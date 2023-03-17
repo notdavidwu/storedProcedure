@@ -1,0 +1,421 @@
+{% load static%}
+
+<!DOCTYPE html>
+<html lang="zh-Hant" >
+<head>
+    <meta name="viewport" maximum-scale=1.0, user-scalable=0 content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css_js/font-awesome.min.css' %}">
+
+
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.0.2-dist/css/bootstrap.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css_js/loaders.css-master/loaders.css' %}">
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'css_js/jquery-3.5.1.slim.min.js' %}"></script>
+    <script src="{% static 'css_js/popper.min.js' %}"></script>
+    <script src="{% static 'css_js/bootstrap-5.0.2-dist/js/bootstrap.js' %}"></script>
+    <script src="{% static 'css_js/key_forbidden.js' %}"></script>
+    <script src="{% static 'css_js/popper.min.js' %}"></script>
+    <script src="{% static 'css_js/loaders.css-master/loaders.css.js' %}"></script>
+    <script type="text/javascript" src="{% static 'css_js/jquery-3.6.0.min.js' %}"></script>
+    <title>DICOM</title>
+    </head>
+
+
+    {% include 'eventDefinition/confirm.css.html' %}
+    {% include 'eventDefinition/confirm.js.html' %}
+
+<body >
+{{ user.username|json_script:"user_username" }}
+{{ user.last_name|json_script:"hospital" }}
+{% include 'navBar.html' %}
+
+
+</body>
+    
+    <div id="Disease" style="width:200px;height:200px;margin:0 auto;">
+        <input value="2023-01-11" type="date" id="startdate">
+        <input value="2023-01-11" type="date" id="enddate">
+        <select class="form-select" aria-label="Default select example" id="ChangeDisease">
+            <option value=0>65歲以下</option>
+            <option value=1>65歲以上</option>
+        </select>
+        <!-- <select class="form-select" aria-label="Default select example" id="filter">
+            <option value=0>全部</option>
+        </select> -->
+        <div id="statusFilterPannel">
+            <input type="checkbox" id="statusFilter1" onclick="statusFilter();excludeCheck('statusFilterPannel');" class="diagChecked btn-check" name="disappear"><label class="btn btn-outline-warning statusFilter" for="statusFilter1">Female</label>
+            <input type="checkbox" id="statusFilter2" onclick="statusFilter();excludeCheck('statusFilterPannel');" class="treatChecked btn-check" name="disappear"><label class="btn btn-outline-warning statusFilter" for="statusFilter2">Male</label>
+            <!-- <input type="checkbox" id="statusFilter5" onclick="statusFilter();excludeCheck('statusFilterPannel');" class="fuChecked btn-check" name="disappear"><label class="btn btn-outline-warning statusFilter" for="statusFilter5">F/U</label>
+            <input type="checkbox" id="statusFilter4" onclick="statusFilter();excludeCheck('statusFilterPannel');" class="ambiguousChecked btn-check" name="disappear"><label class="btn btn-outline-warning statusFilter" for="statusFilter4">Ambiguous</label>
+            <input type="checkbox" id="statusFilter6" onclick="statusFilter();excludeCheck('statusFilterPannel');" class="pdConfirmed btn-check" name="disappear"><label class="btn btn-outline-warning statusFilter" for="statusFilter6">Exclude</label> -->
+        </div>            
+    </div>
+    <div id='defaultMenuBlock1'>  
+        <div id="patient">
+            <div class="loader loader1">
+                <div class="loader-inner pacman">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <span class="tooltip">
+                    <p>載入中，請稍後‧‧‧</p>
+                </span>
+            </div>
+            <table class="table table-striped" id="Report"></table>
+        </div>
+    </div>
+    <div id='defaultMenuBlock2'>  
+        <div id="title">
+            <table  class="thead-dark">
+                <thead>
+                    <tr>
+                        <th class="header" id ="header_date">日期</th>
+                        <th class="header" id ="header_exam">檢查項目</th>
+                        <th class="header" id ="header_note">註記</th>
+                        <th class="header" id ="header_confirm">確認階段</th>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+
+
+        <div id="medtypeFilterTable">
+            <input type="checkbox" id="medtypeFilterCheckbox">
+            <label for="medtypeFilterCheckbox" id="medtypeFilter-label">設定</label>
+            <form class="" id="medtypeFilterForm">
+                <div id = "medtypeFilter">
+                
+                </div>
+            </form>
+        </div>
+
+        <div class="loader loader2">
+            <div class="loader-inner ball-grid-pulse">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <span class="tooltip">
+                <p>載入中，請稍後‧‧‧</p>
+            </span>
+        </div>
+
+
+        <div id="timetable">
+            <table class="table   table-hover" id="time">
+                <tbody id="accordionExample"></tbody>
+            </table>
+        </div>
+
+
+
+        <div class="checkPannel" id="ascription">
+            <div class="ascriptionHeader">
+                歸納
+                <button type="button" class="btn-close close" aria-label="Close" onclick="ascriptionClose()"></button>
+            </div>
+            <div id="processing"  class="row">
+                <div class="col-md-6 ">
+                    <div class="item">
+                        <div class="ascriptionContentHeader">日期</div>
+                        <div class="content" id="date">a</div>
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="item">
+                        <div class="ascriptionContentHeader">項目</div>
+                        <div class="content" id="exam"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="item">
+                        <div class="content" id="ascriptionPhase"></div>
+                    </div>
+                </div>
+                <p class="inductionEventID" id="inductionEventID1"></p>
+                <p class="inductionEventID" id="inductionID"></p>
+            </div>
+            <div id="destination" class="row">
+                <div class="col-md-6 ">
+                    <div class="item">
+                        <div class="ascriptionContentHeader">日期</div>
+                        <div class="content" id="desDate">a</div>
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="item">
+                        <div class="ascriptionContentHeader">項目</div>
+                        <div class="content" id="desExam"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="item">
+                        <div class="content" id="desPhase"></div>
+                    </div>
+                </div>
+                <p class="inductionEventID" id="inductionEventID2"></p>
+            </div>
+            <button type="submit" class="btn btn-primary submit"  onclick="ascriptionSubmit()">Submit</button>
+        </div>
+
+
+        <div class="checkPannel" id="cancerRegistCheck">
+            <div class="ascriptionHeader">
+                癌登資料確認
+                <button type="button" class="btn-close close" aria-label="Close" onclick="cancerRegistCheckClose()"></button>
+            </div>
+            <div id="checkArea"  class="row">
+                
+            </div>
+            <button type="submit" class="btn btn-primary submit"  onclick="cancerRegistSubmit()">Submit</button>
+        </div>
+
+        <div class="checkPannel" id="addTopicForm">
+            <div class="ascriptionHeader">
+                研究主題
+                <button type="button" class="btn-close close" aria-label="Close" onclick="addTopicFormClose()"></button>
+            </div>
+            <div id="topicArea"  class="row">
+                
+            </div>
+            <button type="submit" class="btn btn-primary submit"  onclick="addTopicFormSubmit()">Submit</button>
+        </div>       
+
+
+        <div id="statusMenu" class="customMenu">
+            <p class="btn btn-secondary resetbtn status" role="button" onclick="statusOpen()">病患資料確認</p>
+            <p class="btn btn-secondary resetbtn" role="button"  onclick="formDesign()">表單設計</p>
+            <p class="btn btn-secondary resetbtn" role="button" data-isDone="1" id="isDone"  onclick="isDone()">標記已完成</p>
+            <p class="btn btn-secondary resetbtn" role="button"  onclick="addTopicFormOpen()">加入研究主題</p>
+        </div>
+
+        <div id="menu" class="customMenu">
+            <p class="btn btn-secondary resetbtn" id="belong" role="button" onclick="belong()">歸屬</p>
+            <!--<p class="btn btn-secondary resetbtn" id="CR_check" role="button" onclick="cancerRegistCheck()">癌登確認</p>-->
+            <p class="btn btn-secondary resetbtn" id="extract" role="button" onclick="extractedFactorOpen()">報告萃取</p>
+            <p class="btn btn-secondary resetbtn" id="disableEvent" role="button" data-eventCheck=1 onclick="disableEvent()">disabled</p>
+            <p class="btn btn-secondary resetbtn" id="formDesign" role="button"  onclick="formDesign()">表單設計</p>
+            {% if user.is_superuser %}
+            <p class="btn btn-secondary resetbtn" id="formDesign" role="button"  onclick="addTTP()"  aria-label="Close" data-bs-toggle="modal" data-bs-target="#addTTPModal">add TTP</p>
+            {% endif %}
+            <p class="btn btn-secondary resetbtn" id="formDesign" role="button"  onclick="batchDefiniteOpen()">批次定義</p>
+            <p class="btn btn-secondary resetbtn" id="formDesign" role="button"  onclick="confirmDone()">一鍵確認</p>
+        </div>
+
+        <div id="extractFactorMenu" class="customMenu">
+            <p class="btn btn-secondary resetbtn" id="emptyAll" role="button" onclick="emptyAll()">全部清空</p>
+            <p class="btn btn-secondary resetbtn" id="1window" role="button" onclick="onewindow()">單視窗</p>
+            <p class="btn btn-secondary resetbtn" id="2window" role="button" onclick="twowindow()">雙視窗</p>
+            <p class="btn btn-secondary resetbtn" id="addExtractFactorReport" role="button" onclick="addMainBlock()">新增報告</p>
+        </div>
+
+        <div id="formGeneratorMenu" class="customMenu">
+            <input placeholder="eventFactorCode"  autocomplete=on  class="form-control formFilterMenu resetbtn" list="eventFactorCode" disabled>
+            <datalist id="eventFactorCode"></datalist>
+            <select onchange="searchForm('formGeneratorMenu',false)" name="formFilter" class="form-control formFilterMenu" id="groupNo"></select>
+            <select onchange="searchForm('formGeneratorMenu',false)" name="formFilter" class="form-control formFilterMenu" id="diseaseID"></select>
+            <select onchange="searchForm('formGeneratorMenu',false)" name="formFilter" class="form-control formFilterMenu" id="procedureID"></select>
+            <input placeholder="version" onchange="searchForm('formGeneratorMenu',false)" name="formFilter" autocomplete=on class="form-control formFilterMenu" list="version">
+            <datalist id="version"></datalist>
+            <p onclick="copyForm()" class="btn btn-secondary resetbtn">複製<p>
+        </div>
+
+        <input type='radio' id='extractedFactorPannel_1' name='extractedFactorPannel' data-windowSeq=1>
+        <label for='extractedFactorPannel_1'>
+            <div class="checkPannel" id="extractedFactor" data-window=1 data-windowSeq=1>
+                <div class="ascriptionHeader">
+                    報告萃取
+                    <select class="form-select form-select-sm customSelect formDisease" aria-label="Default select example" onchange="changeFormbyDisease()" id="formDisease" data-form=0></select>
+                    <select class="form-select form-select-sm customSelect procedureOfForm" onchange="procedureOfForm()" id="procedureOfForm" data-form=0></select>
+                    <select class="form-select form-select-sm customSelect formVersion" onchange="changeForm()" id="formVersion" data-form=0></select>    
+                    <!-- <select class="form-select form-select-sm customSelect changeSeq" onchange="changeSeq()"  data-form=0></select>-->
+                </div>
+                <div id="factorGroupArea0"  class="row factorGroupArea"></div>
+                <button type="submit" class="btn btn-primary submit" onclick="extractedFactorSubmit(0)">Submit</button>
+            </div>
+        </label>
+        <input type='radio' id='extractedFactorPannel_2' name='extractedFactorPannel' data-windowSeq=2>
+        <label for='extractedFactorPannel_2'>
+        <div class="checkPannel" id="extractedFactor2" data-windowSeq=2>
+                <div class="ascriptionHeader">
+                    報告萃取
+                    <select class="form-select form-select-sm customSelect formDisease" aria-label="Default select example" onchange="changeFormbyDisease()" id="formDisease2" data-form=1></select>
+                    <select class="form-select form-select-sm customSelect procedureOfForm" onchange="procedureOfForm()" id="procedureOfForm2" data-form=1></select>
+                    <select class="form-select form-select-sm customSelect formVersion" onchange="changeForm()" id="formVersion2" data-form=1></select>
+                    <!-- <select class="form-select form-select-sm customSelect changeSeq" onchange="changeSeq()"  data-form=1></select>-->
+                </div>
+                <div id="factorGroupArea1"  class="row factorGroupArea"></div>
+                <button type="submit" class="btn btn-primary submit" onclick="extractedFactorSubmit(1)">Submit</button>
+            </div>
+        </label>
+        <div class="checkPannel" id="formDesignPannel">
+            <div class="ascriptionHeader">
+                表單設計
+                <button type="button" class="btn-close close" aria-label="Close" onclick="formDesignClose()"></button>
+            </div>
+            <div id="formTitle">
+                <label class="formTitle form-label">eventFactorCode</label>
+                <label class="formTitle form-label">groupNo</label>
+                <label class="formTitle form-label">diseaseID</label>
+                <label class="formTitle form-label">procedureID</label>
+                <label class="formTitle form-label">version</label>
+            </div>
+            <div id="formFilter">
+                <input placeholder="eventFactorCode"  autocomplete=on  class="formFilter form-control" list="eventFactorCode" disabled>
+                <datalist id="eventFactorCode"></datalist>
+                <select onchange="searchForm('formFilter',true)" name="formFilter" class="formFilter form-control" id="groupNo"></select>
+                <select onchange="searchForm('formFilter',true)" name="formFilter" class="formFilter form-control" id="diseaseID"></select>
+                <select onchange="searchForm('formFilter',true)" name="formFilter" class="formFilter form-control" id="procedureID"></select>
+                <input placeholder="version" onchange="searchForm('formFilter',true)" name="formFilter" autocomplete=on class="formFilter form-control" list="version">
+                <datalist id="version"></datalist>
+            </div>
+            <div id="designArea"  class="row">
+                <table class='table table-striped'>
+                    <thead>
+                        <th>eventFactorID</th>
+                        <th>serialNo</th>
+                        <th>factorName</th>
+                        <th>itemType</th>
+                        <th>labeled</th>
+                        <th>F_eventFactorID</th>
+                        <th>isLeaf</th>
+                        <th>刪除</th>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan=8><div class="addButton"><button type="button" onclick="addFactor()" class="add btn btn-outline-primary">+</button></div></td></tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <div id="preview"  class="row">
+                
+            </div>
+        </div>
+
+        
+        <div class="checkPannel" id="batchDefinite">
+            <div class="ascriptionHeader">
+                batchDefinite
+                <button type="button" class="btn-close close" aria-label="Close" onclick="batchDefiniteClose()"></button>
+            </div>
+            <div id="event_start"   style="height:30%;background-color:#999">
+                <div class="event_content"></div>
+                <button type="button" class="btn btn-warning buttonAtBottom" onclick="batchDefinite('event_start')">設定</button>
+            </div>
+            <div id="event_end"   style="height:30%;background-color:#DDD">
+                <div class="event_content"></div>
+                <button type="button" class="btn btn-warning buttonAtBottom" onclick="batchDefinite('event_end')">設定</button>
+            </div>
+            <div id="event_setting"   style="height:30%;background-color:#AAA">
+                
+            </div>
+            <button type="submit" class="btn btn-primary submit"  onclick="batchDefiniteSubmit()">Submit</button>
+        </div>
+    </div>    
+
+    <div id="slideout">
+        <input type="checkbox" id="mycheckbox">
+        <label for="mycheckbox" class="feedback-label">癌登資料</label>
+        <form class="form sc2">
+            <table class="table table-striped table-hover" id="cancerRegistInfo" >
+                <thead>
+                    <tr>
+                        <th>疾病</th><th>序列</th><th>日期</th><th>項目</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </form>
+    </div>
+    
+    <div class="modal fade" id="deletelePatientDiseaseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="InsertMessage" class="modal-body">
+                    確定要刪除?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="delete" onclick="deletelePatientDisease()">刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="InsertMessage" class="modal-body">
+                    確定要刪除?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="delete" onclick="deleteFactor()">刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addTTPModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">TTP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="InsertMessage" class="modal-body">
+                    確定要新增?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addTTP()">確定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="checkPannel" id="patientStatusCheck">
+        <div class="ascriptionHeader">
+            病患資料確認
+            <button type="button" class="btn-close close" aria-label="Close" onclick="patientStatusCheckClose()"></button>
+        </div>
+        <div id="statusArea"  class="row">
+              <table class="table table-striped table-hover" >
+                <thead>
+                    <tr>
+                        <th>Disease</th><th>SeqNo</th><th>Male</th><th>Female</th><th>F/U</th><th>Ambiguous</th><th>AmbiguousNote</th><th>Exclude</th><th>刪除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary submit" onclick="patientStatusSubmit()">Submit</button>
+    </div>
+
+    <textarea id="text" readonly>
+
+    </textarea>
+    
+</body>
+</html>
+
+
+
