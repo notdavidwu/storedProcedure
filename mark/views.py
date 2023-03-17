@@ -364,7 +364,7 @@ def getTextToken(request):
         # # print(textTokenData[0][0])
         record = {}
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\r]{1})') 
-        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>]{1})')
+        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
             # print("textTokenData : ", i)
@@ -389,7 +389,7 @@ def getTextToken(request):
                 second = RE1.findall(i[1])
                 # print("first : ", first)
                 # print("second : ", first)
-                if first == [] and second == [] :
+                if (first == [] and second == []) or i[0] == '[NUM]' or i[1] == '[NUM]':
                     result['data'].append({
                             'No': number,
                             'First': i[0],
@@ -533,7 +533,7 @@ def getTextToken_3(request):
         record = {}
 
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n]{1})') 
-        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`]{1})')
+        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
             # print(i)
@@ -559,7 +559,7 @@ def getTextToken_3(request):
                 third = RE.findall(i[2])
                 # print("first : ", first)
                 # print("second : ", first)
-                if first == [] and second == [] and third == [] :
+                if (first == [] and second == [] and third == []) or i[0] == '[NUM]' or i[1] == '[NUM]' or i[2] == '[NUM]':
                     result['data'].append({
                             'No': number,
                             'First': i[0],
