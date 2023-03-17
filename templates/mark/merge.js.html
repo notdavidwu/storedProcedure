@@ -308,7 +308,8 @@
     }
 
     function merge(){
-        const start = Date.now();
+        
+        var start = Date.now();
         $(event.target).toggleClass('active');
         if ($(event.target).attr('class') == "btn btn-info active" ){
             let token1 = $(event.target).parents('tr').children('td').eq(1).html();
@@ -350,7 +351,7 @@
                     newTokenID = response.data[0].tokenID;
                     //取得被合併的兩個tokenID
                     tokenIDArray = getTokenIDByName([token1,token2]);
-                    //console.log("tokenIDArray : ", tokenIDArray);
+                    console.log("tokenIDArray : ", tokenIDArray);
                     if (tokenIDArray.status === "0"){
                         //console.log("in");
                         //取得textToken位置
@@ -360,16 +361,19 @@
                         if (positionArray.status === "0"){
                             //將textToken原始資料*(-1)
                             response1 = multiplyByMinusOne(tokenIDArray.tokenID);
+                            console.log("response1 : ", response1);
                             if (response1.status === "0"){
                                 //存入新的tokenID到textToken
                                 response2 = insertNewTextToken(positionArray, newTokenID);
                                 console.log("insertNewTextToken : ", response2);
                                 if (response2.status === "0"){
-                                    $('#result_data').empty();
-                                    $('#sortTable').empty();
-                                    printAllData();
+                                    $(event.target).parents('tr').remove();
                                     printAllPData();
-                                    swal("Merged!", token1 + token2 + " has been merged!", "success");
+                                    var end = Date.now();
+                                    swal("Merged!", token1 + token2 + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+                                    //$('#result_data').empty();
+                                    //$('#sortTable').empty();
+                                    //printAllData();
                                 }          
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
@@ -397,19 +401,19 @@
             }
             else{
                 //console.log("choose a token type");
+                
+                swal("Error!", "Vocabulary already exist!", "error");
                 display_noInput();
             }
             //console.log("class : ", $(event.target).attr('class'));
         }
         else{            
             ////console.log("class : ", $(event.target).attr('class'));
-        }      
-        const end = Date.now();
-
-        console.log("total execute time : ", end-start);      
+        }        
     }
 
-    function merge_3(){
+    function merge_3(){        
+        var start = Date.now();
         $(event.target).toggleClass('active');
         if ($(event.target).attr('class') == "btn btn-info active" ){
             let token1 = $(event.target).parents('tr').children('td').eq(1).html();
@@ -448,11 +452,14 @@
                                 //存入新的tokenID到textToken
                                 response1 = insertNewTextToken(positionArray, newTokenID);
                                 if (response1.status === "0"){
-                                    $('#result_data').empty();
-                                    $('#sortTable').empty();
-                                    printAllData_3();
+                                    $(event.target).parents('tr').remove();
                                     printAllPData();
-                                    swal("Merged!", token1 + token2 + token3 + " has merged!", "success");
+                                    var end = Date.now();
+                                    swal("Merged!", token1 + token2 + token3 + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
+                                    //$('#result_data').empty();
+                                    //$('#sortTable').empty();
+                                    //printAllData_3();
+                                    //printAllPData();
                                 }
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
@@ -479,6 +486,7 @@
             }
             else{
                 //console.log("choose a token type");
+                swal("Error!", "Vocabulary already exist!", "error");
                 display_noInput();
             }
             ////console.log("class : ", $(event.target).attr('class'));

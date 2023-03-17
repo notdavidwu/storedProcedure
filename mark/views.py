@@ -364,7 +364,7 @@ def getTextToken(request):
         # # print(textTokenData[0][0])
         record = {}
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\r]{1})') 
-        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/]{1})')
+        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
             # print("textTokenData : ", i)
@@ -533,7 +533,7 @@ def getTextToken_3(request):
         record = {}
 
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n]{1})') 
-        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/]{1})')
+        RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
             # print(i)
