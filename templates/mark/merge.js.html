@@ -53,6 +53,17 @@
             //}
             //defineFunction();
         });
+
+        //根據select顯示token
+        $("#showTimes").on('change', function() {
+            value = document.getElementById('twoOrThree').value;
+            if (value === "2"){
+                printAllData();
+            }
+            else if (value === "3"){
+                printAllData_3();
+            }
+        });
     });        
 
     function passTokenIDToWorker() {
@@ -116,7 +127,7 @@
         response = getTextTokenData();
         //console.log("response.data : ", response.data);
         $('#result_data').empty();
-        $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true">
+        $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch" data-reset-search="resetSearch">
         </table>`);
         $('#sortTable').bootstrapTable({
             columns: [{
@@ -144,6 +155,13 @@
             }],
             data:response.data
         })
+        $('#result_data .fixed-table-toolbar').attr('id', 'table_2word');
+        $('#table_2word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
+            <option selected value="1">Search First</option>
+            <option value="2">Search Second</option>
+            <option value="3">Search Times</option>
+          </select>`);
+        $('#table_2word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
     }
 
     //顯示資料
@@ -152,7 +170,7 @@
         //console.log("response.data : ", response.data);
         
         $('#result_data').empty();
-        $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true">
+        $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch">
         </table>`);
         $('#sortTable').bootstrapTable({
             columns: [{
@@ -188,6 +206,14 @@
             }],
             data:response.data
         })
+        $('#result_data .fixed-table-toolbar').attr('id', 'table_3word');
+        $('#table_3word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
+            <option selected value="1">Search First</option>
+            <option value="2">Search Second</option>
+            <option value="4">Search Third</option>
+            <option value="3">Search Times</option>
+          </select>`);
+        $('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
     }
 
     //顯示P資料
@@ -196,7 +222,7 @@
         var tokenP = response.data;
         //console.log("response.data : ", response.data);
         $('#result_dataP').empty();
-        $('#result_dataP').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true">
+        $('#result_dataP').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch">
         </table>`);
         $('#sortTableP').bootstrapTable({
             columns: [{
@@ -250,13 +276,21 @@
     //取得所有資料
     function getTextTokenData(){
         var res;
-        var NS = document.getElementById("filter").value;
+        var NS = document.getElementById("filter").value;        
+        var filter_times = document.getElementById("showTimes").value;
+        console.log("filter_times : ", filter_times);
+        if (!filter_times){
+            //console.log("filter_times : ", filter_times);
+            filter_times = 0;
+        }
+
         $.ajax({
             async: false,
             type: 'GET',
             url: '{% url 'mark:getTextToken' %}',
             data:{
                 "NoSign" : NS,
+                "filter_times" : parseInt(filter_times),
             },
             success:function (response){
                 res = response;
@@ -270,12 +304,18 @@
     function getTextTokenData_3(){
         var res;
         var NS = document.getElementById("filter").value;
+        var filter_times = document.getElementById("showTimes").value;
+        if (!filter_times){
+            //console.log("filter_times : ", filter_times);
+            filter_times = 0;
+        }
         $.ajax({
             async: false,
             type: 'GET',
             url: '{% url 'mark:getTextToken_3' %}',
             data:{
                 "NoSign" : NS,
+                "filter_times" : parseInt(filter_times),
             },
             success:function (response){
                 res = response;
@@ -371,9 +411,9 @@
                                     printAllPData();
                                     var end = Date.now();
                                     swal("Merged!", token1 + token2 + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
-                                    //$('#result_data').empty();
-                                    //$('#sortTable').empty();
-                                    //printAllData();
+                                    $('#result_data').empty();
+                                    $('#sortTable').empty();
+                                    printAllData();
                                 }          
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
@@ -392,8 +432,8 @@
                     }
                 }
                 else if (response.status === 'already_exist'){
+                    swal("Error!", "Vocabulary already exist!", "error");
                     //console.log("already_exist!!!");
-                    display_already_exist();
                 }
                 else{
                     swal("Error!", "insertVocabulary_new ERROR!", "error");
@@ -456,10 +496,10 @@
                                     printAllPData();
                                     var end = Date.now();
                                     swal("Merged!", token1 + token2 + token3 + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
-                                    //$('#result_data').empty();
-                                    //$('#sortTable').empty();
-                                    //printAllData_3();
-                                    //printAllPData();
+                                    $('#result_data').empty();
+                                    $('#sortTable').empty();
+                                    printAllData_3();
+                                    printAllPData();
                                 }
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
@@ -487,7 +527,6 @@
             else{
                 //console.log("choose a token type");
                 swal("Error!", "Vocabulary already exist!", "error");
-                display_noInput();
             }
             ////console.log("class : ", $(event.target).attr('class'));
         }
@@ -854,6 +893,55 @@
             iframeDoc.getElementById("wordNumber").style.display = "";
             iframeDoc.getElementById("firstWord").style.display = "";
         }
-    }
+    }   
+
     
+
+  function customSearch(data, text) {
+    var search = document.getElementsByClassName("form-control search-input");
+    console.log("search : ", search[0]);
+    var selectValue = document.getElementById("tableSelect1").value;
+    console.log("selectValue : ", selectValue);
+    console.log("data : ", data);
+    console.log("text : ", text);
+    if (text != ""){
+        switch (selectValue) {
+            case '1':
+                console.log('select 1');
+                return data.filter(function (row) {
+                  return row.First == text
+                })
+                break;
+            case '2':
+                console.log('select 2');
+                return data.filter(function (row) {
+                  return row.Second == text
+                })
+                break;
+            case '3':
+                console.log('select 3');
+                return data.filter(function (row) {
+                  return row.Times >= text
+                })
+                break;
+            case '4':
+                console.log('select 4');
+                return data.filter(function (row) {
+                  return row.Third == text
+                })
+                break;
+            case '0':
+                console.log('select 0');
+                return data
+        }
+    }
+
+    return data.filter(function (row) {
+      return row.Times >= text
+    })
+  }
+
+  function resetSearch(){
+    $("#sortTable").bootstrapTable('resetSearch');
+  }
 </script> 

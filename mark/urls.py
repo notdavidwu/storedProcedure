@@ -52,7 +52,7 @@ urlpatterns = [
     path('getSynTypo/', getSynTypo, name="getSynTypo"),
     
     
-    path('Page2/', Page2.as_view(),name="Page2"),
+    path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
     

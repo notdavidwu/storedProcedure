@@ -1,3 +1,4 @@
+{% load static%}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.css" rel="stylesheet">
@@ -99,7 +100,7 @@
         ////console.log("get token p2 " + selectValue);
         $.ajax({
             type: 'GET',
-            url: '{% url 'getVocabulary' %}',
+            url: '{% url 'mark:getVocabulary' %}',
             data:{
             },
             success:function (response){
@@ -134,7 +135,7 @@
         $.ajax({
             async: 'false',
             type: 'GET',
-            url: '{% url 'getVocabularyByType' %}',
+            url: '{% url 'mark:getVocabularyByType' %}',
             data:{
                 'tokenType':selectValue,
             },
@@ -304,7 +305,7 @@
         $.ajax({
             async: false,
             type: 'GET',
-            url: '{% url 'checkName' %}',
+            url: '{% url 'mark:checkName' %}',
             data:{
                 'Name[]': selected,
             },
@@ -323,7 +324,7 @@
         $.ajax({
             async: false,
             type: 'GET',
-            url: '{% url 'checkRE' %}',
+            url: '{% url 'mark:checkRE' %}',
             data:{
                 'tokenID[]': tokenID,
             },
@@ -437,7 +438,7 @@
         $.ajax({            
             async: false,
             type: 'POST',
-            url: '{% url 'insertVocabulary_U' %}',
+            url: '{% url 'mark:insertVocabulary_U' %}',
             data:{
                 'token[]': token,
                 'nWord[]': nWord,
@@ -476,7 +477,7 @@
         $.ajax({
             async: false,
             type: 'POST',
-            url: '{% url 'getTextToken' %}',
+            url: '{% url 'mark:getTextToken' %}',
             data:{
                 'reportID[]' : reportID,
                 'posStart[]' : posStart,
@@ -510,7 +511,7 @@
         $.ajax({
             async: false,
             type: 'PATCH',
-            url: '{% url 'getReportText' %}',                
+            url: '{% url 'mark:getReportText' %}',                
             data:JSON.stringify({
                 'reportID' : reportID,
                 'residualText': residualText,
@@ -530,7 +531,7 @@
         $.ajax({
             async: false,
             type: 'POST',
-            url: '{% url 'getReportText' %}',                
+            url: '{% url 'mark:getReportText' %}',                
             data:{
                 'reportID[]' : reportID,
                 'posStart[]' : posStart,
@@ -554,7 +555,7 @@
                 async: false,
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
-                url: '{% url 'getTokenREItemID' %}',
+                url: '{% url 'mark:getTokenREItemID' %}',
                 data: JSON.stringify(matchArray),
                 //成功存第三章表(每個array值會有一個tokenID.一次的match)
                 success:function (response){
@@ -592,7 +593,7 @@
             $.ajax({
                 async: false,
                 type: 'POST',
-                url: '{% url 'insertExtractedValueFromToken' %}',
+                url: '{% url 'mark:insertExtractedValueFromToken' %}',
                 data: {
                     'reportID[]' : reportID,
                     'posStart[]' : posStart,
@@ -685,7 +686,7 @@
         $.ajax({
             async:false,
             type: 'GET',
-            url: '{% url 'getReportID' %}',
+            url: '{% url 'mark:getReportID' %}',
             data:{
                 "reportID1": reportIDfrom,
                 "reportID2": reportIDto,
@@ -702,7 +703,7 @@
     function getReport(reportID){
         $.ajax({
             type: 'GET',
-            url: '{% url 'getReportText' %}',
+            url: '{% url 'mark:getReportText' %}',
             data:{
                 'reportID': reportID,
             },

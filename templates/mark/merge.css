@@ -63,7 +63,7 @@
       position:absolute;
       left:550px;
       top:65px;
-      width:200px;
+      width:150px;
     }
 
     #filter {
@@ -172,4 +172,31 @@
 			from {opacity: 0; transform: translateY(-100px);}
 			to {opacity: 1; transform: translateY(0);}
 		}
+
+  #tableSelect1 {
+    position:absolute;
+    top:20px;
+    left:150px;
+    height:36px;
+    width:150px;
+    border-width:2px;
+  }  
+
+  #resetSearch {
+    position:absolute;
+    top:20px;
+    left:50px;
+    height:36px;
+    width:80px;
+    background-color:bg-secondary;
+  }  
+
+  #showTimes {
+    position:absolute;
+    top:65px;
+    left:730px;
+    height:30px;
+    width:80px;
+    border-width:1px;
+  }  
 </style>
