@@ -1,13 +1,19 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
 <!-- Animate.css v3.5.2 -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+
 <!-- lettering.js v0.7.0 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lettering.js/0.7.0/jquery.lettering.min.js"></script>
 <!-- Textillate.js v0.4.0 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/textillate/0.4.0/jquery.textillate.min.js"></script>
 <script src="http://jschr.github.io/textillate/jquery.textillate.js"></script>
-<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 
 
 <script >
@@ -115,7 +121,7 @@
             $.ajax({
                 async: false,
                 type: 'GET',
-                url: '{% url "mark:getNextWord" %}',
+                url: '{% url 'mark:getNextWord' %}',
                 data:{
                     "word" : wordNumber,//最多14字[('組', '織', '來', '源', ':', 'C', '[NUM]', '-', '[NUM]', ',', 'C', '[NUM]', '-', '[NUM]', 1, '組織來源:C[NUM]-[NUM],C[NUM]-[NUM]')]
                     "firstToken" : firstWord,
@@ -123,7 +129,7 @@
                 success:function (response){
                     res = response;
                     $('#result_data').empty();
-                    $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true">
+                    $('#result_data').append(`<table id='sortTableNext' class="table table-striped" data-toggle="table"  data-search="true">
                     </table>`);
                     var columnsOfTable = [{
                         field: 'No',
@@ -131,7 +137,7 @@
                         align: 'center',
                         valign: 'middle',
                         sortable:true,
-                    }]
+                    }];
                     if (parseInt(wordNumber)>=3){
                         for (var i=0 ; i<parseInt(wordNumber) ; i++){
                             columnsOfTable.push({
@@ -183,10 +189,14 @@
                         },
                         ]
                     }
-                    $('#sortTable').bootstrapTable({
+                    console.log("columnsOfTable : ", columnsOfTable);
+                    console.log("response.data : ", response.data);
+                    console.log("$('#sortTableNext') : ", $('#sortTableNext'));
+                    $('#sortTableNext').bootstrapTable({
                         columns: columnsOfTable,
                         data:response.data
-                    })                    
+                    });
+                    
                     $('.loading-text').hide();
                     ////console.log("res : ", res);
                 },

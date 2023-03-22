@@ -61,16 +61,16 @@ def TextFormView(request):
     if  request.method == 'POST':
         form = TextModelForm(request.POST) #拿到POST過來的資料並填入form
         result = {'status':'1'} #預設失敗
-        # print(request.POST)
+        # # print(request.POST)
         if form.is_valid(): #檢查forms.py中的格式
-            # print("form is valid")            
+            # # print("form is valid")            
             data = form.cleaned_data #接form裡面丟出來的資料
-            # # print(data)
+            # # # print(data)
             FormRegexText = form.cleaned_data['regexText'] #依標籤解析出資料
             FormInputText = form.cleaned_data['inputText'] #依標籤解析出資料
-            # # print("User is :", request.user)
-            # # print("regexText is :",FormRegexText)
-            # # print("inputText is :",FormInputText)
+            # # # print("User is :", request.user)
+            # # # print("regexText is :",FormRegexText)
+            # # # print("inputText is :",FormInputText)
             # if FormInputText != None and FormRegexText != None:
             #     text123 = Text.objects.create(author=request.user) #建立新表單
             #     text123.author = request.user
@@ -78,10 +78,10 @@ def TextFormView(request):
             #     text123.inputText = FormInputText #將解析完的資料丟到物件內
             #     result = {'status':'0'}
             #     text123.save() #存檔
-            # # print(result)
+            # # # print(result)
         else:
             pass
-            # print("form is NOT valid.")
+            # # print("form is NOT valid.")
     
     
     
@@ -95,12 +95,12 @@ def getVocabulary(request):
     if request.method == 'GET':
         #測試拉資料
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        result = cursor.execute("select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType != 'U' ")
+        result = cursor.execute("select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType != 'U' ")
         patient = cursor.fetchall()
         result = {}
         result['data'] = []
@@ -121,30 +121,30 @@ def getVocabularyByType(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
         if request.GET['tokenType'] == 'U':
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where (tokenType = ? and tokenID <= 152 and tokenID != 151) order by tokenID DESC;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where (tokenType = ? and tokenID <= 152 and tokenID != 151) order by tokenID DESC;'
         elif request.GET['tokenType'] == 'P':
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ? or tokenType != \'U\';'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ? or tokenType != \'U\';'
         else:
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ? ;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ? ;'
         args = [request.GET['tokenType']]
-        # print(args)
+        # # print(args)
         cursor.execute(query, args)
         tokenID = cursor.fetchall()
-        ## print(tokenID[0])
+        ## # print(tokenID[0])
         result['status'] = '0'            
         result['data'] = []
         for i in tokenID:
             record = {}
             record['token'] = i.token 
             record['tokenType'] = i.tokenType     
-            ## print("token: " + str(i.token))
+            ## # print("token: " + str(i.token))
             result['data'].append(record)
     
         conn.commit()
@@ -157,7 +157,7 @@ def getVocabularyByType_Ptable(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -175,14 +175,14 @@ def getVocabularyByType_Ptable(request):
                 WHERE res.rowID=1 and res.rowID2=1
                 ORDER BY  tokenID, posStart,reportID
                 '''
-        # print(args)
+        # # print(args)
         cursor.execute(query)
         tokenID = cursor.fetchall()
         result['data'] = []
             
         for ind,i in enumerate(tokenID):
-            # print("i[0] : ",i[0])
-            # print("i : ", i)
+            # # print("i[0] : ",i[0])
+            # # print("i : ", i)
             if i[1]>0 and i[2]>0:
                 result['data'].append({
                     'No': ind+1,
@@ -212,7 +212,7 @@ def insertVocabulary(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -226,22 +226,22 @@ def insertVocabulary(request):
         record['tokenType'] = request.POST.get('tokenType')
 
 
-        query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ? and nWord = ?;'
+        query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ? and nWord = ?;'
         args = [request.POST.get('token'),int(request.POST.get('nWord'))]
         cursor.execute(query, args)
         tokenID_original = cursor.fetchone()
-        print("tokenID_original : ", tokenID_original)
+        # print("tokenID_original : ", tokenID_original)
 
         
         if tokenID_original == None and request.POST.get('tokenType'):
 
         #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[Vocabulary] (token,nWord,tokenType) OUTPUT [INSERTED].tokenID,[INSERTED].token,[INSERTED].tokenType VALUES (?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[Vocabulary] (token,nWord,tokenType) OUTPUT [INSERTED].tokenID,[INSERTED].token,[INSERTED].tokenType VALUES (?, ?, ?);'
             args = [request.POST.get('token'),int(request.POST.get('nWord')),request.POST.get('tokenType')]
-            # print(args)
+            # # print(args)
             cursor.execute(query, args)
             tokenID = cursor.fetchall()
-            print(tokenID[0][0], tokenID[0][1], tokenID[0][2])
+            # print(tokenID[0][0], tokenID[0][1], tokenID[0][2])
             if tokenID != []:
                 result['status'] = '0'
                 record['tokenID'] = tokenID[0][0]
@@ -250,14 +250,14 @@ def insertVocabulary(request):
                 result['data'].append(record)
 
         elif tokenID_original != None:
-            # print("tokenID_original : ", tokenID_original)
+            # # print("tokenID_original : ", tokenID_original)
             result['status'] = 'already_exist'
             record['tokenID'] = tokenID_original[2]
             record['token'] = tokenID_original[0]
             record['tokenType'] = tokenID_original[3]
             result['data'].append(record)
 
-        # # print("data saved(Vocabulary)")
+        # # # print("data saved(Vocabulary)")
         conn.commit()
         conn.close()
             
@@ -271,7 +271,7 @@ def insertVocabulary_U(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -286,55 +286,65 @@ def insertVocabulary_U(request):
         token = request.POST.getlist('token[]')
         nWord = request.POST.getlist('nWord[]')
         tokenType = request.POST.getlist('tokenType[]')
-        # print("token : ", len(token))
-        # print("nWord : ", len(nWord))
-        # print("tokenType : ", len(tokenType))
+        # # print("token : ", len(token))
+        # # print("nWord : ", len(nWord))
+        # # print("tokenType : ", len(tokenType))
         tokenID = []
         args = []
-        for i in range(len(token)):
-            args.append({"token": token[i], "nWord":nWord[i], "tokenType":tokenType[i], })
-
-
-            # args = [Token,nWord[i],tokenType[i]]
-        query = 'EXEC insertVocabulary_POST @array = ?;'
-        args = json.dumps(args)
-        # print(args)
-        cursor.execute(query, args)
-        newtoken = cursor.fetchall()
-        print(newtoken)
         # for i in range(len(token)):
-        #     Token = token[i]
-        #     # print("Token : ", Token)
-        #     #先查詢
-        #     query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ?;'
-        #     args = [Token]
-        #     cursor.execute(query, args)
-        #     old_tokenID = cursor.fetchone()
-        #     # # print("old_tokenID", old_tokenID)
-        #     # # print("i : ", i)
-        #     # 不存在插入
-        #     if old_tokenID == None:
-        #         # # print("i : ", i)
-        #         query = 'INSERT into Vocabulary (token,nWord,tokenType) OUTPUT [INSERTED].tokenID VALUES (?, ?, ?);'
-        #         args = [Token,nWord[i],tokenType[i]]
-        #         # # print("args : ", args)
-        #         cursor.execute(query, args)
-        #         newtoken = cursor.fetchone()
-        #         # 沒找到存現在的tokenID
-        #         tokenID.append(newtoken.tokenID)
-        #     else:
-        #         # 有找到存舊的tokenID
-        #         tokenID.append(old_tokenID.tokenID)
+        #     args.append({"token": token[i], "nWord":nWord[i], "tokenType":tokenType[i], })
+
+
+        #     # args = [Token,nWord[i],tokenType[i]]
+        # query = 'EXEC insertVocabulary_POST @array = ?;'
+        # args = json.dumps(args)
+        # # print(args)
+        # cursor.execute(query, args)
+        # newtoken = cursor.fetchall()
+        # print(" newtoken : ", newtoken)
+
+
+        for i in range(len(token)):
+            Token = token[i]
+            # # print("Token : ", Token)
+            #先查詢
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?;'
+            args = [Token]
+            cursor.execute(query, args)
+            old_tokenID = cursor.fetchone()
+            # # # print("old_tokenID", old_tokenID)
+            # # # print("i : ", i)
+            # 不存在插入
+            if old_tokenID == None:
+                # # # print("i : ", i)
+                query = 'INSERT into Vocabulary (token,nWord,tokenType) OUTPUT [INSERTED].tokenID VALUES (?, ?, ?);'
+                args = [Token,nWord[i],tokenType[i]]
+                # # # print("args : ", args)
+                cursor.execute(query, args)
+                newtoken = cursor.fetchone()
+                # 沒找到存現在的tokenID
+                tokenID.append(newtoken.tokenID)
+            else:
+                # 有找到存舊的tokenID
+                tokenID.append(old_tokenID.tokenID)
         # print("ID : ", tokenID)
+
+        
         result['status'] = '0'
         # record['tokenID'] = tokenID[0][0]
-        for i in newtoken:
-            print("i : ", i[0])
-            # tokenID.append(i[0])
-            result['data'].append(i[0])
-        print("result : ", result)
-        # # print("data saved(Vocabulary)")
-        # print(result)
+
+        # for i in newtoken:
+        #     print("i : ", i[0])
+        #     # tokenID.append(i[0])
+        #     result['data'].append(i[0])
+        # print("result : ", result)
+
+        # # # print("data saved(Vocabulary)")
+        # # print(result)
+
+        for i in tokenID:
+            result['data'].append(i)
+            
         conn.commit()
         conn.close()            
     return JsonResponse(result)
@@ -348,33 +358,35 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         filter_times = int(request.GET['filter_times'])
+        if filter_times == 0:
+            filter_times = 1
         query = '''
                 EXEC two_word @filter_times = ?;
                 '''
         args = [filter_times]
         cursor.execute(query, args)
         textTokenData = cursor.fetchall()
-        # # print("textTokenData : ", textTokenData)
+        # # # print("textTokenData : ", textTokenData)
         result['data'] = []
-        # # print(textTokenData[0][0])
+        # # # print(textTokenData[0][0])
         record = {}
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\r]{1})') 
         RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
-            # print("textTokenData : ", i)
+            # # print("textTokenData : ", i)
 
             if request.GET['NoSign'] == 'NS':
                 first = RE.findall(i[0])
                 second = RE.findall(i[1])
-                # print("first : ", first)
-                # print("second : ", first)
+                # # print("first : ", first)
+                # # print("second : ", first)
                 if first == [] and second == [] :
                     result['data'].append({
                         'No': number,
@@ -386,23 +398,23 @@ def getTextToken(request):
                     number += 1 
                     
             else:                   
-                first = RE1.findall(i[0])
-                second = RE1.findall(i[1])
-                # print("first : ", first)
-                # print("second : ", first)
-                if (first == [] and second == []) or i[0] == '[NUM]' or i[1] == '[NUM]':
-                    result['data'].append({
-                            'No': number,
-                            'First': i[0],
-                            'Second': i[1],
-                            'Times': i[2],
-                            'Mergecheck':'<button onclick="merge()" class="btn btn-info">Merge</button>',
-                        })
-                    number += 1 
+                # first = RE1.findall(i[0])
+                # second = RE1.findall(i[1])
+                # # print("first : ", first)
+                # # print("second : ", first)
+                # if (first == [] and second == []) or i[0] == '[NUM]' or i[1] == '[NUM]':
+                result['data'].append({
+                        'No': number,
+                        'First': i[0],
+                        'Second': i[1],
+                        'Times': i[2],
+                        'Mergecheck':'<button onclick="merge()" class="btn btn-info">Merge</button>',
+                    })
+                number += 1 
 
         conn.commit()
         conn.close()
-        print("STATIC_ROOT : ", settings.STATIC_ROOT)
+        # print("STATIC_ROOT : ", settings.STATIC_ROOT)
 
     #插入U資料
     if request.method == 'POST':
@@ -410,28 +422,32 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        # # print(request.POST)
+        # # # print(request.POST)
         reportID = request.POST.getlist('reportID[]')
         posStart = request.POST.getlist('posStart[]')
         posEnd = request.POST.getlist('posEnd[]')
-        tokenID = request.POST.getlist('tokenID[]')[0]
-        tokenID = tokenID.split(",")
-        # # print(len(reportID), len(posStart), len(posEnd), len(tokenID))
-        # # print(  type(reportID), type(posStart), type(posEnd), type(tokenID))
-        # # print("tokenID : ", tokenID.split(","))
+        tokenID = request.POST.getlist('tokenID[]')
+        print("tokenID :", tokenID)
+        # tokenID = tokenID.split(",")
+        # print(len(reportID), len(posStart), len(posEnd), len(tokenID))
+        # # # print(  type(reportID), type(posStart), type(posEnd), type(tokenID))
+        # # # print("tokenID : ", tokenID.split(","))
         for i in range(len(reportID)):
             result['status'] = '0'
-            
-            # print( reportID[i], posStart[i], posEnd[i], tokenID[i])
+            # # print(int(reportID[i]))
+            # # print(posStart[i])
+            # # print(posEnd[i])
+            # # print(int(tokenID[i]))
+            # # print( reportID[i], posStart[i], posEnd[i], tokenID[i])
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
             args = [int(reportID[i]), posStart[i], posEnd[i], int(tokenID[i])]
-            # # print("args : ", args)
+            # # # print("args : ", args)
             cursor.execute(query, args)
 
         conn.commit()
@@ -443,7 +459,7 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -451,14 +467,14 @@ def getTextToken(request):
 
         raw = request.body.decode('utf-8')
         body = json.loads(raw)
-        # print(body)
-        # # print( body['reportID1'])
+        # # print(body)
+        # # # print( body['reportID1'])
 
         tokenID1 = body['tokenID1']
         tokenID2 = body['tokenID2']
 
         
-        # print(tokenID1, tokenID2)
+        # # print(tokenID1, tokenID2)
 
 
         query = '''
@@ -467,7 +483,7 @@ def getTextToken(request):
         args = [tokenID1, tokenID2]
         cursor.execute(query, args)
         changed_texttoken1 = cursor.fetchall()
-        # # print("changed_texttoken first : ", changed_texttoken1)
+        # # # print("changed_texttoken first : ", changed_texttoken1)
 
         
 
@@ -478,7 +494,7 @@ def getTextToken(request):
         args = [tokenID1, tokenID2]
         cursor.execute(query, args)
         changed_texttoken2 = cursor.fetchall()
-        # # print("changed_texttoken second: ", changed_texttoken2)
+        # # # print("changed_texttoken second: ", changed_texttoken2)
 
 
 
@@ -488,7 +504,7 @@ def getTextToken(request):
         record = {}
 
         for i in changed_texttoken1:
-            # print(i)
+            # # print(i)
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[2]
@@ -496,7 +512,7 @@ def getTextToken(request):
             result['data'].append(copy.deepcopy(record))
 
         for i in changed_texttoken2:
-            # print(i)
+            # # print(i)
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[2]
@@ -517,7 +533,7 @@ def getTextToken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -525,6 +541,8 @@ def getTextToken_3(request):
 
         
         filter_times = int(request.GET['filter_times'])
+        if filter_times == 0:
+            filter_times = 1
 
         query = '''
                 EXEC three_word @filter_times = ?;
@@ -532,16 +550,16 @@ def getTextToken_3(request):
         args = [filter_times]
         cursor.execute(query, args)
         textTokenData = cursor.fetchall()
-        # # print("textTokenData : ", textTokenData)
+        # print("textTokenData : ", textTokenData)
         result['data'] = []
-        # # print(textTokenData[0][0])
+        # # # print(textTokenData[0][0])
         record = {}
 
         RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n]{1})') 
         RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
-            # print(i)
+            # # print(i)
 
             if request.GET['NoSign'] == 'NS':
                 first = RE.findall(i[0])
@@ -559,21 +577,21 @@ def getTextToken_3(request):
                     number += 1
                     
             else:
-                first = RE1.findall(i[0])
-                second = RE1.findall(i[1])
-                third = RE.findall(i[2])
-                # print("first : ", first)
-                # print("second : ", first)
-                if (first == [] and second == [] and third == []) or i[0] == '[NUM]' or i[1] == '[NUM]' or i[2] == '[NUM]':
-                    result['data'].append({
-                            'No': number,
-                            'First': i[0],
-                            'Second': i[1],
-                            'Third': i[2],
-                            'Times': i[3],
-                            'Mergecheck':'<button onclick="merge_3()" class="btn btn-info">Merge</button>',
-                        })
-                    number += 1
+                # first = RE1.findall(i[0])
+                # second = RE1.findall(i[1])
+                # third = RE.findall(i[2])
+                # # # print("first : ", first)
+                # # # print("second : ", first)
+                # if (first == [] and second == [] and third == []) or i[0] == '[NUM]' or i[1] == '[NUM]' or i[2] == '[NUM]':
+                result['data'].append({
+                        'No': number,
+                        'First': i[0],
+                        'Second': i[1],
+                        'Third': i[2],
+                        'Times': i[3],
+                        'Mergecheck':'<button onclick="merge_3()" class="btn btn-info">Merge</button>',
+                    })
+                number += 1
 
         conn.commit()
         conn.close()
@@ -585,7 +603,7 @@ def getTextToken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -593,15 +611,15 @@ def getTextToken_3(request):
 
         raw = request.body.decode('utf-8')
         body = json.loads(raw)
-        # print(body)
-        # # print( body['reportID1'])
+        # # print(body)
+        # # # print( body['reportID1'])
 
         tokenID1 = body['tokenID1']
         tokenID2 = body['tokenID2']
         tokenID3 = body['tokenID3']
 
         
-        # print(tokenID1, tokenID2, tokenID3)
+        # # print(tokenID1, tokenID2, tokenID3)
 
 
         query = '''
@@ -610,7 +628,7 @@ def getTextToken_3(request):
         args = [tokenID1, tokenID2, tokenID3]
         cursor.execute(query, args)
         changed_texttoken1 = cursor.fetchall()
-        # print("changed_texttoken first : ", changed_texttoken1)
+        # # print("changed_texttoken first : ", changed_texttoken1)
 
         
 
@@ -621,7 +639,7 @@ def getTextToken_3(request):
         args = [tokenID1, tokenID2, tokenID3]
         cursor.execute(query, args)
         changed_texttoken2 = cursor.fetchall()
-        # print("changed_texttoken second: ", changed_texttoken2)
+        # # print("changed_texttoken second: ", changed_texttoken2)
 
 
 
@@ -631,9 +649,9 @@ def getTextToken_3(request):
         args = [tokenID1, tokenID2, tokenID3]
         cursor.execute(query, args)
         changed_texttoken3 = cursor.fetchall()
-        # print("changed_texttoken Third: ", changed_texttoken3)
+        # # print("changed_texttoken Third: ", changed_texttoken3)
 
-        # print("length of all data : ",  len(changed_texttoken1) + len(changed_texttoken2) + len(changed_texttoken3))
+        # # print("length of all data : ",  len(changed_texttoken1) + len(changed_texttoken2) + len(changed_texttoken3))
 
 
 
@@ -643,7 +661,7 @@ def getTextToken_3(request):
         record = {}
 
         for i in changed_texttoken1:
-            # print(i)
+            # # print(i)
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[2]
@@ -651,7 +669,7 @@ def getTextToken_3(request):
             result['data'].append(copy.deepcopy(record))
 
         for i in changed_texttoken2:
-            # print(i)
+            # # print(i)
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[2]
@@ -659,7 +677,7 @@ def getTextToken_3(request):
             result['data'].append(copy.deepcopy(record))
 
         for i in changed_texttoken3:
-            # print(i)
+            # # print(i)
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[2]
@@ -681,7 +699,7 @@ def insertTexttoken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -699,12 +717,12 @@ def insertTexttoken(request):
         result['data'] = []
         record = {}
         for i in position:
-            # print( "reportID = ", i[0], "position from ", i[1], " to ", i[6])
+            # # print( "reportID = ", i[0], "position from ", i[1], " to ", i[6])
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[6]
             result['data'].append(copy.deepcopy(record))
-        # print(result)
+        # # print(result)
 
         result['status'] = '0'
         conn.commit()
@@ -718,15 +736,15 @@ def insertTexttoken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
 
         data = json.loads(request.body)
-        # print("positionArray : ", data.get('positionArray[]'))
-        # print("newTokenID : ", data.get('newTokenID'))
+        # # print("positionArray : ", data.get('positionArray[]'))
+        # # print("newTokenID : ", data.get('newTokenID'))
 
         positionArray = data.get('positionArray[]')
         newTokenID = data.get('newTokenID')
@@ -752,7 +770,7 @@ def insertTexttoken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -771,12 +789,12 @@ def insertTexttoken_3(request):
         result['data'] = []
         record = {}
         for i in position:
-            # print( "reportID = ", i[0], "position from ", i[1], " to ", i[10])
+            # # print( "reportID = ", i[0], "position from ", i[1], " to ", i[10])
             record['reportID'] = i[0]
             record['posStart'] = i[1]
             record['posEnd'] = i[10]
             result['data'].append(copy.deepcopy(record))
-        # print(result)
+        # # print(result)
 
         result['status'] = '0'
         conn.commit()
@@ -790,19 +808,19 @@ def insertTexttoken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
 
         data = json.loads(request.body)
-        # print("positionArray : ", data.get('positionArray[]'))
-        # print("newTokenID : ", data.get('newTokenID'))
+        # # print("positionArray : ", data.get('positionArray[]'))
+        # # print("newTokenID : ", data.get('newTokenID'))
 
         positionArray = data.get('positionArray[]')
         newTokenID = data.get('newTokenID')
-
+        # print(newTokenID)
         args = []
         for i in positionArray:
             args.append({"reportID":i['reportID'], "posStart":i['posStart'], "posEnd":i['posEnd'], "newTokenID":newTokenID})           
@@ -828,12 +846,12 @@ def inserttokenRE(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        #result = cursor.execute("select * from [buildVocabulary  ].[dbo].[Vocabulary]")
+        #result = cursor.execute("select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary]")
         #取得post資料
         result['data'] = []
         record = {}
@@ -841,23 +859,23 @@ def inserttokenRE(request):
         record['RE'] = request.POST.get('RE')
 
 
-        query = 'select * from [buildVocabulary  ].[dbo].[tokenRE] where tokenID = ? and RE = ?;'
+        query = 'select * from [nlpVocabularyLatest  ].[dbo].[tokenRE] where tokenID = ? and RE = ?;'
         args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
         cursor.execute(query, args)
         tokenREID_original = cursor.fetchall()
-        # print("tokenREID_original : ", tokenREID_original)
+        # # print("tokenREID_original : ", tokenREID_original)
         if tokenREID_original == []:
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[tokenRE] (tokenID, RE) OUTPUT [INSERTED].tokenREID VALUES (?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[tokenRE] (tokenID, RE) OUTPUT [INSERTED].tokenREID VALUES (?, ?);'
             args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
-            # print(args)
+            # # print(args)
             cursor.execute(query, args)
             tokenREID = cursor.fetchall()
-            # print(tokenREID[0])       
+            # # print(tokenREID[0])       
             result['status'] = '0'
             record['tokenREID'] = tokenREID[0][0]            
             result['data'].append(record)
-            # print("data saved(tokenRE)")
+            # # print("data saved(tokenRE)")
         else:
             result['status'] = 'already_exist'
     
@@ -874,7 +892,7 @@ def inserttokenREItem(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -887,16 +905,16 @@ def inserttokenREItem(request):
         record['serialNo'] = request.POST.get('serialNo')
         record['itemName'] = request.POST.get('itemName')
         #插入資料表
-        query = 'INSERT into [buildVocabulary ].[dbo].[tokenREItem] (tokenREID, serialNo, itemName) OUTPUT [INSERTED].tokenREID VALUES (?, ?, ?);'
+        query = 'INSERT into [nlpVocabularyLatest ].[dbo].[tokenREItem] (tokenREID, serialNo, itemName) OUTPUT [INSERTED].tokenREID VALUES (?, ?, ?);'
         args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), request.POST.get('itemName') ]
-        # print(args)
+        # # print(args)
         cursor.execute(query, args)
         tokenREItemID = cursor.fetchall()
-        # print(tokenREItemID[0])
+        # # print(tokenREItemID[0])
         result['status'] = '0'
         record['tokenREItemID'] = tokenREItemID[0][0]
         result['data'].append(record)
-        # print("data saved(tokenREItem)")
+        # # print("data saved(tokenREItem)")
         conn.commit()
         conn.close()
 
@@ -912,7 +930,7 @@ def checkName(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -920,22 +938,22 @@ def checkName(request):
         Token = request.GET.getlist('Name[]')
         tokenID = []
         tokenType = []
-        print("Token : ", Token)
+        # print("Token : ", Token)
 
         for i in range(len(Token)):
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] WHERE token = ?;'
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] WHERE token = ?;'
             args = [Token[i]]
             cursor.execute(query, args)
             token = cursor.fetchone()
-            print("token : ", token)
+            # print("token : ", token)
             if token:
                 tokenID.append(token.tokenID)
                 if token.token == '[NUM]':
                     tokenType.append('U')
                 else:                    
                     tokenType.append(token.tokenType)
-        # print(token)
-        # # print(tokenType)
+        # # print(token)
+        # # # print(tokenType)
 # 
         # 有找到
         if token:
@@ -943,7 +961,7 @@ def checkName(request):
             result['tokenID'] = tokenID
             result['tokenType'] = tokenType
         
-        print("result : ", result)
+        # print("result : ", result)
         conn.commit()
         conn.close()
     return JsonResponse(result)
@@ -957,7 +975,7 @@ def checkRE(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -967,17 +985,17 @@ def checkRE(request):
         TokenREID = []
 
         for i in range(len(TokenID)):
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[tokenRE] WHERE tokenID = ?;'
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[tokenRE] WHERE tokenID = ?;'
             args = [TokenID[i]]
-            # # print(args)
-            ## print(query)
+            # # # print(args)
+            ## # print(query)
             cursor.execute(query, args)
             tokenREID = cursor.fetchone()
             if tokenREID:
                 RE.append(tokenREID.RE)
                 TokenREID.append(tokenREID.tokenREID)
-        # print("RE : ", RE)
-        # print("TokenREID : ", TokenREID)
+        # # print("RE : ", RE)
+        # # print("TokenREID : ", TokenREID)
 
         #有找到
         if tokenREID != None:
@@ -998,13 +1016,13 @@ def getAnalyseText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        query = 'SELECT * FROM [buildVocabulary  ].[dbo].[analyseText];'
+        query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[analyseText];'
         cursor.execute(query)
         reportText = cursor.fetchall()
 
@@ -1016,7 +1034,7 @@ def getAnalyseText(request):
                 record = {}
                 record['reportText'] = item.reportText
                 result['data'].append(record)
-        #     # print(token[0])
+        #     # # print(token[0])
         conn.commit()
         conn.close()
         
@@ -1031,20 +1049,20 @@ def getReportID(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        # query = 'SELECT * FROM [buildVocabulary ].[dbo].[analyseText] where reportID = 10002;'
+        # query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[analyseText] where reportID = 10002;'
         # query = 'SELECT * FROM analyseText;'
-        query = 'SELECT * FROM [buildVocabulary ].[dbo].[analyseText] where reportID >= ? and reportID <= ?'
+        query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[analyseText] where reportID >= ? and reportID <= ?'
         args = [request.GET['reportID1'], request.GET['reportID2']]
         
         cursor.execute(query, args)
         reportID = cursor.fetchall()
-        # # print(reportID)
+        # # # print(reportID)
 
         #有找到
         if reportID != None:
@@ -1057,8 +1075,8 @@ def getReportID(request):
                 else:
                     record[str(item.reportID)] = item.residualText
             result['data'].append(record)
-        #     # print(token[0])
-        # print(result)
+        #     # # print(token[0])
+        # # print(result)
         
         conn.commit()
         conn.close()
@@ -1073,20 +1091,20 @@ def getReportText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        query = 'SELECT * FROM [buildVocabulary  ].[dbo].[analyseText] where reportID = ?;'
+        query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[analyseText] where reportID = ?;'
         args = [request.GET['reportID']]
         cursor.execute(query, args)
         reportID = cursor.fetchone()
 
         #有找到
         if reportID != None:
-            ## print(reportID.reportText)
+            ## # print(reportID.reportText)
             result['status'] = '0'
             result['reportText'] = []
             # result['reportText'].append(reportID.reportText)
@@ -1105,18 +1123,18 @@ def getReportText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        # # print("patch in")
+        # # # print("patch in")
         #更新資料表
-        query = 'update [buildVocabulary  ].[dbo].[analyseText]  set analysed = ?, residualText = ? output INSERTED.reportID,INSERTED.reportText,INSERTED.residualText where reportID = ?;'
+        query = 'update [nlpVocabularyLatest  ].[dbo].[analyseText]  set analysed = ?, residualText = ? output INSERTED.reportID,INSERTED.reportText,INSERTED.residualText where reportID = ?;'
         raw = request.body.decode('utf-8')
         body = json.loads(raw)
-        # # print('data : ' + data.getlist['residualText'])
-        # print( body['reportID'])
+        # # # print('data : ' + data.getlist['residualText'])
+        # # print( body['reportID'])
         
         args = [1, body['residualText'], body['reportID']]
         
@@ -1125,7 +1143,7 @@ def getReportText(request):
 
         #有找到
         if reportID != None:
-            ## print(reportID.reportText)
+            ## # print(reportID.reportText)
             result['status'] = '0'
             result['reportText'] = reportID[0]        
         conn.commit()
@@ -1136,21 +1154,21 @@ def getReportText(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        # # print(request.POST)
+        # # # print(request.POST)
         reportID = request.POST.getlist('reportID[]')
         posStart = request.POST.getlist('posStart[]')
         posEnd = request.POST.getlist('posEnd[]')
         tokenID = request.POST.getlist('tokenID[]')
-        # # print(len(reportID), len(posStart), len(posEnd), len(tokenID))
-        # # print(reportID, posStart, posEnd, tokenID)
+        # # # print(len(reportID), len(posStart), len(posEnd), len(tokenID))
+        # # # print(reportID, posStart, posEnd, tokenID)
         for i in range(len(reportID)):
-            # # print(reportID[i], posStart[i], posEnd[i], tokenID[i])
-            query = "select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ?"
+            # # # print(reportID[i], posStart[i], posEnd[i], tokenID[i])
+            query = "select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?"
             args = [tokenID[i]]
             cursor.execute(query, args)
             id = cursor.fetchone()
@@ -1159,9 +1177,9 @@ def getReportText(request):
             if id.tokenType == 'U':
                 result = {'status':'U'}
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
             args = [reportID[i], posStart[i], posEnd[i], id.tokenID]
-            # # print("args : ", args)
+            # # # print("args : ", args)
             cursor.execute(query, args)
 
         conn.commit()
@@ -1176,7 +1194,7 @@ def getTokenREItemID(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1185,14 +1203,14 @@ def getTokenREItemID(request):
         data = []
         #取締一個取成功
         if request.is_ajax():
-            # # print('Raw Data: "%s"' % request.body)
+            # # # print('Raw Data: "%s"' % request.body)
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
             for i in body:
                 data.append(i)
-            # # print("data : ", data)
+            # # # print("data : ", data)
             # content = body[0]
-            # # print('Data: "%s"' % content['year'])
+            # # # print('Data: "%s"' % content['year'])
         tokenIDArray = []
         tokentypeArray = []
         tokenREIDArray = []
@@ -1202,44 +1220,44 @@ def getTokenREItemID(request):
         
         for i in range(len(data)):
             temp.clear()
-            # # print("data[i] : ", data[i])
+            # # # print("data[i] : ", data[i])
             if data[i]['tokenID']:
                 #查詢tokenType
-                query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+                query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
                 args = [data[i]['tokenID']]
                 cursor.execute(query, args)
                 tokenType = cursor.fetchone()
-                # # print("tokenType ", tokenID.tokenType)
+                # # # print("tokenType ", tokenID.tokenType)
                 if tokenType:
                     tokenIDArray.append(tokenType.tokenID)
                     tokentypeArray.append(tokenType.tokenType)
 
                 if tokenType.tokenType != 'T' or tokenType.tokenType != 'U':
                     #查詢tokenREID
-                    # print("tokentype is not T or U")
-                    query = 'SELECT * FROM [buildVocabulary  ].[dbo].[tokenRE] where tokenID = ?;'
+                    # # print("tokentype is not T or U")
+                    query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[tokenRE] where tokenID = ?;'
                     args = [data[i]['tokenID']]
                     cursor.execute(query, args)
                     tokenREID = cursor.fetchone()
                     if tokenREID:
                         tokenREIDArray.append(tokenREID.tokenREID)
-                    # print("data[i].keys()", data[i].keys())
+                    # # print("data[i].keys()", data[i].keys())
                     for j in range(len(list(data[i].keys()))):
                         if tokenType.tokenType != 'T' or tokenType.tokenType != 'U':
-                            # # print(j)
+                            # # # print(j)
                             #查詢tokenREItemID
-                            query = 'SELECT * FROM [buildVocabulary ].[dbo].[tokenREItem] where tokenREID = ? and itemName = ?;'
+                            query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[tokenREItem] where tokenREID = ? and itemName = ?;'
                             args = [tokenREID.tokenREID, list(data[i].keys())[j]]
                             cursor.execute(query, args)
                             tokenREItemID = cursor.fetchone()
                         if tokenREItemID:
                             temp.append(tokenREItemID.tokenREItemID)
-                            # print("temp : ", temp)
-                        # print("j : ", j)
-                        # print("len : ", len(list(data[i].keys()))-1)
+                            # # print("temp : ", temp)
+                        # # print("j : ", j)
+                        # # print("len : ", len(list(data[i].keys()))-1)
                         if len(list(data[i].keys()))-1 == j:
                             tokenREItemIDArray.append(copy.deepcopy(temp))
-                            # print("tokenREItemIDArray : ", tokenREItemIDArray)
+                            # # print("tokenREItemIDArray : ", tokenREItemIDArray)
 
         record = {}
         result['data'] = []
@@ -1248,7 +1266,7 @@ def getTokenREItemID(request):
         record['tokenType'] = tokentypeArray
         record['tokenREItemID'] = tokenREItemIDArray
         result['data'].append(record)
-        # # print(result)
+        # # # print(result)
         conn.commit()
         conn.close()
         result['status'] = '0'
@@ -1261,12 +1279,12 @@ def insertExtractedValueFromToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        # # print("request: ", request.POST.getlist('tokenID[]'))
+        # # # print("request: ", request.POST.getlist('tokenID[]'))
 
         #取得post資料
         reportID = request.POST.getlist('reportID[]')
@@ -1274,47 +1292,47 @@ def insertExtractedValueFromToken(request):
         tokenREItemID = request.POST.getlist('tokenREItemID[]')
         tokenType = request.POST.getlist('tokenType[]')
         Value = request.POST.getlist('Value[]')
-        # print("reportID: ", request.POST.getlist('reportID[]'))
-        # print("posStart: ", request.POST.getlist('posStart[]'))
-        # print("tokenREItemID: ", request.POST.getlist('tokenREItemID[]'))
-        # print("tokenType: ", request.POST.getlist('tokenType[]'))
-        # print("Value: ", request.POST.getlist('Value[]'))
+        # # print("reportID: ", request.POST.getlist('reportID[]'))
+        # # print("posStart: ", request.POST.getlist('posStart[]'))
+        # # print("tokenREItemID: ", request.POST.getlist('tokenREItemID[]'))
+        # # print("tokenType: ", request.POST.getlist('tokenType[]'))
+        # # print("Value: ", request.POST.getlist('Value[]'))
 
         # 處理tokenREItemID二維陣列(用逗號分開轉int)
         for i in range(len(tokenREItemID)):
             tokenREItemID[i] = tokenREItemID[i].split(',')
             for j in range(len(tokenREItemID[i])):
                 tokenREItemID[i][j] = int(tokenREItemID[i][j])
-        # # print("tokenREItemID: ", tokenREItemID)
+        # # # print("tokenREItemID: ", tokenREItemID)
 
         # 處理Value二維陣列(用逗號分開)
         for i in range(len(Value)):
             Value[i] = Value[i].split(',')
-        # print("Value: ", len(Value))
-        # print("Value: ", Value)
+        # # print("Value: ", len(Value))
+        # # print("Value: ", Value)
         
-        # # print("tokenREItemID: ", len(tokenREItemID))
+        # # # print("tokenREItemID: ", len(tokenREItemID))
         tokenREItemIDIndex = 0
         #插入資料表()
         for i in range(len(reportID)):
-            # # print("i : ", i)
+            # # # print("i : ", i)
             if tokenType[i]  != 'T' or tokenType[i]  != 'U':
-                # print("TU")
+                # # print("TU")
                 for j in range(len(tokenREItemID[tokenREItemIDIndex])):
-                    # # print("j : ", j)
-                    # # print(tokenType[i])
-                    # # print(reportID[i], posStart[i], tokenREItemID[i][j], Value[i][j])
-                    query = 'INSERT into [buildVocabulary  ].[dbo].[extractedValueFromToken] (reportID, posStart, tokenREItemID, extractedValue) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+                    # # # print("j : ", j)
+                    # # # print(tokenType[i])
+                    # # # print(reportID[i], posStart[i], tokenREItemID[i][j], Value[i][j])
+                    query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[extractedValueFromToken] (reportID, posStart, tokenREItemID, extractedValue) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
                     Value[tokenREItemIDIndex][j] = Value[tokenREItemIDIndex][j].replace("|", ",")
                     args = [reportID[i], posStart[i], tokenREItemID[tokenREItemIDIndex][j], Value[tokenREItemIDIndex][j]]
-                    # print(args)
+                    # # print(args)
                     cursor.execute(query, args)
                 tokenREItemIDIndex += 1
 
         conn.commit()
         conn.close()
         result['status'] = '0'
-        # # print(result)
+        # # # print(result)
     return JsonResponse(result)
 
 
@@ -1325,40 +1343,40 @@ def getToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        # # print("request: ", request.POST.getlist('tokenID[]'))
+        # # # print("request: ", request.POST.getlist('tokenID[]'))
 
         #取得資料
         tokenID1 = request.POST.getlist('tokenID1[]')
         tokenID2 = request.POST.getlist('tokenID2[]')
-        # # print(tokenID1)        
-        # # print(tokenID2)
+        # # # print(tokenID1)        
+        # # # print(tokenID2)
         token1 = []
         token2 = []
         for i in tokenID1:
-            # # print(i)
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+            # # # print(i)
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
             args = [i]
             cursor.execute(query, args)
             token = cursor.fetchone()
-            # # print(token.token)
+            # # # print(token.token)
             token1.append(token.token)
 
         for i in tokenID2:
-            # # print(i)
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+            # # # print(i)
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
             args = [i]
             cursor.execute(query, args)
             token = cursor.fetchone()
-            # # print(token.token)
+            # # # print(token.token)
             token2.append(token.token)
 
-        # # print(token1)
-        # # print(token2)
+        # # # print(token1)
+        # # # print(token2)
         result['data'] = []
         record = {}
         record['token1'] = token1
@@ -1367,7 +1385,7 @@ def getToken(request):
         conn.commit()
         conn.close()
         result['status'] = '0'
-        # # print(result)
+        # # # print(result)
     return JsonResponse(result)
 
         #讀取tokenID再檢查textToken是否為正值
@@ -1379,22 +1397,22 @@ def getTokenIDCheckTextToken(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
 
         token = request.POST.getlist('token[]')
-        # # print(token)
+        # # # print(token)
 
         PNarray = []
         for i, t in enumerate(token):
             pn = 0
-            # print("Index:", i, "Token:", t)
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where token = ?;'
+            # # print("Index:", i, "Token:", t)
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?;'
             args = [t]
-            # # print(i)
+            # # # print(i)
 
             
             cursor.execute(query, args)
@@ -1402,25 +1420,25 @@ def getTokenIDCheckTextToken(request):
 
             # 有找到
             if tokenID != None:
-                # # print(tokenID.tokenID)
+                # # # print(tokenID.tokenID)
                 
-                query = 'SELECT * FROM [buildVocabulary  ].[dbo].[textToken] where tokenID = ?;'
+                query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[textToken] where tokenID = ?;'
                 args = [tokenID.tokenID]
 
                 cursor.execute(query, args)
                 textTokenData = cursor.fetchall()
 
                 if textTokenData != []:
-                    # # print(textTokenData)
+                    # # # print(textTokenData)
                     result['status'] = '0'
                     for jcount, j in enumerate(textTokenData) :
                         result['status'] = '0'
                         if (j[1] > 0 and j[2] > 0) == False:
-                            # print("negative")
+                            # # print("negative")
                             PNarray.append(1)
                             pn = 1      
                             break
-                        # print("jcount :", jcount, " len : ", len(textTokenData))
+                        # # print("jcount :", jcount, " len : ", len(textTokenData))
                         if jcount == len(textTokenData)-1 and pn == 0:
                             PNarray.append(0)
                 else:
@@ -1428,7 +1446,7 @@ def getTokenIDCheckTextToken(request):
                     PNarray.append(2)
         
         result['data'] = PNarray
-        # # print("PNarray : ", PNarray)
+        # # # print("PNarray : ", PNarray)
         conn.commit()
         conn.close()
     return JsonResponse(result)
@@ -1443,7 +1461,7 @@ def getNextWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1451,8 +1469,8 @@ def getNextWord(request):
 
         num = int(request.GET['word'])
         firstToken = request.GET['firstToken']
-        # print(firstToken)
-        # # print(token)
+        # # print(firstToken)
+        # # # print(token)
 
         token = ''
         mergetoken = ''
@@ -1465,19 +1483,19 @@ def getNextWord(request):
                 token += f', c{i+5}.token as token{i+5}'
                 mergetoken += f' + c{i+5}.token'
                 if i == 0:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
                 else:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
 
-                innerjointoken += f' inner join [buildVocabulary  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
+                innerjointoken += f' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
                 groupby += f' , c{i+5}.token'
                 text = innerjoinpos
         #如果<3就固定抓三個字
         else:
             token = f''' , a5.token as token3'''
             mergetoken = f''' + a5.token'''
-            innerjoinpos = f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
-            innerjointoken = f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
+            innerjoinpos = f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
+            innerjointoken = f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
             groupby = f''' , a5.token'''
             text = innerjoinpos
 
@@ -1496,21 +1514,21 @@ def getNextWord(request):
         query += mergetoken
 
         query +=f''' as mergeToken
-                from [buildVocabulary  ].[dbo].[textToken] as a0
-                inner join [buildVocabulary  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
+                from [nlpVocabularyLatest  ].[dbo].[textToken] as a0
+                inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
                 '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
         query += innerjoinpos
         # 找第一個字
         if firstToken != "":
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}'
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}'
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
         else:
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
         query += innerjointoken
         query +=f''' group by a2.token, a3.token
                 '''
@@ -1519,12 +1537,12 @@ def getNextWord(request):
         
         query +=f'''
                 ) as textTokenData
-                left join [buildVocabulary  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
+                left join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
                 where word.tokenID is null
                 order by times desc;
                 '''
         # print("query : ", query)
-        # print("text : ", text)
+        # # print("text : ", text)
         
         
         cursor.execute(query)
@@ -1532,28 +1550,28 @@ def getNextWord(request):
         # print("texttoken : ", texttoken)
         # for i in texttoken:
         #     # if i[0] == '[NUM]':
-        #     print("texttoken : ", i)
+        #     # print("texttoken : ", i)
         result['data'] = []
         record = {}
         if texttoken != []:
             record['reportID'] = texttoken[0][num + 1]
 
             for ind,i in enumerate(texttoken):
-                # print("i[0] : ",i[0])
+                # # print("i[0] : ",i[0])
                 dataDict = {}
                 if num >= 3:
-                    # print("i[ind] : ", type(i))
+                    # # print("i[ind] : ", type(i))
                     if type(i) != int:
                         for index,j in enumerate(i):
-                            # print("j : ", j)
-                            # print("i[index] : ", i[index])
+                            # # print("j : ", j)
+                            # # print("i[index] : ", i[index])
                             dataDict[str(index + 1)] = j
                     dataDict["No"] = ind+1
                     dataDict["times"] = i[len(i)-2]
                     # print("dataDict : ", dataDict)
                     result['data'].append(dataDict)
                 else:
-                    print(i[len(i)-2])
+                    # print(i[len(i)-2])
                     result['data'].append({
                         'No': ind+1,
                         '1': i[0],
@@ -1562,7 +1580,8 @@ def getNextWord(request):
                         'times': i[len(i)-2],
                     })
 
-        # print("PNarray : ", PNarray)
+        # # print("PNarray : ", PNarray)
+        ("result['data'] : ", result['data'])
         conn.commit()
         conn.close()
     return JsonResponse(result)
@@ -1575,7 +1594,7 @@ def getNextWordReport(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1583,8 +1602,8 @@ def getNextWordReport(request):
 
         num = int(request.GET['word'])
         firstToken = request.GET['firstToken']
-        print(firstToken)
-        # # print(token)
+        # print(firstToken)
+        # # # print(token)
 
         token = ''
         mergetoken = ''
@@ -1597,19 +1616,19 @@ def getNextWordReport(request):
                 token += f', c{i+5}.token as token{i+5}'
                 mergetoken += f' + c{i+5}.token'
                 if i == 0:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
                 else:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
 
-                innerjointoken += f' inner join [buildVocabulary  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
+                innerjointoken += f' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
                 groupby += f' , c{i+5}.token'
                 text = innerjoinpos
         #如果<3就固定抓三個字
         else:
             token = f''' , a5.token as token3'''
             mergetoken = f''' + a5.token'''
-            innerjoinpos = f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
-            innerjointoken = f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
+            innerjoinpos = f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
+            innerjointoken = f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
             groupby = f''' , a5.token'''
             text = innerjoinpos
 
@@ -1628,21 +1647,21 @@ def getNextWordReport(request):
         query += mergetoken
 
         query +=f''' as mergeToken
-                from [buildVocabulary  ].[dbo].[textToken] as a0
-                inner join [buildVocabulary  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
+                from [nlpVocabularyLatest  ].[dbo].[textToken] as a0
+                inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
                 '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
         query += innerjoinpos
         # 找第一個字
         if firstToken != "":
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}' and a2.tokenType != 'E'
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}' and a2.tokenType != 'E'
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
         else:
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
         query += innerjointoken
         query +=f''' group by a2.token, a3.token
                 '''
@@ -1651,41 +1670,41 @@ def getNextWordReport(request):
         
         query +=f'''
                 ) as textTokenData
-                left join [buildVocabulary  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
+                left join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
                 where word.tokenID is null
                 order by times desc;
                 '''
-        print("query : ", query)
-        print("text : ", text)
+        # print("query : ", query)
+        # print("text : ", text)
         
         
         cursor.execute(query)
         texttoken = cursor.fetchall()
-        print("texttoken : ", texttoken)
+        # print("texttoken : ", texttoken)
         # for i in texttoken:
         #     # if i[0] == '[NUM]':
-        #     print("texttoken : ", i)
+        #     # print("texttoken : ", i)
         result['data'] = []
         record = {}
         if texttoken != []:
             record['reportID'] = texttoken[0][num + 1]
 
             for ind,i in enumerate(texttoken):
-                # print("i[0] : ",i[0])
+                # # print("i[0] : ",i[0])
                 dataDict = {}
                 if num >= 3:
-                    # print("i[ind] : ", type(i))
+                    # # print("i[ind] : ", type(i))
                     if type(i) != int:
                         for index,j in enumerate(i):
-                            # print("j : ", j)
-                            # print("i[index] : ", i[index])
+                            # # print("j : ", j)
+                            # # print("i[index] : ", i[index])
                             dataDict[str(index + 1)] = j
                     dataDict["No"] = ind+1
                     dataDict["times"] = i[len(i)-2]
-                    # print("dataDict : ", dataDict)
+                    # # print("dataDict : ", dataDict)
                     result['data'].append(dataDict)
                 else:
-                    print(i[len(i)-2])
+                    # print(i[len(i)-2])
                     result['data'].append({
                         'No': ind+1,
                         '1': i[0],
@@ -1694,7 +1713,7 @@ def getNextWordReport(request):
                         'times': i[len(i)-2],
                     })
 
-        # print("PNarray : ", PNarray)
+        # # print("PNarray : ", PNarray)
         conn.commit()
         conn.close()
     return JsonResponse(result)
@@ -1708,24 +1727,32 @@ def getSynTypo(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
         cursor = conn.cursor()
         #插入資料表
-        # query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ?;'
+        # query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ?;'
         # args = [request.GET['tokenType']]
         # cursor.execute(query, args)
-        query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = 43517 or tokenID = 39691;'
+        query = "SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType != \'U\' and token != '[NUM]' ;"
         cursor.execute(query)
         Vocabulary = cursor.fetchall()
-        print("Vocabulary : ", Vocabulary)
-
-        # Use a dictionary cursor to fetch the results as dictionaries
-        rows = cursor.fetchall()
-        # print("cursor.description : ", cursor.description)
+        # # print("Vocabulary : ", Vocabulary)
         
+
+
+        
+        result['data'] = []
+        record = {}
+        for i in Vocabulary:
+            record['token'] = i[0]
+            record['nWord'] = i[1]
+            record['tokenID'] = i[2]
+            record['tokenType'] = i[3]
+            result['data'].append(copy.deepcopy(record))
+        result['status'] = '0'
         conn.commit()
         conn.close()
     return JsonResponse(result)

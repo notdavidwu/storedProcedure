@@ -39,19 +39,8 @@
         
         //搜尋按鈕
         $("#define").click(function(){
-            
-            //var data = document.getElementById("result_data");
-            //getSynTypoValue();
-            ////console.log("Data : ", data);
-            //showModal();
-            //
-            //window.onclick = function(event) {
-            //    var modal = document.getElementById("modalDefine");
-            //    if (event.target == modal) {
-            //        modal.style.display = "none";
-            //    }
-            //}
-            //defineFunction();
+            getSynTypoValue();
+            showModal();
         });
 
         //根據select顯示token
@@ -64,27 +53,29 @@
                 printAllData_3();
             }
         });
-    });        
-
-    function passTokenIDToWorker() {
-        // Receive messages from the main script
-        // Send the worker URL back to the main script
-        self.postMessage({type: 'workerUrl', url: self.location.href});    
-             
-        
-        // Receive messages from the main script
-        self.onmessage = function(event) {
-            console.log('Received message from main script:', event);
-        };
-        // worker code here
-      }
-
-    function defineFunction(){
-    }
+    });
     
     function showModal() {
 		var modal = document.getElementById("modalDefine");
-        modal.style.display = "block";
+		var data = document.getElementById("result_dataDefine");
+        if( modal.style.display == "block"){
+            modal.style.display = "none";
+        }
+        else{
+            document.addEventListener("click", function(event) {
+                console.log("listener in ", event.target);
+                console.log("listener in ", event.target.classList);
+                // Check if the clicked element is inside the iframe or the button that opened the iframe
+                if (!event.target.classList.contains("modal-content") && !event.target.classList.contains("btn") && !event.target.classList.contains("table table-bordered")) {
+                    console.log("dissapear ", event.target);
+                    // If it is not, hide the iframe
+                    modal.style.display = "none";
+                }
+            });        
+            modal.style.display = "block";            
+            $('#result_dataDefine').empty();
+            $('#result_dataDefine').append(123);
+        }
     }
 
     function getSynTypoValue() {
@@ -97,7 +88,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                console.log("res : ", res);
             },
         });
         return res;
@@ -909,30 +900,31 @@
             case '1':
                 console.log('select 1');
                 return data.filter(function (row) {
-                  return row.First == text
+                  return row.First == text;
                 })
                 break;
             case '2':
                 console.log('select 2');
                 return data.filter(function (row) {
-                  return row.Second == text
+                  return row.Second == text;
                 })
                 break;
             case '3':
                 console.log('select 3');
                 return data.filter(function (row) {
-                  return row.Times >= text
+                  return row.Times >= text;
                 })
                 break;
             case '4':
                 console.log('select 4');
                 return data.filter(function (row) {
-                  return row.Third == text
+                  return row.Third == text;
                 })
                 break;
             case '0':
                 console.log('select 0');
-                return data
+                return data;
+                break;
         }
     }
 
