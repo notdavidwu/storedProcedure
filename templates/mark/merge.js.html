@@ -987,7 +987,10 @@
             //處理前後50字
             text = forwardBackward(reportText.data[i].reportText, pattern, 0, 100, 100);
             ////console.log("tempText : ", tempText);
-            //text = tempText.replace(pattern, match => `<mark>${match}</mark>`);
+
+            //整篇文章
+            //text = reportText.data[i].reportText.replace(pattern, match => `<mark>${match}</mark>`);
+
             ////console.log(text);
             //$('#result_dataReport').append(text);
             if (reportText.data[i].reportID == 2 || reportText.data[i].reportID == 3 || reportText.data[i].reportID == 4){

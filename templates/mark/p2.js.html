@@ -376,9 +376,9 @@
             //將處理好的regex文本定義為新的regex物件
             let pattern = new RegExp(`${textToSearch}`,"g");
             let pattern1 = new RegExp(`${textToSearch1}`,"g");
-            console.log("pattern: " + pattern);
-            console.log("pattern1: " + pattern1);
-            console.log(pattern.toString() === pattern1.toString());
+            //console.log("pattern: " + pattern);
+            //console.log("pattern1: " + pattern1);
+            //console.log(pattern.toString() === pattern1.toString());
             paragraph = valueText;
             //無符合配對20230213之後修
             //if (valueText.innerHTML == paragraph){
@@ -387,6 +387,7 @@
             //}
             patternArray[i] = pattern;
             //////console.log("paragraph : " + paragraph.length);
+            console.log("pattern : " + pattern);
             var length = 0;
             while (match = pattern.exec(paragraph)) {
                 //////console.log(match.index + ' ' + pattern.lastIndex);
@@ -444,9 +445,14 @@
         //////console.log("token : ", token);
         //////console.log("nword : ", nword);
         ////console.log("tokentype : ", tokentype);
-
-        //寫入Vocabulary
-        tokenIDForU = insertVocabulary_U(token, nword, tokentype);
+        console.log("REGEX : ", REGEX[0]);
+        if (REGEX[0] != "(?<NUM>[0-9]+)"){
+            //寫入Vocabulary
+            tokenIDForU = insertVocabulary_U(token, nword, tokentype);
+        }
+        else{
+            tokenIDForU = [];
+        }
         return [array, matchArray, tokenIDForU, tokentype]
     }
 
