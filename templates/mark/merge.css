@@ -199,4 +199,18 @@
     width:80px;
     border-width:1px;
   }  
+
+  .highlight {
+    background-color: #27B7DE;
+    color: white;
+  }
+
+  mark.highlight-1{
+    background-color: #C7EED4;
+    color: black;
+  }
+  mark.highlight{
+    background-color: #C7EED4;
+    color: black;
+  }
 </style>

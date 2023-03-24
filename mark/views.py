@@ -183,7 +183,7 @@ def getVocabularyByType_Ptable(request):
         for ind,i in enumerate(tokenID):
             # # print("i[0] : ",i[0])
             # # print("i : ", i)
-            if i[1]>0 and i[2]>0:
+            if i[1]>0 and i[2]>0 and i[6] == 'E':
                 result['data'].append({
                     'No': ind+1,
                     'ProperNoun': i[5],
@@ -376,7 +376,7 @@ def getTextToken(request):
         result['data'] = []
         # # # print(textTokenData[0][0])
         record = {}
-        RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\r]{1})') 
+        RE = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z]{1})')
         RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
@@ -389,7 +389,7 @@ def getTextToken(request):
                 # # print("second : ", first)
                 if first == [] and second == [] :
                     result['data'].append({
-                        'No': number,
+                        'No': '<button  onclick="searchReportText()" class="btn btn-secondary">' + str(number) + '</button>',
                         'First': i[0],
                         'Second': i[1],
                         'Times': i[2],
@@ -404,7 +404,7 @@ def getTextToken(request):
                 # # print("second : ", first)
                 # if (first == [] and second == []) or i[0] == '[NUM]' or i[1] == '[NUM]':
                 result['data'].append({
-                        'No': number,
+                        'No': '<button  onclick="searchReportText()" class="btn btn-secondary">' + str(number) + '</button>',
                         'First': i[0],
                         'Second': i[1],
                         'Times': i[2],
@@ -567,7 +567,7 @@ def getTextToken_3(request):
                 third = RE.findall(i[2])
                 if first == [] and second == [] and third == [] :
                     result['data'].append({
-                        'No': number,
+                        'No': '<button  onclick="searchReportText()" class="btn btn-secondary">' + str(number) + '</button>',
                         'First': i[0],
                         'Second': i[1],
                         'Third': i[2],
@@ -584,7 +584,7 @@ def getTextToken_3(request):
                 # # # print("second : ", first)
                 # if (first == [] and second == [] and third == []) or i[0] == '[NUM]' or i[1] == '[NUM]' or i[2] == '[NUM]':
                 result['data'].append({
-                        'No': number,
+                        'No': '<button  onclick="searchReportText()" class="btn btn-secondary">' + str(number) + '</button>',
                         'First': i[0],
                         'Second': i[1],
                         'Third': i[2],
@@ -1751,6 +1751,52 @@ def getSynTypo(request):
             record['nWord'] = i[1]
             record['tokenID'] = i[2]
             record['tokenType'] = i[3]
+            result['data'].append(copy.deepcopy(record))
+        result['status'] = '0'
+        conn.commit()
+        conn.close()
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportTextByMergeToken(request):
+    if request.method == 'GET':
+        #取得資料
+        result = {'status':'1'} #預設沒找到
+        
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824'
+        password = 'test81218'
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+        cursor = conn.cursor()
+        words = request.GET['words']
+        mergetoken = request.GET['mergeToken']
+        # print(type(words))
+        # print(mergetoken)
+        if words == "2":
+            query = "EXEC [countMergeToken_GET] @mergeToken = ?;"
+        else:
+            query = "EXEC [countMergeToken3_GET] @mergeToken = ?;"
+        args = [mergetoken]
+
+        cursor.execute(query, args)
+        Text = cursor.fetchall()
+        # print("Text : ", Text)
+        
+
+
+        
+        result['data'] = []
+        record = {}
+        for i in Text:
+            if words == "2":
+                record['reportID'] = i[4]
+                record['reportText'] = i[5]
+            else:
+                record['reportID'] = i[5]
+                record['reportText'] = i[6]
             result['data'].append(copy.deepcopy(record))
         result['status'] = '0'
         conn.commit()

@@ -50,6 +50,7 @@ urlpatterns = [
     path('getNextWord/', getNextWord, name="getNextWord"),
     path('getNextWordReport/', getNextWordReport, name="getNextWordReport"),
     path('getSynTypo/', getSynTypo, name="getSynTypo"),
+    path('getReportTextByMergeToken/', getReportTextByMergeToken, name="getReportTextByMergeToken"),
     
     
     path('Page2/', Page2,name="Page2"),

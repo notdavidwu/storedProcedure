@@ -62,16 +62,16 @@
             modal.style.display = "none";
         }
         else{
-            document.addEventListener("click", function(event) {
-                console.log("listener in ", event.target);
-                console.log("listener in ", event.target.classList);
-                // Check if the clicked element is inside the iframe or the button that opened the iframe
-                if (!event.target.classList.contains("modal-content") && !event.target.classList.contains("btn") && !event.target.classList.contains("table table-bordered")) {
-                    console.log("dissapear ", event.target);
-                    // If it is not, hide the iframe
-                    modal.style.display = "none";
-                }
-            });        
+            //document.addEventListener("click", function(event) {
+            //    //console.log("listener in ", event.target);
+            //    //console.log("listener in ", event.target.classList);
+            //    // Check if the clicked element is inside the iframe or the button that opened the iframe
+            //    if (!event.target.classList.contains("modal-content") && !event.target.classList.contains("btn") && !event.target.classList.contains("table table-bordered")) {
+            //        //console.log("dissapear ", event.target);
+            //        // If it is not, hide the iframe
+            //        modal.style.display = "none";
+            //    }
+            //});        
             modal.style.display = "block";            
             $('#result_dataDefine').empty();
             $('#result_dataDefine').append(123);
@@ -88,7 +88,7 @@
             },
             success:function (response){
                 res = response;
-                console.log("res : ", res);
+                //console.log("res : ", res);
             },
         });
         return res;
@@ -107,7 +107,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -116,13 +116,14 @@
     //顯示資料
     function printAllData(){
         response = getTextTokenData();
-        //console.log("response.data : ", response.data);
+        ////console.log("response.data : ", response.data);
         $('#result_data').empty();
         $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch" data-reset-search="resetSearch">
         </table>`);
         $('#sortTable').bootstrapTable({
             columns: [{
                 field: 'No',
+                title: 'No',
                 align: 'center',
                 valign: 'middle',
                 sortable:true,
@@ -158,7 +159,7 @@
     //顯示資料
     function printAllData_3(){
         response = getTextTokenData_3();
-        //console.log("response.data : ", response.data);
+        ////console.log("response.data : ", response.data);
         
         $('#result_data').empty();
         $('#result_data').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch">
@@ -166,6 +167,7 @@
         $('#sortTable').bootstrapTable({
             columns: [{
                 field: 'No',
+                title: 'No',
                 align: 'center',
                 valign: 'middle',
                 sortable:true,
@@ -211,13 +213,14 @@
     function printAllPData(){
         response = getVocabularyData();
         var tokenP = response.data;
-        //console.log("response.data : ", response.data);
+        ////console.log("response.data : ", response.data);
         $('#result_dataP').empty();
         $('#result_dataP').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch">
         </table>`);
         $('#sortTableP').bootstrapTable({
             columns: [{
                 field: 'No',
+                title: 'No',
                 align: 'center',
                 valign: 'middle',
                 sortable:true,
@@ -244,6 +247,7 @@
             ],
             data:response.data
         })
+        $('#result_dataP .fixed-table-toolbar').attr('id', 'table_p;');
     }
     
     //取得P資料
@@ -258,7 +262,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -269,9 +273,9 @@
         var res;
         var NS = document.getElementById("filter").value;        
         var filter_times = document.getElementById("showTimes").value;
-        console.log("filter_times : ", filter_times);
+        //console.log("filter_times : ", filter_times);
         if (!filter_times){
-            //console.log("filter_times : ", filter_times);
+            ////console.log("filter_times : ", filter_times);
             filter_times = 0;
         }
 
@@ -285,7 +289,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -297,7 +301,7 @@
         var NS = document.getElementById("filter").value;
         var filter_times = document.getElementById("showTimes").value;
         if (!filter_times){
-            //console.log("filter_times : ", filter_times);
+            ////console.log("filter_times : ", filter_times);
             filter_times = 0;
         }
         $.ajax({
@@ -310,7 +314,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -332,7 +336,7 @@
             success:function (response){
                 res.push(response.data[0].token1);
                 res.push(response.data[0].token2);
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -344,32 +348,32 @@
         $(event.target).toggleClass('active');
         if ($(event.target).attr('class') == "btn btn-info active" ){
             let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            //console.log("token1 = ", token1);
+            ////console.log("token1 = ", token1);
             let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            //console.log("token2 = ", token2);
+            ////console.log("token2 = ", token2);
             let times = $(event.target).parents('tr').children('td').eq(3).html();
-            //console.log("times = ", times);
+            ////console.log("times = ", times);
             var Token = token1 + token2;
             var lenOfToken = Token.length;
             var TokenType = document.getElementById("selectTokenType").value;
-            //console.log(Token, lenOfToken, TokenType);
+            ////console.log(Token, lenOfToken, TokenType);
             /*
             const worker = new Worker("{% static 'css_js/selectVocabulary.js' %}");
-            //console.log('test1')
+            ////console.log('test1')
             worker.postMessage(Token);
-            //console.log("worker : ", worker);
-            //console.log('test2')
+            ////console.log("worker : ", worker);
+            ////console.log('test2')
             var man = 0;
             if (man == 0){
                 worker.onmessage = function(event) {
-                    console.log("Received message from worker:", event.data);
+                    //console.log("Received message from worker:", event.data);
                 };
                 man = 1;
             }
             */
 //]]
             /*setTimeout(function() {
-                console.log("terminated : ", worker);
+                //console.log("terminated : ", worker);
                 worker.terminate();
                 //your code to be executed after 1 second
             }, 5000);
@@ -378,25 +382,25 @@
                 //存新的volcabulary(a+b)
                 response = insertVocabulary_new(Token, lenOfToken, TokenType);
                 if(response.status === '0'){
-                    //console.log("tokenID : ", response.data[0].tokenID);
+                    ////console.log("tokenID : ", response.data[0].tokenID);
                     newTokenID = response.data[0].tokenID;
                     //取得被合併的兩個tokenID
                     tokenIDArray = getTokenIDByName([token1,token2]);
-                    console.log("tokenIDArray : ", tokenIDArray);
+                    //console.log("tokenIDArray : ", tokenIDArray);
                     if (tokenIDArray.status === "0"){
-                        //console.log("in");
+                        ////console.log("in");
                         //取得textToken位置
 
                         positionArray = getPositionOfTextToken(tokenIDArray.tokenID);
-                        //console.log("positionArray : ", positionArray);
+                        ////console.log("positionArray : ", positionArray);
                         if (positionArray.status === "0"){
                             //將textToken原始資料*(-1)
                             response1 = multiplyByMinusOne(tokenIDArray.tokenID);
-                            console.log("response1 : ", response1);
+                            //console.log("response1 : ", response1);
                             if (response1.status === "0"){
                                 //存入新的tokenID到textToken
                                 response2 = insertNewTextToken(positionArray, newTokenID);
-                                console.log("insertNewTextToken : ", response2);
+                                //console.log("insertNewTextToken : ", response2);
                                 if (response2.status === "0"){
                                     $(event.target).parents('tr').remove();
                                     printAllPData();
@@ -424,22 +428,22 @@
                 }
                 else if (response.status === 'already_exist'){
                     swal("Error!", "Vocabulary already exist!", "error");
-                    //console.log("already_exist!!!");
+                    ////console.log("already_exist!!!");
                 }
                 else{
                     swal("Error!", "insertVocabulary_new ERROR!", "error");
                 }
             }
             else{
-                //console.log("choose a token type");
+                ////console.log("choose a token type");
                 
                 swal("Error!", "Vocabulary already exist!", "error");
                 display_noInput();
             }
-            //console.log("class : ", $(event.target).attr('class'));
+            ////console.log("class : ", $(event.target).attr('class'));
         }
         else{            
-            ////console.log("class : ", $(event.target).attr('class'));
+            //////console.log("class : ", $(event.target).attr('class'));
         }        
     }
 
@@ -448,38 +452,38 @@
         $(event.target).toggleClass('active');
         if ($(event.target).attr('class') == "btn btn-info active" ){
             let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            //console.log("token1 = ", token1);
+            ////console.log("token1 = ", token1);
             let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            //console.log("token2 = ", token2);
+            ////console.log("token2 = ", token2);
             let token3 = $(event.target).parents('tr').children('td').eq(3).html();
-            //console.log("token3 = ", token3);
+            ////console.log("token3 = ", token3);
             let times = $(event.target).parents('tr').children('td').eq(4).html();
-            //console.log("times = ", times);
+            ////console.log("times = ", times);
             var Token = token1 + token2 + token3;
             var lenOfToken = Token.length;
             var TokenType = document.getElementById("selectTokenType").value;
-            //console.log(Token, lenOfToken, TokenType);
+            ////console.log(Token, lenOfToken, TokenType);
             
             if (TokenType){
                 //存新的volcabulary(a+b+c)
                 response_new = insertVocabulary_new(Token, lenOfToken, TokenType);
-                //console.log("stauts insertVocabulary_new : ", response_new);
+                ////console.log("stauts insertVocabulary_new : ", response_new);
                 if(response_new.status === '0'){
-                    //console.log("tokenID : ", response_new.data[0].tokenID);
+                    ////console.log("tokenID : ", response_new.data[0].tokenID);
                     newTokenID = response_new.data[0].tokenID;
                     //取得被合併的兩個tokenID
                     tokenIDArray = getTokenIDByName([token1, token2, token3]);
-                    //console.log("tokenIDArray : ", tokenIDArray);
+                    ////console.log("tokenIDArray : ", tokenIDArray);
                     if (tokenIDArray.status === "0"){
-                        //console.log("in");
+                        ////console.log("in");
                         //取得textToken位置
                         positionArray = getPositionOfTextToken_3(tokenIDArray.tokenID);
-                        //console.log("positionArray : ", positionArray);
+                        ////console.log("positionArray : ", positionArray);
                         if (positionArray.status === "0"){
                             //將textToken原始資料*(-1)
                             response1 = multiplyByMinusOne_3(tokenIDArray.tokenID);
                             if (response1.status === "0"){
-                                ////console.log("minus one response : ", response)
+                                //////console.log("minus one response : ", response)
                                 //存入新的tokenID到textToken
                                 response1 = insertNewTextToken(positionArray, newTokenID);
                                 if (response1.status === "0"){
@@ -516,20 +520,20 @@
                 }
             }
             else{
-                //console.log("choose a token type");
+                ////console.log("choose a token type");
                 swal("Error!", "Vocabulary already exist!", "error");
             }
-            ////console.log("class : ", $(event.target).attr('class'));
+            //////console.log("class : ", $(event.target).attr('class'));
         }
         else{            
-            ////console.log("class : ", $(event.target).attr('class'));
+            //////console.log("class : ", $(event.target).attr('class'));
         }            
     }
 
     //顯示未輸入
     function display_noInput(){
         var x = document.getElementById("noInput");
-        ////console.log(x.style.visibility)
+        //////console.log(x.style.visibility)
         if (document.getElementById("noInput").style.visibility != 'visible') {
             document.getElementById("noInput").style.visibility = 'visible';
             setTimeout(function() {
@@ -542,7 +546,7 @@
     //顯示已經存在
     function display_already_exist(){
         var x = document.getElementById("already_exist");
-        ////console.log(x.style.visibility)
+        //////console.log(x.style.visibility)
         if (document.getElementById("already_exist").style.visibility != 'visible') {
             document.getElementById("already_exist").style.visibility = 'visible';
             setTimeout(function() {
@@ -554,7 +558,7 @@
 
     //存新的volcabulary(a+b)
     function insertVocabulary_new(token, nWord, tokenType){
-        //console.log("insertVocabulary_new : ", token, nWord, tokenType);
+        ////console.log("insertVocabulary_new : ", token, nWord, tokenType);
         var res = [];
         $.ajax({
             async: false,
@@ -567,7 +571,7 @@
             },
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -585,7 +589,7 @@
             },
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -593,7 +597,7 @@
     
     //取得textToken位置
     function getPositionOfTextToken(tokenIDArray){
-        //console.log("tokenIDArray : ", tokenIDArray);
+        ////console.log("tokenIDArray : ", tokenIDArray);
         var res = [];
         $.ajax({
             async: false,
@@ -605,7 +609,7 @@
             },
             success:function (response){
                 res = response;
-                ////console.log("res : ", res);
+                //////console.log("res : ", res);
             },
         });
         return res;
@@ -613,7 +617,7 @@
 
     //取得textToken位置
     function getPositionOfTextToken_3(tokenIDArray){
-        //console.log("tokenIDArray : ", tokenIDArray);
+        ////console.log("tokenIDArray : ", tokenIDArray);
         var res = [];
         $.ajax({
             async: false,
@@ -626,7 +630,7 @@
             },
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -645,7 +649,7 @@
             }),
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -653,7 +657,7 @@
 
     //將textToken原始資料*(-1)
     function multiplyByMinusOne_3(tokenIDArray){
-        //console.log("tokenIDArray_3 : ", tokenIDArray);
+        ////console.log("tokenIDArray_3 : ", tokenIDArray);
         var res = [];
         $.ajax({
             async: false,
@@ -666,7 +670,7 @@
             }),
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -674,8 +678,8 @@
 
     //存入新的tokenID到textToken
     function insertNewTextToken(positionArray, newTokenID){
-        //console.log("positionArray : ", positionArray.data);
-        //console.log("newTokenID : ", newTokenID);
+        ////console.log("positionArray : ", positionArray.data);
+        ////console.log("newTokenID : ", newTokenID);
         var res = [];
         $.ajax({
             async: false,
@@ -689,7 +693,7 @@
             dataType: 'json',
             success:function (response){
                 res = response;
-                //console.log("res : ", res);
+                ////console.log("res : ", res);
             },
         });
         return res;
@@ -701,7 +705,7 @@
         for (var i=0 ; i<array.length ; i++){
             tokenArray[i] = array[i][1];
         }
-        //console.log("checkPN : ", tokenArray);
+        ////console.log("checkPN : ", tokenArray);
         var res = [];
         $.ajax({
             async: false,
@@ -712,7 +716,7 @@
             },
             success:function (response){
                 res = response;
-                //console.log("PNarray : ", res.data);
+                ////console.log("PNarray : ", res.data);
             },
         });
         return res.data;
@@ -749,8 +753,8 @@
 
     //確認前後重複+disable
     function checkDuplicateDisable(btn, tokenID, disableArray){
-        ////console.log(btn.value);
-        ////console.log(tokenID);
+        //////console.log(btn.value);
+        //////console.log(tokenID);
         var first = tokenID[0];
         var second = tokenID[1];
         var index = parseInt(btn.value);
@@ -758,19 +762,19 @@
         if (first[index]){
             tokenID1 = first[index];
             tokenID2 = second[index];
-            //console.log(tokenID1, tokenID2);
+            ////console.log(tokenID1, tokenID2);
             //如果前一筆資料存在 且 後面的id跟現在前面的一樣 就disable按鈕
             if (second[index-1] && second[index-1] === first[index] ){
-                //console.log("前一個disable");
+                ////console.log("前一個disable");
                 disableBtn = document.getElementById("button" + (index-1).toString());
                 //若他不是被選中的
                 if (disableBtn.className === "btn btn-info active"){
-                    //console.log("選到前面選中的了");
+                    ////console.log("選到前面選中的了");
                 }
                 else{
                     disableBtn.disabled = true;
                     
-                    //console.log("disableArray : ", disableArray);
+                    ////console.log("disableArray : ", disableArray);
 
                     if (disableArray[index] === 'undefined'){
                         disableArray[index] = [];
@@ -785,24 +789,24 @@
             
             //如果後一筆資料存在 且 前面的id跟現在後面的一樣 就disable按鈕
             if (first[index+1] && first[index+1] === second[index] ){                
-                //console.log("後一個disable");
+                ////console.log("後一個disable");
                 disableBtn = document.getElementById("button" + (index+1).toString());
                 //若他不是被選中的
                 if (disableBtn.className === "btn btn-info active"){
-                    //console.log("選到後面選中的了");
+                    ////console.log("選到後面選中的了");
                 }
                 else{
                     disableBtn.disabled = true;
                 }
             }
         }
-        //console.log("disableArray : ", disableArray);
+        ////console.log("disableArray : ", disableArray);
     }
 
     //確認前後重複+取消disable
     function checkDuplicateAble(btn, tokenID){
-        ////console.log(btn.value);
-        ////console.log(tokenID);
+        //////console.log(btn.value);
+        //////console.log(tokenID);
         var first = tokenID[0];
         var second = tokenID[1];
         var index = parseInt(btn.value);
@@ -810,18 +814,18 @@
         if (first[index]){
             tokenID1 = first[index];
             tokenID2 = second[index];
-            //console.log(tokenID1, tokenID2);
+            ////console.log(tokenID1, tokenID2);
             //(如果前一筆資料存在 且 後面的id跟現在前面的一樣) 
             //且(前兩筆沒使用到)就disable按鈕
             if (second[index-1] && second[index-1] === first[index] ){
-                //console.log("前一個able");
+                ////console.log("前一個able");
                 disableBtn = document.getElementById("button" + (index-1).toString());
                 disableBtn.disabled = false;
             }
             
             //如果後一筆資料存在 且 前面的id跟現在後面的一樣 就disable按鈕
             if (first[index+1] && first[index+1] === second[index] ){                
-                //console.log("後一個able");
+                ////console.log("後一個able");
                 disableBtn = document.getElementById("button" + (index+1).toString());
                 disableBtn.disabled = false;
             }
@@ -837,7 +841,7 @@
         var iframeDoc = iframe.contentWindow.document;
         var feedbackElement = iframeDoc.querySelector('.warning-feedback');
         feedbackElement.textContent = "";
-        //console.log(" regexName : ", $("#regexName"));
+        ////console.log(" regexName : ", $("#regexName"));
         var drop = iframeDoc.getElementById("regexName");
         drop.classList.remove("is-warning");
 
@@ -890,39 +894,39 @@
 
   function customSearch(data, text) {
     var search = document.getElementsByClassName("form-control search-input");
-    console.log("search : ", search[0]);
+    //console.log("search : ", search[0]);
     var selectValue = document.getElementById("tableSelect1").value;
-    console.log("selectValue : ", selectValue);
-    console.log("data : ", data);
-    console.log("text : ", text);
+    //console.log("selectValue : ", selectValue);
+    //console.log("data : ", data);
+    //console.log("text : ", text);
     if (text != ""){
         switch (selectValue) {
             case '1':
-                console.log('select 1');
+                //console.log('select 1');
                 return data.filter(function (row) {
                   return row.First == text;
                 })
                 break;
             case '2':
-                console.log('select 2');
+                //console.log('select 2');
                 return data.filter(function (row) {
                   return row.Second == text;
                 })
                 break;
             case '3':
-                console.log('select 3');
+                //console.log('select 3');
                 return data.filter(function (row) {
                   return row.Times >= text;
                 })
                 break;
             case '4':
-                console.log('select 4');
+                //console.log('select 4');
                 return data.filter(function (row) {
                   return row.Third == text;
                 })
                 break;
             case '0':
-                console.log('select 0');
+                //console.log('select 0');
                 return data;
                 break;
         }
@@ -936,4 +940,213 @@
   function resetSearch(){
     $("#sortTable").bootstrapTable('resetSearch');
   }
+
+  function searchReportText(){
+    //console.log(event.target);
+    showModalReportText(event.target);
+  }
+
+  //取得前後50字報告
+  function showModalReportText(target) {
+    var modal = document.getElementById("modalReport");
+    var data = document.getElementById("result_dataReport");
+    var twoorthree = document.getElementById("twoOrThree");
+    
+    var token1 = $(event.target).parents('tr').children('td').eq(1).html();
+    var token2 = $(event.target).parents('tr').children('td').eq(2).html();
+    var token3 = "";
+    mergeToken = token1 + token2;
+    if(twoorthree.value === "3"){
+        token3 = $(event.target).parents('tr').children('td').eq(3).html();
+        mergeToken = token1 + token2 + token3;
+    }
+    
+    //console.log("mergeToken : ", mergeToken);
+
+    if( modal.style.display == "block"){
+        modal.style.display = "none";
+        document.removeEventListener('click', handleClick);
+    }
+    else{
+        document.addEventListener("click", handleClick);
+        
+        modal.style.display = "block";
+        //$('#result_dataReport').append(mergeToken);
+        //var reportText = `Hi, <mark class="highlight">I</mark>'m david`;
+        reportText = getReportText(twoorthree.value, mergeToken);  
+        //console.log(token1, token2, token3);
+        var pattern = regexSetting(token1, token2, token3, mergeToken);
+        
+        ////console.log("mergeToken : ", mergeToken);
+        //console.log("pattern : ", pattern);
+        //var reportText = `.[NUM]Hi, I'm david .[NUM] /[NUM] 取日病理tissue,`;        
+        var matchCount = 0;
+        var report = [];
+        //取得報告文字
+        for (var i=0 ; i<reportText.data.length ; i++){
+            //處理前後50字
+            text = forwardBackward(reportText.data[i].reportText, pattern, 0, 100, 100);
+            ////console.log("tempText : ", tempText);
+            //text = tempText.replace(pattern, match => `<mark>${match}</mark>`);
+            ////console.log(text);
+            //$('#result_dataReport').append(text);
+            if (reportText.data[i].reportID == 2 || reportText.data[i].reportID == 3 || reportText.data[i].reportID == 4){
+                //console.log("text : ", text);
+            }
+            report.push({
+                "reportText" : text,
+                "reportID" : reportText.data[i].reportID
+            });
+        }
+        //$('#result_dataReport').append(reportText.replace(pattern, match => `<mark>${match}</mark>`));
+        //$('#result_dataReport').append(matchCount);
+        showModalReport(report, mergeToken);
+    }
+}
+
+//處理前後50字
+function forwardBackward(text, pattern, count, startCount, endCount){
+    ////console.log("text : ", text);
+    //console.log("pattern : ", pattern.toString());
+    //用來記錄每篇文章的每筆前後50字
+    var tempText = "";
+    //紀錄起始結束
+    var start,end = 0;
+    while ((match = pattern.exec(text)) && count < 10) {     
+        //console.log("match : ", match);       
+        start = match.index;
+        end = pattern.lastIndex;
+    
+        //00 01 10 11
+        //前後都沒超過
+        if (start-startCount >=0 && end+endCount <= text.length){
+            ////console.log("start :" , start);
+            ////console.log("end :" , end);
+            ////console.log("text.length :" , text.length);
+            ////console.log("tempText : ", text.slice(start-50, end+50));
+            tempText += "<br>" + (count+1).toString() + "○ "  + text.slice(start-startCount, end+endCount) + "<br>";
+        }
+        //前後都超過
+        else if (start-startCount <=0 && end+endCount >= text.length){
+            tempText += "<br>" + (count+1).toString() + "○ "  + text + "<br>";
+        }
+        //前超後沒超
+        else if (start-startCount <=0 && end+endCount <= text.length){
+            tempText += "<br>" + (count+1).toString() + "○ "  + text.slice(0, end+endCount) + "<br>";
+        }
+        //後超前沒超
+        else if (start-startCount >=0 && end+endCount >= text.length){
+            tempText += "<br>" + (count+1).toString() + "○ "  + text.slice(start-startCount, text.length) + "<br>";
+        }
+        count += 1;
+    }
+    
+    //console.log("tempText : ", tempText);
+    count = 0;
+    //text = tempText.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
+    text = tempText.replace(pattern, match => {
+        count++;
+        if (count == 1){
+            return `<mark class="highlight-${count}">${match}</mark>`;
+        }
+        else{
+            return `<mark class="highlight">${match}</mark>`;
+        }
+    });
+    
+    //console.log("text : ", text);
+    text = text.replace(/(○)/gi, ".");
+    return text;
+}
+
+    function getReportText(twoorthree, mergeToken){
+        ////console.log("tokenIDArray_3 : ", tokenIDArray);
+        var res = [];
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '{% url 'mark:getReportTextByMergeToken' %}',
+            data:{
+                "words" : twoorthree,
+                "mergeToken" : mergeToken,
+            },
+            success:function (response){
+                res = response;
+                ////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    function showModalReport(report, mergeToken){        
+        $('#result_dataReport').empty();
+        $('#result_dataReport').append(`<table id='dataReportTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch" data-reset-search="resetSearch">
+        </table>`);
+        $('#dataReportTable').bootstrapTable({
+            columns: [
+            {
+                field: 'reportID',
+                title: 'reportID',
+                align: 'center',
+                valign: 'middle',
+                sortable:true,
+            },
+            {
+                field: 'reportText',
+                title: 'reportText',
+                align: 'left',
+                valign: 'middle',
+                sortable:true,
+                overflow: 'auto',
+            },
+            ],
+            data:report
+        });        
+        $('#result_dataReport .fixed-table-toolbar').attr('id', 'table_Report;');
+        $('#result_dataReport .fixed-table-toolbar').append(" You're Searching for \「 " + mergeToken + " \」");
+    }
+
+    function regexSetting(token1, token2, token3, mergeToken){        
+        if (token1 != "[NUM]" && token2 != "[NUM]" && token3 != "[NUM]"){
+            //符號前面加反斜線   
+            mergeToken = mergeToken.replace(/([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\t\r]{1})/g, "\\$&");
+        }
+        else{
+           //把[NUM]換成數字
+            mergeToken = mergeToken.replace(/(\[NUM\])/g, "[0|9]+");
+            //把非[NUM]前後加上[]
+            allvalue = [...mergeToken.matchAll(/([^\[0-9\]\(\)\{1\}\|\*+])/gi)];
+            allvalue.reverse().forEach(function(i){
+                //console.log("allvalue index: ", i);
+                mergeToken = mergeToken.slice(0, i.index+1) + "]" + mergeToken.slice(i.index+1);
+                mergeToken = mergeToken.slice(0, i.index) + "[" + mergeToken.slice(i.index);
+            });
+            mergeToken = mergeToken.replace(/[\|]/g, "-");
+            //console.log("mergeToken : ", mergeToken);
+        }        
+        var pattern = new RegExp("(" + mergeToken + ")","gi");
+        return pattern;
+    }
+    
+    //處理按下事件
+    function handleClick(){        
+        var modal = document.getElementById("modalReport");
+        //console.log("listener in ", event.target);
+        ////console.log("listener in ", event.target.classList);
+        // Check if the clicked element is inside the iframe or the button that opened the iframe
+        var checkParentNode = 0;
+        var target = event.target;
+        ////console.log("$(event.target).parents('modal')", $(event.target).parents("modal"));
+        ////console.log("$(event.target).parents('fixed-table-toolbar')", $(event.target).parents("fixed-table-toolbar"));
+        if ($(event.target).parents("modal").length > 0 || $(event.target).parents("fixed-table-toolbar").length > 0 ) {
+            ////console.log("Parent element is a table with the 'table-bordered' class");
+            // Do something else here
+            checkParentNode = 1;
+        }
+        if (checkParentNode == 0 && !event.target.classList.contains("btn") && event.target.classList != "" && !event.target.classList.contains("fixed-table-toolbar") && !event.target.classList.contains("form-control")  && !event.target.classList.contains("sortable-center") ) {
+            ////console.log("dissapear ", event.target.classList);
+            // If it is not, hide the iframe
+            modal.style.display = "none";
+        }
+    }
 </script> 
