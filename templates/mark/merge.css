@@ -213,4 +213,8 @@
     background-color: #C7EED4;
     color: black;
   }
+
+  #sortTable {
+    overflow:auto;
+  }
 </style>

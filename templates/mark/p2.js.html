@@ -17,7 +17,7 @@
                 getTokenP2();
             }
         });
-        //////console.log("start : ",start);
+        ////////console.log("start : ",start);
         //按下執行全部按鈕
         $("#page2ExecuteAll").click(function(){
             document.querySelector('.spinner').style.display = 'block';
@@ -28,32 +28,32 @@
                 display_noRegex();
                 return;
             }
-            //////console.log("selected : " + selected);
+            ////console.log("selectedExecuteAll : " , selected);
             
 
             //取得報告剩餘文字
             var reportIDfrom = document.getElementById('reportIDfrom').value;
             var reportIDto = document.getElementById('reportIDto').value;
             report = createReportButton(reportIDfrom, reportIDto);
-            ////console.log("report : ", report);
+            //////console.log("report : ", report);
 
             var Value = [];
-            ////console.log("Value : ", Value);
+            //////console.log("Value : ", Value);
             var lengthOfArray = 0;
             //for (var i=0 ; i<Object.keys(report[0]).length ; i++){
             //    //取得所有已選擇的textarea
             //    var valueText 
-            //    //////console.log("valueText : " + valueText.innerHTML);    
+            //    ////////console.log("valueText : " + valueText.innerHTML);    
             //    var currentReportID = activeButton[i].innerHTML;
             //    
             //    lengthOfArray += BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID);
-            //    //////console.log("lengthOfArray : ", lengthOfArray);
+            //    ////////console.log("lengthOfArray : ", lengthOfArray);
             //}
             
 
             //取得RE
             resultTokenType = getRegularExpression(selected);
-            //////console.log("result : ", result);
+            ////////console.log("result : ", result);
             var TokenID = resultTokenType[0];
             var REGEX = resultTokenType[1];
             var TokenType = resultTokenType[2];
@@ -61,22 +61,111 @@
 
             for (const [key, value] of Object.entries(report[0])) {
                 var valueText = value;
-                var currentReportID = key;
-                lengthOfArray += BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID, report[0], TokenID, REGEX, TokenType, ItemName, resultTokenType);
-                ////console.log("currentReportID : ", currentReportID);
-                ////console.log("valueText : ", valueText);
+                var currentReportID = key;                
+                //取得select 值
+                var selectVal = document.getElementById("selectRegexType").value;
+                lengthOfArray += BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID, report[0], TokenID, REGEX, TokenType, ItemName, resultTokenType, selectVal);
+                //////console.log("currentReportID : ", currentReportID);
+                //////console.log("valueText : ", valueText);
             }
             
             end = new Date().getTime();
             document.getElementById("Total").innerHTML = "Execute Time : " + ((end - start) / 1000).toString() + " seconds";            
             document.querySelector('.spinner').style.display = 'none';
         });
+
+        //按下自動執行按鈕
+        $("#page2Auto").click(function(){
+            //worker();
+            start = new Date().getTime();
+            console.log("start:", start/1000);
+            //取得select 值
+            //var selectVal = document.getElementById("selectRegexType").value;
+
+            var execDict = {
+                "[SPACE]": "T",
+                "Undefined_Chinese": "C",
+                "Undefined_English": "G",
+                "[NUM]": "E",
+                "[EOL]": "T",
+                "[TAB]": "T",
+                "Undefined_Sign": "S",
+            };
+            for (var key in execDict) {
+                //if (execDict.hasOwnProperty(key)) {
+                //  //console.log("Key:", key);
+                //  //console.log("Value:", execDict[key]);
+                //}
+                //console.log("Key:", key);
+                //console.log("Value:", execDict[key]);
+                automaticExecute([key], execDict[key]);
+            }
+            
+            end = new Date().getTime();
+            console.log("end:", end/1000);
+            document.getElementById("Total").innerHTML = "Execute Time : " + ((end - start) / 1000).toString() + " seconds";            
+            document.querySelector('.spinner').style.display = 'none';
+        });
+        
         //產生報告按鈕.監聽
         //var reportIDfrom = document.getElementById('reportIDfrom').value;
         //var reportIDto = document.getElementById('reportIDto').value;
         //report = createReportButton(reportIDfrom, reportIDto);
-        //////console.log("report : ", Object.keys(report[0]).length);
-    });
+        ////////console.log("report : ", Object.keys(report[0]).length);
+    });    
+
+    function worker(){
+        if ('serviceWorker' in navigator) {
+            //console.log("Will the service worker register?");
+            var path = '{% url 'mark:worker.js' %}';
+            path = path + "?para='qwer'";
+            navigator.serviceWorker.register(path, {
+                // Pass additional parameters here
+                customParam: 'myCustomValue'
+            }) //note that I am using the url template here
+              .then(function(reg){
+                //console.log("Yes, it did.");
+             }).catch(function(err) {
+               //console.log("No it didn't. This happened:", err)
+                //console.log("err.message:", err.message)
+            });
+            
+         }
+    }
+
+    //自動
+    function automaticExecute(selected, selectVal){
+        //console.log("selected : ", selected);
+        //console.log("selectVal : ", selectVal);
+        //取得報告剩餘文字
+        var reportIDfrom = document.getElementById('reportIDfrom').value;
+        var reportIDto = document.getElementById('reportIDto').value;
+        report = createReportButton(reportIDfrom, reportIDto);
+        //////console.log("report : ", report);
+
+        var Value = [];
+        //////console.log("Value : ", Value);
+        var lengthOfArray = 0;
+        
+
+        //取得RE
+        resultTokenType = getRegularExpression(selected);
+        ////////console.log("result : ", result);
+        var TokenID = resultTokenType[0];
+        var REGEX = resultTokenType[1];
+        var TokenType = resultTokenType[2];
+        var ItemName = resultTokenType[3];
+        //console.log(TokenID, REGEX, TokenType, ItemName);
+
+        for (const [key, value] of Object.entries(report[0])) {
+            var valueText = value;
+            var currentReportID = key;
+            lengthOfArray += BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID, report[0], TokenID, REGEX, TokenType, ItemName, resultTokenType, selectVal);
+            //////console.log("currentReportID : ", currentReportID);
+            //////console.log("valueText : ", valueText);
+        }
+
+    }
 
     //傳入id選擇選項以及顯示文章
     function changePrint(id){        
@@ -97,16 +186,16 @@
     //抓regexName(token)
     function getTokenP2(){
         document.getElementById('tokenContainer').innerHTML = "";
-        //////console.log("get token p2 " + selectValue);
+        ////////console.log("get token p2 " + selectValue);
         $.ajax({
             type: 'GET',
             url: '{% url 'mark:getVocabulary' %}',
             data:{
             },
             success:function (response){
-                //////console.log(response.data);
+                ////////console.log(response.data);
                 var count = Object.keys(response.data).length;
-                //////console.log(count);
+                ////////console.log(count);
                 var topdis = 0;
                 var id = 0;
                 for(var i=0 ; i<count ; i++){
@@ -131,7 +220,7 @@
     function getTokenByTypeP2(){
         document.getElementById('tokenContainer').innerHTML = "";
         selectValue = document.getElementById('selectRegexType').value;
-        //////console.log("get token p2 " + selectValue);
+        ////////console.log("get token p2 " + selectValue);
         $.ajax({
             async: 'false',
             type: 'GET',
@@ -140,15 +229,15 @@
                 'tokenType':selectValue,
             },
             success:function (response){
-                //////console.log(response.data);
+                ////////console.log(response.data);
                 var count = Object.keys(response.data).length;
-                //////console.log(count);
+                ////////console.log(count);
                 var topdis = 0;
                 var id = 0;
                 
                 var typeOfRegex = document.getElementById('selectRegexType').value;
                 for(var i=0 ; i<count ; i++){
-                    //////console.log("token : " + response.dict[i].token)
+                    ////////console.log("token : " + response.dict[i].token)
                     topdis += 30;
                     id += 1;
                     var checkBox = '<input class="form-check-input" type="checkbox" value="'+response.data[i].token+'" id="flexCheckDefault'+ id +'" name="checkBoxes" style="position:absolute; top:'+ topdis +'px; "><label class="form-check-label" for="flexCheckDefault'+ id +'" style="position:absolute; top:'+ topdis +'px; left:45px; width:200px; user-select:none;">'+ response.data[i].token +'</label>'                    
@@ -157,7 +246,7 @@
                 //如果是U就全選
                 if (typeOfRegex === 'U'){
                     var checkboxes = document.getElementsByClassName('form-check-input');
-                    ////console.log("len: ", checkboxes.length)
+                    //////console.log("len: ", checkboxes.length)
                     for (var i=0 ; i<checkboxes.length ; i++ ){
                         checkboxes[i].checked = true;
                     }
@@ -172,39 +261,39 @@
         $("input:checkbox[name=checkBoxes]:checked").each(function() {
             array.push($(this).val());
         });
-        //////console.log("selected regex : ", array);
+        ////////console.log("selected regex : ", array);
         return array;
     }
 
     //萃取全部(需要iter的是文章id 取得文章內容)
-    function BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID, report, TokenID, REGEX, TokenType, ItemName, resultTokenType){
-        ////console.log("report Batch :", report);
-        ////console.log("valueText", valueText);
-        ////console.log("currentReportID", currentReportID);
-        //////console.log("selected : " + selected);
+    function BatchProcessingExtract(lengthOfArray, selected, valueText, currentReportID, report, TokenID, REGEX, TokenType, ItemName, resultTokenType, selectVal){
+        //////console.log("report Batch :", report);
+        //////console.log("valueText", valueText);
+        //////console.log("currentReportID", currentReportID);
+        ////////console.log("selected : " + selected);
         var Value = [];
         //萃取模式
         if ((selected.length != 0) && (valueText != "")) {
 
-            //////console.log("tokenID: " + TokenID);
-            //////console.log("tokenType: " + TokenType);
+            ////////console.log("tokenID: " + TokenID);
+            ////////console.log("tokenType: " + TokenType);
 
             //處理textArea並且回傳找到值的陣列
             
             start = new Date().getTime();
             result = getMatchData(REGEX, valueText, TokenID, currentReportID, selected, resultTokenType, report);            
             end = new Date().getTime();
-            console.log("time used: ", end-start, currentReportID, REGEX);
+            //console.log("time used: ", end-start, currentReportID, REGEX);
 
             var array = result[0];
             var matchArray = result[1];
             var tokenIDForU = result[2];
             var tokenType = result[3];
 
-            //////console.log(array);
+            ////////console.log(array);
             
-            //////console.log(matchArray);
-            //console.log("tokenIDForU", tokenIDForU);
+            ////////console.log(matchArray);
+            //console.log("result", result);
 
             //顯示結果表格
             if (selected.length != 0 && array[0]){
@@ -217,26 +306,24 @@
             var reportID = [];
             var posStart = [];
             var posEnd = [];
-            var tokenID = [];
+            var token = [];
             for (var i=0 ; i<array.length ; i++){
                 reportID[i] = array[i][0];
                 posStart[i] = array[i][1]+1;
                 posEnd[i] = array[i][2];
-                tokenID[i] = array[i][3];
+                token[i] = array[i][3];
             }
             
             //紀錄上一篇文章的長度給下一篇文章用
             lengthOfArray = array.length;
             
-            ////console.log("matchArray : " , matchArray);
+            //////console.log("matchArray : " , matchArray);
             if (matchArray.length != 0){
                 response = updateAnalyseText(currentReportID, report[currentReportID]);
                 if (response && response.status === '0' ){
-                    //取得select 值
-                    var selectVal = document.getElementById("selectRegexType").value;
                     //如果有存成功且為U
-                    if (tokenIDForU.length != 0 && selectVal === 'U'){
-                        ////console.log("現在是U");
+                    if (tokenIDForU.length != 0 && (selectVal === 'C' || selectVal === 'G' || selectVal === 'S')){
+                        //console.log("現在是U");
                         responseU = insertTextTokenForU(reportID, posStart, posEnd, tokenIDForU);
                         if (responseU && responseU.status === '0'){
                             swal("Extracted!", "Data saved!", "success");
@@ -245,26 +332,37 @@
                         return lengthOfArray;
                     }
                     else{
-                        ////console.log("response", response);
-                        response1 = selectVocabulary_insertTextToken(reportID, posStart, posEnd, tokenID);
-                        if (response1 && response1.status === '0'){
-                            //////console.log("response1 : " , response1);
+                        //////console.log("response", response);
+                        //console.log("reportID : ", reportID);
+                        //console.log("posStart : ", posStart);
+                        //console.log("posEnd : ", posEnd);
+                        //console.log("token : ", token);
+                        response1 = selectVocabulary_insertTextToken(reportID, posStart, posEnd, token);
+                        ////console.log("REGEX[0] : ", REGEX[0]);
+                        //var text = "([\\r\\n]+)";
+                        ////console.log("text : ", text);
+                        ////console.log("response1 : ", response1);
+                        if (response1 && response1.status === '0' && (REGEX[0] != "([ ]+)" && REGEX[0] != "([\\r\\n]+)")){
+                            ////////console.log("response1 : " , response1);
                             response2 = selecttokenREItem(matchArray);
-                            ////console.log("response2 : ", response2);
+                            //////console.log("response2 : ", response2);
                             if (response2 && response2.status === '0'){
                                 //取得value.posStart
                                 for (var i=0 ; i<matchArray.length ; i++){
                                     Value.push(Object.values(matchArray[i]));
                                 }
-                                //////console.log("values : ", Value);
-                                //////console.log("posStart : ", posStart);
+                                ////////console.log("values : ", Value);
+                                ////////console.log("posStart : ", posStart);
                                 response3 = insertExtractedvaluefromtoken(reportID, posStart, response2, Value);
-                                //////console.log("response3 : ", response3);
+                                ////////console.log("response3 : ", response3);
                                 if (response3 && response3 && response3.status === '0'){
                                     swal("Extracted!", "Data saved!", "success");
                                     display_dataSaved();
                                 }
                             }
+                        }
+                        else if (response1 && response1.status === '0' && (REGEX[0] == "([ ]+)" || REGEX[0] == "([\\r\\n]+)")){
+                            swal("Extracted!", "Data saved!", "success");
                         }
                     }
                 }
@@ -278,6 +376,7 @@
 
     //取得TokenID.tokenType.RE
     function getRegularExpression(selected){
+        //console.log("selected : ", selected);
         var TokenID = [];
         var REGEX = [];
         var TokenType = [];
@@ -285,20 +384,20 @@
         var TokenREID = [];
         response = getTokenIDTokenType(selected);
         if (response.status === '0'){
-            //////console.log("response : " + response);
+            ////////console.log("response : " + response);
             TokenID = response.tokenID;
             TokenType = response.tokenType;
-            //////console.log("TokenID : " + TokenID);
-            //////console.log("TokenType : " + TokenType);
+            ////////console.log("TokenID : " + TokenID);
+            ////////console.log("TokenType : " + TokenType);
 
             //取得RE.REID
             response1 = getRE(TokenID);
             if (response1.status === '0'){
-                //////console.log("response1 : ", response1);
+                ////////console.log("response1 : ", response1);
                 REGEX = response1.RE;
                 TokenREID = response1.tokenREID;
-                //////console.log("REGEX : ", REGEX);
-                //////console.log("TokenREID : ", TokenREID);
+                ////////console.log("REGEX : ", REGEX);
+                ////////console.log("TokenREID : ", TokenREID);
             }
         }
         return [TokenID, REGEX, TokenType, ItemName]
@@ -317,7 +416,7 @@
             //成功找RE
             success:function (response){
                 res = response;
-                ////console.log("response : " , response);      
+                //////console.log("response : " , response);      
             },
         });
         return res;
@@ -335,7 +434,7 @@
             },
             success:function (response){
                 if (response.status === '0'){
-                    ////console.log(response);
+                    //////console.log(response);
                     res = response;
                 }
             },
@@ -345,7 +444,7 @@
 
     //處理textArea以及產生要儲存的陣列(看能不能拆)
     function getMatchData(REGEX, valueText, TokenID, currentReportID, selected, TokenType, report){
-        ////console.log("get match data report", report);
+        //////console.log("get match data report", report);
         //取出的資料總數
         var start_end_count = 0;
         //用來決定第i個selected從哪開始填入陣列(不然會被洗掉)
@@ -360,15 +459,15 @@
         var tokentype = [];
         //找tokenType
         resOftokenType = TokenType[2];
-        ////console.log("resOftokenType : ", resOftokenType);
+        //////console.log("resOftokenType : ", resOftokenType);
         for(var i=0 ; i<REGEX.length ; i++){
-            //////console.log("i : " + i);
-            console.log("REGEX: " + REGEX[i]);
-            console.log(REGEX[i] == "([a-zA-Z]+)");
+            ////////console.log("i : " + i);
+            //console.log("REGEX: " + REGEX[i]);
+            //console.log(REGEX[i] == "([a-zA-Z]+)");
             //定義輸入的regex值存進變數
             let textToSearch = "(?<wholeString>(" + REGEX[i] + "))";
             let textToSearch1 = "(?<wholeString>(([a-zA-Z]+)))";
-            ////console.log(textToSearch);
+            //////console.log(textToSearch);
             //處理輸入的regex文本
             if (textToSearch){
                 textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
@@ -376,9 +475,9 @@
             //將處理好的regex文本定義為新的regex物件
             let pattern = new RegExp(`${textToSearch}`,"g");
             let pattern1 = new RegExp(`${textToSearch1}`,"g");
-            //console.log("pattern: " + pattern);
-            //console.log("pattern1: " + pattern1);
-            //console.log(pattern.toString() === pattern1.toString());
+            ////console.log("pattern: " + pattern);
+            ////console.log("pattern1: " + pattern1);
+            ////console.log(pattern.toString() === pattern1.toString());
             paragraph = valueText;
             //無符合配對20230213之後修
             //if (valueText.innerHTML == paragraph){
@@ -386,11 +485,11 @@
             //    return;
             //}
             patternArray[i] = pattern;
-            //////console.log("paragraph : " + paragraph.length);
-            console.log("pattern : " + pattern);
+            ////////console.log("paragraph : " + paragraph.length);
+            //console.log("pattern : " + pattern);
             var length = 0;
             while (match = pattern.exec(paragraph)) {
-                //////console.log(match.index + ' ' + pattern.lastIndex);
+                ////////console.log(match.index + ' ' + pattern.lastIndex);
                 //if (pattern.toString() === pattern1.toString()){
                 //    start[start_end_count] = match.index;
                 //    end[start_end_count] = pattern.lastIndex+1;
@@ -401,11 +500,11 @@
                 //}
 
                 start_end_count += 1;
-                //////console.log("match : " + match);
+                ////////console.log("match : " + match);
                 if (match.groups){
                     match.groups['tokenID'] = TokenID[i];
                     matchArray.push(match.groups);
-                    //////console.log("wholeString : ", getLength(match.groups['wholeString']));
+                    ////////console.log("wholeString : ", getLength(match.groups['wholeString']));
                     //含中文的長度
                     length = getLength(match.groups['wholeString']);
                     //字串內長度
@@ -414,39 +513,40 @@
                     nword.push(match.groups['wholeString'].length);
                     tokentype.push(resOftokenType[i]);
                     var blank = "";
+                    //console.log("origin_length : ", origin_length);
                     for (var b=0 ; b<(origin_length) ; b++){
                         blank += " ";
                     }
-                    //////console.log("length", length);
-                    //////console.log("origin_length", origin_length);
+                    ////////console.log("length", length);
+                    ////////console.log("origin_length", origin_length);
                     //將輸出文本與regex物件有符合的地方取代為空白
-                    //////console.log("match.index", match.index);
-                    ////console.log("report['currentReportID'] : ", report[currentReportID]);
+                    ////////console.log("match.index", match.index);
+                    //////console.log("report['currentReportID'] : ", report[currentReportID]);
                     report[currentReportID] = replaceCharacter(report[currentReportID], match.index, pattern.lastIndex, blank);
                 }
                 //else{
-                //    ////console.log("push!!!");
+                //    //////console.log("push!!!");
                 //    var nomatch = {};
                 //    nomatch['tokenID'] = TokenID[i];
                 //    matchArray.push(nomatch);
                 //}
-                //////console.log("match : ", match[0]);
-                //////console.log("length : ", length);
+                ////////console.log("match : ", match[0]);
+                ////////console.log("length : ", length);
             }
-            //////console.log("matchArray : " , matchArray);
+            ////////console.log("matchArray : " , matchArray);
             for(var j=origin ; j<start_end_count ; j++){
-                //////console.log("j : " + j);
+                ////console.log("selected[i] : " + selected[i]);
                 array[j] = [currentReportID,start[j], end[j], selected[i]];
             }
             origin = start_end_count;
-            //////console.log(pattern);
+            ////////console.log(pattern);
         }
         
-        //////console.log("token : ", token);
-        //////console.log("nword : ", nword);
-        ////console.log("tokentype : ", tokentype);
-        console.log("REGEX : ", REGEX[0]);
-        if (REGEX[0] != "(?<NUM>[0-9]+)"){
+        ////////console.log("token : ", token);
+        ////////console.log("nword : ", nword);
+        //////console.log("tokentype : ", tokentype);
+        //console.log("REGEX : ", REGEX[0]);
+        if (REGEX[0] != "(?<NUM>[0-9]+)" && REGEX[0] != "([ ]+)" && REGEX[0] != "([\r\n]+)"){
             //寫入Vocabulary
             tokenIDForU = insertVocabulary_U(token, nword, tokentype);
         }
@@ -470,12 +570,12 @@
                 'csrfmiddlewaretoken': window.CSRF_TOKEN
             },
             success:function (response){
-                ////console.log("result : " + response.data)
+                //////console.log("result : " + response.data)
                 res = response.data;
                 //if (response.status == '0'){                    
                 //    display_data_saved();
                 //}else{
-                //    ////console.log("data not saved");
+                //    //////console.log("data not saved");
                 //    display_data_not_saved();
                 //}
                 //if (tokenType == 'E'){
@@ -497,7 +597,7 @@
     //insert textToken for U
     function insertTextTokenForU(reportID, posStart, posEnd, tokenID){
         var res;
-        ////console.log("tokenID :", tokenID);
+        //////console.log("tokenID :", tokenID);
         $.ajax({
             async: false,
             type: 'POST',
@@ -542,16 +642,16 @@
             }),
             success:function (response){
                 res = response;
-                //////console.log(response.status);
+                ////////console.log(response.status);
             },
         });
         return res;
     }
 
     //找vocabulary + insert textToken
-    function selectVocabulary_insertTextToken(reportID, posStart, posEnd, tokenID){
+    function selectVocabulary_insertTextToken(reportID, posStart, posEnd, token){
         var res;
-        //////console.log("reportID :", reportID);
+        ////////console.log("reportID :", reportID);
         $.ajax({
             async: false,
             type: 'POST',
@@ -560,7 +660,7 @@
                 'reportID[]' : reportID,
                 'posStart[]' : posStart,
                 'posEnd[]' : posEnd,
-                'tokenID[]' : tokenID,
+                'token[]' : token,
             },
             //成功存第三章表(每個array值會有一個tokenID.一次的match)
             success:function (response){
@@ -572,7 +672,7 @@
 
     //查詢每個match的每個RE的每個變數的編號(25~31)
     function selecttokenREItem(matchArray){
-        //////console.log("matchArray : " , matchArray);
+        ////////console.log("matchArray : " , matchArray);
         if (matchArray.length != 0){
             var res;
             $.ajax({
@@ -592,27 +692,27 @@
 
     //新增extractedvaluefromtoken
     function insertExtractedvaluefromtoken(reportID, posStart, response2, Value){
-        //////console.log(response2.data[0]);
+        ////////console.log(response2.data[0]);
         if (response2.status === "0"){
             var res;
             var tokenREItemID = response2.data[0].tokenREItemID;
             var tokenType = response2.data[0].tokenType;
-            //////console.log("Value : ", Value);
+            ////////console.log("Value : ", Value);
             // ordinary for loop
             for (var i=0 ; i<Value.length ; i++) {
                 for (var j=0 ; j<Value[i].length ; j++){
-                        //////console.log(Value[i][j].toString());
+                        ////////console.log(Value[i][j].toString());
                     if (Value[i][j].toString().indexOf(",") != -1){
                         index = Value[i][j].toString().indexOf(",");
-                        //////console.log("逗號");
-                        //////console.log(Value[i][j][x]);
+                        ////////console.log("逗號");
+                        ////////console.log(Value[i][j][x]);
                         Value[i][j] = Value[i][j].replace(/,/gi, "|");
-                        //////console.log(Value[i][j]);
+                        ////////console.log(Value[i][j]);
                     }
                 }
             }
-            //////console.log("tokenREItemID : ", tokenREItemID);
-            //////console.log("tokenType : ", tokenType);
+            ////////console.log("tokenREItemID : ", tokenREItemID);
+            ////////console.log("tokenType : ", tokenType);
 
             $.ajax({
                 async: false,
@@ -628,7 +728,7 @@
                 success:function (response3){
                     res = response3;
                     //if (response3.status === "0"){
-                    //    ////console.log("extractedValueFromToken save Success !!!");
+                    //    //////console.log("extractedValueFromToken save Success !!!");
                     //}
                 },
             });
@@ -638,10 +738,10 @@
 
     //顯示結果表格
     function showTable(headers,array){
-        //////console.log("array : ",array);
+        ////////console.log("array : ",array);
         //創建表格元素
         let myTable = document.querySelector('#result_data');
-        //////console.log(Object.keys(result_array[0]));
+        ////////console.log(Object.keys(result_array[0]));
         let table = document.createElement('table');
         let headerRow = document.createElement('tr');
         headers.forEach(headerText => {
@@ -668,7 +768,7 @@
     //顯示未選regex
     function display_noRegex(){
         var x = document.getElementById("noRegex");
-        //////console.log(x.style.visibility)
+        ////////console.log(x.style.visibility)
         if (document.getElementById("noRegex").style.visibility != 'visible') {
             document.getElementById("noRegex").style.visibility = 'visible';
             setTimeout(function() {
@@ -681,7 +781,7 @@
     //顯示未輸入
     function display_noInput(){
         var x = document.getElementById("noInput");
-        //////console.log(x.style.visibility)
+        ////////console.log(x.style.visibility)
         if (document.getElementById("noInput").style.visibility != 'visible') {
             document.getElementById("noInput").style.visibility = 'visible';
             setTimeout(function() {
@@ -694,7 +794,7 @@
     //顯示儲存成功
     function display_dataSaved(){
         var x = document.getElementById("dataSaved");
-        //////console.log(x.style.visibility)
+        ////////console.log(x.style.visibility)
         if (document.getElementById("dataSaved").style.visibility != 'visible') {
             document.getElementById("dataSaved").style.visibility = 'visible';
             setTimeout(function() {
@@ -717,7 +817,7 @@
             },
             success:async function (response){
                 res = response.data;
-                ////console.log("reportID : ", response.data);
+                //////console.log("reportID : ", response.data);
             },
         })
         return res;
@@ -770,14 +870,14 @@
                     
                     //選中的文章按鈕加邊框 前任刪邊框
                     selectedButton = document.getElementsByClassName("btn btn-light active border border-primary");
-                    //////console.log("selected BUTTON :" + selectedButton);
+                    ////////console.log("selected BUTTON :" + selectedButton);
                     if (selectedButton[0]){
                         selectedButton[0].classList.remove('border','border-primary');
                     }               
                     document.getElementById(reportID).className += " " + "border border-primary"; 
                 }
                 else if (btn.className === "btn btn-light"){
-                    //////console.log("selected :" + selectobject.value);
+                    ////////console.log("selected :" + selectobject.value);
                     //隱藏所有textarea
                     var textArea = document.getElementsByClassName('text');
                     for (var i=0 ; i<textArea.length ; i++){
@@ -796,13 +896,13 @@
 
                 }
                 else if (btn.className === "btn btn-light active border border-primary") {
-                    //////console.log("selected button touched !!!");
+                    ////////console.log("selected button touched !!!");
                     
                     
 
                     //取消邊框.active
                     selectedButton = document.getElementsByClassName("btn btn-light active border border-primary");
-                    //////console.log("selected BUTTON :" + selectedButton);
+                    ////////console.log("selected BUTTON :" + selectedButton);
                     if (selectedButton[0]){
                         selectedButton[0].classList.remove('border', 'border-primary', 'active');
                     }
@@ -818,15 +918,15 @@
                     //選擇第一筆已選取按鈕
                     leftButton = document.getElementsByClassName("btn btn-light active");
                     if (leftButton[0]){
-                        //////console.log("there's button left!!!");
-                        //////console.log("leftbutton : " + leftButton[0].id);
+                        ////////console.log("there's button left!!!");
+                        ////////console.log("leftbutton : " + leftButton[0].id);
 
                         //顯示已選取按鈕邊框
                         document.getElementById(leftButton[0].id).className = "btn btn-light active border border-primary";
                         
                         //顯示第一筆已選取文章
                         //leftTextArea = document.getElementById("id"+leftButton[0].id);
-                        //////console.log("leftTextArea :" + leftTextArea.id);
+                        ////////console.log("leftTextArea :" + leftTextArea.id);
                         //leftTextArea.style.display = "block";
 //
                         ////選擇剩下的第一筆選項
@@ -856,7 +956,7 @@
         //已選取的按鈕
         activeButton = document.getElementsByClassName("btn btn-light active");
         //for (var i=0 ; i<activeButton.length ; i++){            
-        //    ////console.log("activeButton : " + activeButton[i].innerHTML);
+        //    //////console.log("activeButton : " + activeButton[i].innerHTML);
         //}
     }
 

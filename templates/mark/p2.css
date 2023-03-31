@@ -116,6 +116,12 @@
     top:430px;
   }
 
+  #page2Auto {    
+    position:absolute;
+    left:400px;
+    top:480px;
+  }
+
   #page2ClearALL {
     position:absolute;
     right:780px;

@@ -19,7 +19,7 @@ from mark.views import *
 from django.urls import include
 app_name = "mark"
 
-
+from django.views.generic import TemplateView
 
 
 
@@ -51,11 +51,15 @@ urlpatterns = [
     path('getNextWordReport/', getNextWordReport, name="getNextWordReport"),
     path('getSynTypo/', getSynTypo, name="getSynTypo"),
     path('getReportTextByMergeToken/', getReportTextByMergeToken, name="getReportTextByMergeToken"),
+    path('getMergeLog/', getMergeLog, name="getMergeLog"),
     
     
     path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
+    
+    path('worker.js', (TemplateView.as_view(template_name="mark/worker.js", 
+    content_type='application/javascript', )), name='worker.js'),
     
     
 ]

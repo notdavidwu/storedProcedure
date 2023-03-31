@@ -39,8 +39,9 @@
         
         //搜尋按鈕
         $("#define").click(function(){
-            getSynTypoValue();
-            showModal();
+            //getSynTypoValue();
+            //showModal();
+            worker();
         });
 
         //根據select顯示token
@@ -54,6 +55,25 @@
             }
         });
     });
+
+    function worker(){
+        if ('serviceWorker' in navigator) {
+            console.log("Will the service worker register?");
+            var path = '{% url 'mark:worker.js' %}';
+            path = path + "?para='qwer'";
+            navigator.serviceWorker.register(path, {
+                // Pass additional parameters here
+                customParam: 'myCustomValue'
+            }) //note that I am using the url template here
+              .then(function(reg){
+                console.log("Yes, it did.");
+             }).catch(function(err) {
+               console.log("No it didn't. This happened:", err)
+                console.log("err.message:", err.message)
+            });
+            
+         }
+    }
     
     function showModal() {
 		var modal = document.getElementById("modalDefine");
@@ -62,17 +82,17 @@
             modal.style.display = "none";
         }
         else{
-            //document.addEventListener("click", function(event) {
-            //    //console.log("listener in ", event.target);
-            //    //console.log("listener in ", event.target.classList);
-            //    // Check if the clicked element is inside the iframe or the button that opened the iframe
-            //    if (!event.target.classList.contains("modal-content") && !event.target.classList.contains("btn") && !event.target.classList.contains("table table-bordered")) {
-            //        //console.log("dissapear ", event.target);
-            //        // If it is not, hide the iframe
-            //        modal.style.display = "none";
-            //    }
-            //});        
-            modal.style.display = "block";            
+            document.addEventListener("click", function(event) {
+                //console.log("listener in ", event.target);
+                //console.log("listener in ", event.target.classList);
+                // Check if the clicked element is inside the iframe or the button that opened the iframe
+                if (!event.target.classList.contains("modal-content") && !event.target.classList.contains("btn") && !event.target.classList.contains("table table-bordered")) {
+                    //console.log("dissapear ", event.target);
+                    // If it is not, hide the iframe
+                    modal.style.display = "none";
+                }
+            });        
+            modal.style.display = "block";
             $('#result_dataDefine').empty();
             $('#result_dataDefine').append(123);
         }
@@ -342,8 +362,7 @@
         return res;
     }
 
-    function merge(){
-        
+    function merge(){        
         var start = Date.now();
         $(event.target).toggleClass('active');
         if ($(event.target).attr('class') == "btn btn-info active" ){
@@ -353,66 +372,54 @@
             ////console.log("token2 = ", token2);
             let times = $(event.target).parents('tr').children('td').eq(3).html();
             ////console.log("times = ", times);
-            var Token = token1 + token2;
+            let jump = $(event.target).parents('tr').children('td').eq(4).children('button').attr('name');
+            console.log("jump = ", jump, typeof(jump));
+            var Token =  $(event.target).parents('tr').children('td').eq(0).children('button').attr('name');
+            console.log("Token = ", Token);
             var lenOfToken = Token.length;
             var TokenType = document.getElementById("selectTokenType").value;
-            ////console.log(Token, lenOfToken, TokenType);
-            /*
-            const worker = new Worker("{% static 'css_js/selectVocabulary.js' %}");
-            ////console.log('test1')
-            worker.postMessage(Token);
-            ////console.log("worker : ", worker);
-            ////console.log('test2')
-            var man = 0;
-            if (man == 0){
-                worker.onmessage = function(event) {
-                    //console.log("Received message from worker:", event.data);
-                };
-                man = 1;
-            }
-            */
-//]]
-            /*setTimeout(function() {
-                //console.log("terminated : ", worker);
-                worker.terminate();
-                //your code to be executed after 1 second
-            }, 5000);
-*/
             if (TokenType){
                 //存新的volcabulary(a+b)
                 response = insertVocabulary_new(Token, lenOfToken, TokenType);
                 if(response.status === '0'){
                     ////console.log("tokenID : ", response.data[0].tokenID);
                     newTokenID = response.data[0].tokenID;
+                    console.log("取得被合併的兩個tokenID : ", jump);
                     //取得被合併的兩個tokenID
-                    tokenIDArray = getTokenIDByName([token1,token2]);
-                    //console.log("tokenIDArray : ", tokenIDArray);
+                    if (jump === "0"){
+                        tokenIDArray = getTokenIDByName([token1,token2]);
+                    }
+                    else{
+                        tokenIDArray = getTokenIDByName([token1,'[SPACE]',token2]);
+                    }
+                    console.log("tokenIDArray : ", tokenIDArray);
                     if (tokenIDArray.status === "0"){
                         ////console.log("in");
                         //取得textToken位置
-
-                        positionArray = getPositionOfTextToken(tokenIDArray.tokenID);
-                        ////console.log("positionArray : ", positionArray);
+                        positionArray = getPositionOfTextToken(tokenIDArray.tokenID, jump);
+                        console.log("positionArray : ", positionArray);
                         if (positionArray.status === "0"){
                             //將textToken原始資料*(-1)
-                            response1 = multiplyByMinusOne(tokenIDArray.tokenID);
+                            response1 = multiplyByMinusOne(tokenIDArray.tokenID, jump);
                             //console.log("response1 : ", response1);
                             if (response1.status === "0"){
                                 //存入新的tokenID到textToken
                                 response2 = insertNewTextToken(positionArray, newTokenID);
                                 //console.log("insertNewTextToken : ", response2);
                                 if (response2.status === "0"){
+                                    response3 = insertMergeLog(Token, token1, token2, "", "2");
+                                    console.log("response3 : ", response3);
                                     $(event.target).parents('tr').remove();
                                     printAllPData();
-                                    var end = Date.now();
-                                    swal("Merged!", token1 + token2 + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
                                     $('#result_data').empty();
                                     $('#sortTable').empty();
-                                    printAllData();
+                                    printAllData();                                    
+                                    var end = Date.now();
+                                    swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
                                 }          
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
-                                }                  
+                                }
                             }
                             else{
                                 swal("Error!", "multiplyByMinusOne ERROR!", "error");
@@ -440,11 +447,53 @@
                 swal("Error!", "Vocabulary already exist!", "error");
                 display_noInput();
             }
-            ////console.log("class : ", $(event.target).attr('class'));
+            console.log("class : ", $(event.target).attr('class'));
         }
         else{            
             //////console.log("class : ", $(event.target).attr('class'));
         }        
+    }
+
+    function insertMergeLog(Token, token1, token2, token3, twoOrThree){
+        ////console.log("insertVocabulary_new : ", token, nWord, tokenType);
+        var res = [];
+        if (twoOrThree === "2"){
+            $.ajax({
+                async: false,
+                type: 'POST',
+                url: '{% url 'mark:getMergeLog' %}',
+                data:{
+                    "twoOrThree" : "2",
+                    "token1" : token1,
+                    "token2" : token2,
+                    "mergedToken" : Token,
+                },
+                success:function (response){
+                    res = response;
+                    ////console.log("res : ", res);
+                },
+            });
+        }
+        else if (twoOrThree === "3"){
+            $.ajax({
+                async: false,
+                type: 'POST',
+                url: '{% url 'mark:getMergeLog' %}',
+                data:{
+                    "twoOrThree" : "3",
+                    "token1" : token1,
+                    "token2" : token2,
+                    "token3" : token3,
+                    "mergedToken" : Token,
+                },
+                success:function (response){
+                    res = response;
+                    ////console.log("res : ", res);
+                },
+            });
+        }
+        return res;
+
     }
 
     function merge_3(){        
@@ -487,14 +536,15 @@
                                 //存入新的tokenID到textToken
                                 response1 = insertNewTextToken(positionArray, newTokenID);
                                 if (response1.status === "0"){
+                                    response3 = insertMergeLog(Token, token1, token2, token3, "3");
                                     $(event.target).parents('tr').remove();
                                     printAllPData();
-                                    var end = Date.now();
-                                    swal("Merged!", token1 + token2 + token3 + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
                                     $('#result_data').empty();
                                     $('#sortTable').empty();
                                     printAllData_3();
                                     printAllPData();
+                                    var end = Date.now();
+                                    swal("Merged!", token1 + token2 + token3 + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
                                 }
                                 else{
                                     swal("Error!", "insertNewTextToken ERROR!", "error");
@@ -596,22 +646,45 @@
     }
     
     //取得textToken位置
-    function getPositionOfTextToken(tokenIDArray){
+    function getPositionOfTextToken(tokenIDArray, jump){
         ////console.log("tokenIDArray : ", tokenIDArray);
+        console.log("jump : ", jump, typeof(jump));
         var res = [];
-        $.ajax({
-            async: false,
-            type: 'GET',
-            url: '{% url 'mark:insertTexttoken' %}',
-            data:{
-                "tokenID1" : tokenIDArray[0],
-                "tokenID2" : tokenIDArray[1],
-            },
-            success:function (response){
-                res = response;
-                //////console.log("res : ", res);
-            },
-        });
+        if (jump === "0"){
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '{% url 'mark:insertTexttoken' %}',
+                data:{
+                    "tokenID1" : tokenIDArray[0],
+                    "tokenID2" : tokenIDArray[1],
+                    "tokenID3" : -1,
+                    "jump" : jump,
+                },
+                success:function (response){
+                    res = response;
+                    //////console.log("res : ", res);
+                },
+            });
+        }
+        else if (jump === "1"){
+            console.log("getPositionOfTextToken jump = 1");
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '{% url 'mark:insertTexttoken' %}',
+                data:{
+                    "tokenID1" : tokenIDArray[0],
+                    "tokenID2" : tokenIDArray[1],
+                    "tokenID3" : tokenIDArray[2],
+                    "jump" : jump,
+                },
+                success:function (response){
+                    res = response;
+                    console.log("res : ", res);
+                },
+            });
+        }
         return res;
     }
 
@@ -637,21 +710,42 @@
     }
 
     //將textToken原始資料*(-1)
-    function multiplyByMinusOne(tokenIDArray){
+    function multiplyByMinusOne(tokenIDArray, jump){
         var res = [];
-        $.ajax({
-            async: false,
-            type: 'PATCH',
-            url: '{% url 'mark:getTextToken' %}',
-            data:JSON.stringify({
-                "tokenID1" : tokenIDArray[0],
-                "tokenID2" : tokenIDArray[1],
-            }),
-            success:function (response){
-                res = response;
-                ////console.log("res : ", res);
-            },
-        });
+        if (jump === "0"){
+            $.ajax({
+                async: false,
+                type: 'PATCH',
+                url: '{% url 'mark:getTextToken' %}',
+                data:JSON.stringify({
+                    "tokenID1" : tokenIDArray[0],
+                    "tokenID2" : tokenIDArray[1],
+                    "tokenID3" : -1,
+                    "jump" : jump,
+                }),
+                success:function (response){
+                    res = response;
+                    ////console.log("res : ", res);
+                },
+            });
+        }
+        else{            
+            $.ajax({
+                async: false,
+                type: 'PATCH',
+                url: '{% url 'mark:getTextToken' %}',
+                data:JSON.stringify({
+                    "tokenID1" : tokenIDArray[0],
+                    "tokenID2" : tokenIDArray[1],
+                    "tokenID3" : tokenIDArray[2],
+                    "jump" : jump,
+                }),
+                success:function (response){
+                    res = response;
+                    ////console.log("res : ", res);
+                },
+            });
+        }        
         return res;
     }
 
@@ -1109,26 +1203,96 @@ function forwardBackward(text, pattern, count, startCount, endCount){
         $('#result_dataReport .fixed-table-toolbar').append(" You're Searching for \「 " + mergeToken + " \」");
     }
 
-    function regexSetting(token1, token2, token3, mergeToken){        
-        if (token1 != "[NUM]" && token2 != "[NUM]" && token3 != "[NUM]"){
-            //符號前面加反斜線   
+    function regexSetting(token1, token2, token3, mergeToken){
+        console.log("mergeToken : ", mergeToken);
+        var numMark = mergeToken.match(/([ \[][N][U][M][\]]+)/gi);
+        var spaceMark = mergeToken.match(/([ \[][S][P][A][C][E][\]]+)/gi);
+        var eolMark = mergeToken.match(/([ \[][E][O][L][\]]+)/gi);
+        //console.log("numMark : ", numMark);
+        console.log("spaceMark : ", spaceMark);
+
+        //處理NUM
+        mergeToken = regexNUM(numMark, mergeToken);
+        //處理SPACE
+        mergeToken = regexSPACE(spaceMark, mergeToken);
+        //處理EOL
+        mergeToken = regexEOL(eolMark, mergeToken);
+
+        if (numMark == null && spaceMark == null){
+            //符號前面加反斜線
             mergeToken = mergeToken.replace(/([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\t\r]{1})/g, "\\$&");
-        }
-        else{
-           //把[NUM]換成數字
+            console.log("mergeToken after replace : ", mergeToken);
+        }   
+        var pattern = new RegExp("(" + mergeToken + ")","gi");
+        console.log("pattern : ", pattern);
+        return pattern;
+    }
+
+    //處理NUM
+    function regexNUM(numMark, mergeToken){
+        if (numMark != null){
+            //把[NUM]換成數字
             mergeToken = mergeToken.replace(/(\[NUM\])/g, "[0|9]+");
+            //console.log("mergeToken : ", mergeToken);
             //把非[NUM]前後加上[]
-            allvalue = [...mergeToken.matchAll(/([^\[0-9\]\(\)\{1\}\|\*+])/gi)];
+            allvalue = [...mergeToken.matchAll(/([^\[0-9\]\(\)\{1\}\|\*[SPACE]+])/gi)];
+            console.log("allvalue : ", allvalue);
             allvalue.reverse().forEach(function(i){
                 //console.log("allvalue index: ", i);
                 mergeToken = mergeToken.slice(0, i.index+1) + "]" + mergeToken.slice(i.index+1);
                 mergeToken = mergeToken.slice(0, i.index) + "[" + mergeToken.slice(i.index);
             });
+            //換進真正要找的
             mergeToken = mergeToken.replace(/[\|]/g, "-");
-            //console.log("mergeToken : ", mergeToken);
-        }        
-        var pattern = new RegExp("(" + mergeToken + ")","gi");
-        return pattern;
+            console.log("mergeToken : ", mergeToken);
+            //符號前面加反斜線
+            mergeToken = mergeToken.replace(/([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\t\r\[\]\-\+]{1})/g, "\\$&");
+        }
+        return mergeToken;
+    }
+
+    //處理SPACE
+    function regexSPACE(spaceMark, mergeToken){
+        if (spaceMark != null){
+            //把[BLANK]換成空白
+            mergeToken = mergeToken.replace(/(\[SPACE\])/g, "[|]+");
+            console.log("mergeToken : ", mergeToken);
+            //把非[BLANK]前後加上[]
+            allvalue = [...mergeToken.matchAll(/([^\[0-9\-\]\(\)\{1\}\|\*+])/gi)];
+            allvalue.reverse().forEach(function(i){
+                //console.log("allvalue index: ", i);
+                mergeToken = mergeToken.slice(0, i.index+1) + "]" + mergeToken.slice(i.index+1);
+                mergeToken = mergeToken.slice(0, i.index) + "[" + mergeToken.slice(i.index);
+            });
+            //換進真正要找的
+            mergeToken = mergeToken.replace(/[\|]/g, " ");
+            console.log("mergeToken : ", mergeToken);
+            //符號前面加反斜線
+            mergeToken = mergeToken.replace(/([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\t\r\[\]\-\+]{1})/g, "\\$&");
+        }
+        return mergeToken;
+    }
+
+    //處理EOL
+    function regexEOL(eolMark, mergeToken){
+        if (eolMark != null){
+            //把[EOL]換成空白
+            mergeToken = mergeToken.replace(/(\[EOL\])/g, "[|]+");
+            console.log("mergeToken : ", mergeToken);
+            //把非[EOL]前後加上[]
+            allvalue = [...mergeToken.matchAll(/([^\[0-9\-\]\(\)\{1\}\|\*+])/gi)];
+            allvalue.reverse().forEach(function(i){
+                //console.log("allvalue index: ", i);
+                mergeToken = mergeToken.slice(0, i.index+1) + "]" + mergeToken.slice(i.index+1);
+                mergeToken = mergeToken.slice(0, i.index) + "[" + mergeToken.slice(i.index);
+            });
+            //換進真正要找的
+            mergeToken = mergeToken.replace(/[\|]/g, "\r\n");
+            console.log("mergeToken : ", mergeToken);
+            //符號前面加反斜線
+            mergeToken = mergeToken.replace(/([^\u4e00-\u9fa50-9a-zA-Z \n\u00A0\u200B\u2014\t\r\[\]\-\+]{1})/g, "\\$&");
+        }
+        return mergeToken;
     }
     
     //處理按下事件
