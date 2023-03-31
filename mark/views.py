@@ -189,7 +189,7 @@ def getVocabularyByType_Ptable(request):
                     'ProperNoun': i[5],
                     'tokenType': i[6],
                     'NewRE': '<button onclick="changeSrc()" class="btn btn-secondary">NewRE</button>',
-                    'UnMerge':'<button onclick="" class="btn btn-danger">UnMerge</button>',
+                    'UnMerge':'<button onclick="UnMerge()" class="btn btn-danger">UnMerge</button>',
                 })
             else:
                 result['data'].append({
