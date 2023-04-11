@@ -25,14 +25,17 @@
         getNext();
         
         //根據select顯示token
-        $("#twoOrThree").on('change', function() {
+        $("#twoOrThree").on('change', function() {            
+            var start = Date.now();
             value = document.getElementById('twoOrThree').value;
             if (value === "2"){
                 printAllData();
             }
             else if (value === "3"){
                 printAllData_3();
-            }
+            }         
+            var end = Date.now();
+            //swal("Table swapped",((end-start)/1000).toString() + "sec", "success");
         });
         //根據filter顯示token
         $("#filter").on('change', function() {
@@ -54,7 +57,14 @@
         $("#define").click(function(){
             //getSynTypoValue();
             //showModal();
-            worker();
+            //worker();
+            //console.log(document.getElementById("C").selected == true);
+            var resultDataP = document.querySelector('#result_dataP.table.table-bordered');
+            var searchInput = resultDataP.querySelector('input.search-input');            
+            var searchbutton = resultDataP.querySelector('button');
+            searchInput.value = "Token";
+            searchbutton.id = "inputPbutton";
+            document.getElementById('inputPbutton').click();
         });
 
         //根據select顯示token
@@ -152,6 +162,7 @@
 
     //顯示資料
     function printAllData(){
+        document.getElementById("C").selected = true;
         response = getTextTokenData();
         ////console.log("response.data : ", response.data);
         $('#result_data').empty();
@@ -162,9 +173,8 @@
         data-page-size="300"        
         data-show-search-button="true"
         data-show-search-clear-button="true"
-        data-search-highlight-formatter="customSearchFormatter"
-        data-search-highlight="true"
-        data-height="700">
+        data-height="700"
+        >
         </table>`);
         $('#sortTable').bootstrapTable({
             columns: [{
@@ -202,10 +212,18 @@
             <option value="3">Search Times</option>
           </select>`);
         $('#table_2word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+        document.getElementById("filter").style.display = "none";
     }
 
     //顯示資料
-    function printAllData_3(){
+    function printAllData_3(){        
+        if (document.getElementById("fG").selected == true){
+            document.getElementById("G").selected = true;
+        }
+        else{
+            document.getElementById("C").selected = true;
+        }
+        document.getElementById("filter").style.display = "block";
         response = getTextTokenData_3();
         ////console.log("response.data : ", response.data);
         
@@ -217,8 +235,6 @@
         data-page-size="300"        
         data-show-search-button="true"
         data-show-search-clear-button="true"
-        data-search-highlight-formatter="customSearchFormatter"
-        data-search-highlight="true"
         data-height="700">
         </table>`);
         $('#sortTable').bootstrapTable({
@@ -269,21 +285,19 @@
     }
 
     //顯示P資料
-    function printAllPData(){
+    function printAllPData(searchWord){
         response = getVocabularyData();
         var tokenP = response.data;
         ////console.log("response.data : ", response.data);
         $('#result_dataP').empty();
-        $('#result_dataP').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch"
+        $('#result_dataP').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true"
         data-pagination="true"
         data-pagination-h-align="left"
         data-pagination-detail-h-align="right"
-        data-page-size="300"        
+        data-page-size="300"
+        data-height="700"        
         data-show-search-button="true"
-        data-show-search-clear-button="true"
-        data-search-highlight-formatter="customSearchFormatter"
-        data-search-highlight="true"
-        data-height="700">
+        data-show-search-clear-button="true">
         </table>`);
         $('#sortTableP').bootstrapTable({
             columns: [{
@@ -318,6 +332,14 @@
             stickyHeader: true,
         })
         $('#result_dataP .fixed-table-toolbar').attr('id', 'table_p;');
+        if (searchWord){                        
+            var resultDataP = document.querySelector('#result_dataP.table.table-bordered');
+            var searchInput = resultDataP.querySelector('input.search-input');            
+            var searchbutton = resultDataP.querySelector('button');
+            searchInput.value = Token;
+            searchbutton.id = "inputPbutton";
+            document.getElementById('inputPbutton').click(); 
+        }
     }
     
     //取得P資料
@@ -352,7 +374,7 @@
         $.ajax({
             async: false,
             type: 'GET',
-            url: '{% url 'mark:getTextToken' %}',
+            url: '{% url 'mark:chineseTwoWord' %}',
             data:{
                 "NoSign" : NS,
                 "filter_times" : parseInt(filter_times),
@@ -368,7 +390,7 @@
     //取得所有資料
     function getTextTokenData_3(){
         var res;
-        var NS = document.getElementById("filter").value;
+        var English = document.getElementById("filter").value;
         var filter_times = document.getElementById("showTimes").value;
         if (!filter_times){
             ////console.log("filter_times : ", filter_times);
@@ -377,9 +399,9 @@
         $.ajax({
             async: false,
             type: 'GET',
-            url: '{% url 'mark:getTextToken_3' %}',
+            url: '{% url 'mark:chineseThreeWord' %}',
             data:{
-                "NoSign" : NS,
+                "English" : English,
                 "filter_times" : parseInt(filter_times),
             },
             success:function (response){
@@ -412,97 +434,100 @@
         return res;
     }
 
-    function merge(){        
+    function merge(){
+        
         var start = Date.now();
-        $(event.target).toggleClass('active');
-        if ($(event.target).attr('class') == "btn btn-info active" ){
-            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            ////console.log("token1 = ", token1);
-            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            ////console.log("token2 = ", token2);
-            let times = $(event.target).parents('tr').children('td').eq(3).html();
-            ////console.log("times = ", times);
-            let jump = $(event.target).parents('tr').children('td').eq(4).children('button').attr('name');
-            console.log("jump = ", jump, typeof(jump));
-            var Token =  $(event.target).parents('tr').children('td').eq(0).children('button').attr('name');
-            console.log("Token = ", Token);
-            var lenOfToken = Token.length;
-            var TokenType = document.getElementById("selectTokenType").value;
-            if (TokenType){
-                //存新的volcabulary(a+b)
-                response = insertVocabulary_new(Token, lenOfToken, TokenType);
-                if(response.status === '0'){
-                    ////console.log("tokenID : ", response.data[0].tokenID);
-                    newTokenID = response.data[0].tokenID;
-                    console.log("取得被合併的兩個tokenID : ", jump);
-                    //取得被合併的兩個tokenID
-                    if (jump === "0"){
-                        tokenIDArray = getTokenIDByName([token1,token2]);
-                    }
-                    else{
-                        tokenIDArray = getTokenIDByName([token1,'[SPACE]',token2]);
-                    }
-                    console.log("tokenIDArray : ", tokenIDArray);
-                    if (tokenIDArray.status === "0"){
-                        ////console.log("in");
-                        //取得textToken位置
-                        positionArray = getPositionOfTextToken(tokenIDArray.tokenID, jump);
-                        console.log("positionArray : ", positionArray);
-                        if (positionArray.status === "0"){
-                            //將textToken原始資料*(-1)
-                            response1 = multiplyByMinusOne(tokenIDArray.tokenID, jump);
-                            //console.log("response1 : ", response1);
-                            if (response1.status === "0"){
-                                //存入新的tokenID到textToken
-                                response2 = insertNewTextToken(positionArray, newTokenID);
-                                //console.log("insertNewTextToken : ", response2);
-                                if (response2.status === "0"){
-                                    response3 = insertMergeLog(Token, token1, token2, "", "2");
-                                    console.log("response3 : ", response3);
-                                    $(event.target).parents('tr').remove();
-                                    printAllPData();
-                                    $('#result_data').empty();
-                                    $('#sortTable').empty();
-                                    printAllData();                                    
-                                    var end = Date.now();
-                                    swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
-                                }          
-                                else{
-                                    swal("Error!", "insertNewTextToken ERROR!", "error");
-                                }
-                            }
+        let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        ////console.log("token1 = ", token1);
+        let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        ////console.log("token2 = ", token2);
+        let times = $(event.target).parents('tr').children('td').eq(3).html();
+
+        var Token =  $(event.target).parents('tr').children('td').eq(4).children('button').attr('mergetoken');
+        console.log("Token = ", Token);
+        var lenOfToken = $(event.target).parents('tr').children('td').eq(4).children('button').attr('mergenword');
+        console.log("lenOfToken = ", lenOfToken);
+        var TokenType = document.getElementById("selectTokenType").value;
+        if (TokenType){
+            //存新的volcabulary(a+b)
+            response = insertVocabulary_new(Token, lenOfToken, TokenType);
+            if(response.status === '0'){
+                ////console.log("tokenID : ", response.data[0].tokenID);
+                newTokenID = response.data[0].tokenID;
+                var jump = 0;
+                console.log("取得被合併的兩個tokenID : ", jump);
+                //取得被合併的兩個tokenID
+                if (jump === "0"){
+                    tokenIDArray = getTokenIDByName([token1,token2]);
+                }
+                else{
+                    tokenIDArray = getTokenIDByName([token1,'[SPACE]',token2]);
+                }
+                console.log("tokenIDArray : ", tokenIDArray);
+                if (tokenIDArray.status === "0"){
+                    ////console.log("in");
+                    //取得textToken位置
+                    positionArray = getPositionOfTextToken(tokenIDArray.tokenID, jump);
+                    console.log("positionArray : ", positionArray);
+                    if (positionArray.status === "0"){
+                        //將textToken原始資料*(-1)
+                        response1 = multiplyByMinusOne(tokenIDArray.tokenID, jump);
+                        //console.log("response1 : ", response1);
+                        if (response1.status === "0"){
+                            //存入新的tokenID到textToken
+                            response2 = insertNewTextToken(positionArray, newTokenID);
+                            //console.log("insertNewTextToken : ", response2);
+                            if (response2.status === "0"){
+                                response3 = insertMergeLog(Token, token1, token2, "", "2");
+                                console.log("response3 : ", response3);
+                                $(event.target).parents('tr').remove();
+                                printAllPData(Token);
+                                $('#result_data').empty();
+                                $('#sortTable').empty();
+                                printAllData();                        
+                                var resultDataP = document.querySelector('#result_dataP.table.table-bordered');
+                                var searchInput = resultDataP.querySelector('input.search-input');            
+                                var searchbutton = resultDataP.querySelector('button');
+                                searchInput.value = Token;
+                                searchbutton.id = "inputPbutton";
+                                document.getElementById('inputPbutton').click();            
+                                var end = Date.now();
+                                swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+                            }          
                             else{
-                                swal("Error!", "multiplyByMinusOne ERROR!", "error");
+                                swal("Error!", "insertNewTextToken ERROR!", "error");
                             }
                         }
                         else{
-                            swal("Error!", "getPositionOfTextToken ERROR!", "error");
+                            swal("Error!", "multiplyByMinusOne ERROR!", "error");
                         }
                     }
                     else{
-                        swal("Error!", "getTokenIDByName ERROR!", "error");
+                        swal("Error!", "getPositionOfTextToken ERROR!", "error");
                     }
                 }
-                else if (response.status === 'already_exist'){
-                    swal("Error!", "Vocabulary already exist!", "error");
-                    ////console.log("already_exist!!!");
-                }
                 else{
-                    swal("Error!", "insertVocabulary_new ERROR!", "error");
+                    swal("Error!", "getTokenIDByName ERROR!", "error");
                 }
+            }
+            else if (response.status === 'already_exist'){
+                swal("Error!", "Vocabulary already exist!", "error");
+                ////console.log("already_exist!!!");
             }
             else{
-                ////console.log("choose a token type");
-                
-                swal("Error!", "Vocabulary already exist!", "error");
-                display_noInput();
+                swal("Error!", "insertVocabulary_new ERROR!", "error");
             }
-            console.log("class : ", $(event.target).attr('class'));
         }
-        else{            
-            //////console.log("class : ", $(event.target).attr('class'));
-        }        
+        else{
+            ////console.log("choose a token type");
+            
+            swal("Error!", "Vocabulary already exist!", "error");
+            display_noInput();
+        }
+        console.log("class : ", $(event.target).attr('class'));
     }
+
+
 
     function insertMergeLog(Token, token1, token2, token3, twoOrThree){
         ////console.log("insertVocabulary_new : ", token, nWord, tokenType);
@@ -547,87 +572,95 @@
     }
 
     function merge_3(){        
+        swal({
+            title: "Processing",
+            text: "Please wait a minute...",
+            icon: "info",
+            buttons: false,
+            allowOutsideClick: false,
+        });
         var start = Date.now();
-        $(event.target).toggleClass('active');
-        if ($(event.target).attr('class') == "btn btn-info active" ){
-            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            ////console.log("token1 = ", token1);
-            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            ////console.log("token2 = ", token2);
-            let token3 = $(event.target).parents('tr').children('td').eq(3).html();
-            ////console.log("token3 = ", token3);
-            let times = $(event.target).parents('tr').children('td').eq(4).html();
-            ////console.log("times = ", times);
-            var Token = token1 + token2 + token3;
-            var lenOfToken = Token.length;
-            var TokenType = document.getElementById("selectTokenType").value;
-            ////console.log(Token, lenOfToken, TokenType);
-            
-            if (TokenType){
-                //存新的volcabulary(a+b+c)
-                response_new = insertVocabulary_new(Token, lenOfToken, TokenType);
-                ////console.log("stauts insertVocabulary_new : ", response_new);
-                if(response_new.status === '0'){
-                    ////console.log("tokenID : ", response_new.data[0].tokenID);
-                    newTokenID = response_new.data[0].tokenID;
-                    //取得被合併的兩個tokenID
-                    tokenIDArray = getTokenIDByName([token1, token2, token3]);
-                    ////console.log("tokenIDArray : ", tokenIDArray);
-                    if (tokenIDArray.status === "0"){
-                        ////console.log("in");
-                        //取得textToken位置
-                        positionArray = getPositionOfTextToken_3(tokenIDArray.tokenID);
-                        ////console.log("positionArray : ", positionArray);
-                        if (positionArray.status === "0"){
-                            //將textToken原始資料*(-1)
-                            response1 = multiplyByMinusOne_3(tokenIDArray.tokenID);
+        let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        ////console.log("token1 = ", token1);
+        let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        ////console.log("token2 = ", token2);
+        let token3 = $(event.target).parents('tr').children('td').eq(3).html();
+        ////console.log("token3 = ", token3);
+        let times = $(event.target).parents('tr').children('td').eq(4).html();
+        ////console.log("times = ", times);
+        var Token =  $(event.target).parents('tr').children('td').eq(5).children('button').attr('mergetoken');
+        console.log("Token = ", Token);
+        var lenOfToken = $(event.target).parents('tr').children('td').eq(5).children('button').attr('mergenword');
+        console.log("lenOfToken = ", lenOfToken);
+        var TokenType = document.getElementById("selectTokenType").value;
+        ////console.log(Token, lenOfToken, TokenType);
+        
+        if (TokenType){
+            //存新的volcabulary(a+b+c)
+            response_new = insertVocabulary_new(Token, lenOfToken, TokenType);
+            ////console.log("stauts insertVocabulary_new : ", response_new);
+            if(response_new.status === '0'){
+                ////console.log("tokenID : ", response_new.data[0].tokenID);
+                newTokenID = response_new.data[0].tokenID;
+                //取得被合併的兩個tokenID
+                tokenIDArray = getTokenIDByName([token1, token2, token3]);
+                console.log("tokenIDArray : ", tokenIDArray);
+                if (tokenIDArray.status === "0"){
+                    ////console.log("in");
+                    //取得textToken位置
+                    positionArray = getPositionOfTextToken_3(tokenIDArray.tokenID);
+                    ////console.log("positionArray : ", positionArray);
+                    if (positionArray.status === "0"){
+                        //將textToken原始資料*(-1)
+                        response1 = multiplyByMinusOne_3(tokenIDArray.tokenID);
+                        if (response1.status === "0"){
+                            //////console.log("minus one response : ", response)
+                            //存入新的tokenID到textToken
+                            response1 = insertNewTextToken(positionArray, newTokenID);
                             if (response1.status === "0"){
-                                //////console.log("minus one response : ", response)
-                                //存入新的tokenID到textToken
-                                response1 = insertNewTextToken(positionArray, newTokenID);
-                                if (response1.status === "0"){
-                                    response3 = insertMergeLog(Token, token1, token2, token3, "3");
-                                    $(event.target).parents('tr').remove();
-                                    printAllPData();
-                                    $('#result_data').empty();
-                                    $('#sortTable').empty();
-                                    printAllData_3();
-                                    printAllPData();
-                                    var end = Date.now();
-                                    swal("Merged!", token1 + token2 + token3 + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
-                                }
-                                else{
-                                    swal("Error!", "insertNewTextToken ERROR!", "error");
-                                }
+                                response3 = insertMergeLog(Token, token1, token2, token3, "3");
+                                $(event.target).parents('tr').remove();
+                                printAllPData();
+                                $('#result_data').empty();
+                                $('#sortTable').empty();
+                                printAllData_3();
+                                var resultDataP = document.querySelector('#result_dataP.table.table-bordered');
+                                var searchInput = resultDataP.querySelector('input.search-input');            
+                                var searchbutton = resultDataP.querySelector('button');
+                                searchInput.value = Token;
+                                searchbutton.id = "inputPbutton";
+                                document.getElementById('inputPbutton').click();
+                                var end = Date.now();
+                                swal("Merged!", Token + " has merged! " + ((end-start)/1000).toString()  + "sec", "success");
                             }
                             else{
-                                swal("Error!", "multiplyByMinusOne_3 ERROR!", "error");
+                                swal("Error!", "insertNewTextToken ERROR!", "error");
                             }
                         }
                         else{
-                            swal("Error!", "getPositionOfTextToken_3 ERROR!", "error");
+                            swal("Error!", "multiplyByMinusOne_3 ERROR!", "error");
                         }
                     }
                     else{
-                        swal("Error!", "getTokenIDByName ERROR!", "error");
+                        swal("Error!", "getPositionOfTextToken_3 ERROR!", "error");
                     }
                 }
-                else if (response.status === 'already_exist'){
-                    swal("Already Exist!", token1 + token2 + " has been merged before!", "error");
-                }
                 else{
-                    swal("Error!", "insertVocabulary ERROR!", "error");
+                    swal("Error!", "getTokenIDByName ERROR!", "error");
                 }
+            }
+            else if (response.status === 'already_exist'){
+                swal("Already Exist!", token1 + token2 + " has been merged before!", "error");
             }
             else{
-                ////console.log("choose a token type");
-                swal("Error!", "Vocabulary already exist!", "error");
+                swal("Error!", "insertVocabulary ERROR!", "error");
             }
-            //////console.log("class : ", $(event.target).attr('class'));
         }
-        else{            
-            //////console.log("class : ", $(event.target).attr('class'));
-        }            
+        else{
+            ////console.log("choose a token type");
+            swal("Error!", "Vocabulary already exist!", "error");
+        }
+        ////console.log("class : ", $(event.target).attr('class'));
     }
 
     //顯示未輸入
@@ -679,6 +712,7 @@
     
     //取得被合併的兩個tokenID
     function getTokenIDByName(Name){
+        console.log("Name : ", Name);
         var res = [];
         $.ajax({
             async: false,
@@ -1382,6 +1416,100 @@ function forwardBackward(text, pattern, count, startCount, endCount){
                 //////console.log("res : ", res);
             },
         });
+        return res;
+    }
+
+    
+    //測試一次做完
+    function allInOne(){
+        var twoOrThree = document.getElementById("twoOrThree").value;
+
+        if (twoOrThree === "2"){
+            var start = Date.now();
+            //插新字
+            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+            ////console.log("token1 = ", token1);
+            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+            ////console.log("token2 = ", token2);
+            let times = $(event.target).parents('tr').children('td').eq(3).html();
+            ////console.log("times = ", times);
+            let jump = "0";
+            console.log("jump = ", jump, typeof(jump));
+            var Token =  $(event.target).parents('tr').children('td').eq(0).children('button').attr('name');
+            console.log("Token = ", Token);
+            var lenOfToken = Token.length;
+            var TokenType = document.getElementById("selectTokenType").value;
+            //response = insertVocabulary_new(Token, lenOfToken, TokenType);
+    
+    
+            //二字沒跳
+            if (jump == "0"){
+                twoWordNoJump(token1, token2, Token, TokenType);
+                printAllPData();
+                $('#result_data').empty();
+                $('#sortTable').empty();
+                printAllData();
+                var end = Date.now();
+                swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+            }
+
+        }
+        else if (twoOrThree === "3"){
+            var start = Date.now();
+            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+            ////console.log("token1 = ", token1);
+            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+            ////console.log("token2 = ", token2);
+            let token3 = $(event.target).parents('tr').children('td').eq(3).html();
+            ////console.log("token3 = ", token3);
+            let times = $(event.target).parents('tr').children('td').eq(4).html();
+            ////console.log("times = ", times);
+            var Token = token1 + token2 + token3;
+            var lenOfToken = Token.length;
+            var TokenType = document.getElementById("selectTokenType").value;
+
+            var jump = "0";
+            //三字沒跳
+            if (jump == "0"){
+                threeWordNoJump(token1, token2, token3, Token, TokenType);
+                printAllPData();
+                $('#result_data').empty();
+                $('#sortTable').empty();
+                printAllData();
+                var end = Date.now();
+                swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+            }
+            
+
+        }
+    }
+
+    //二字沒跳
+    function twoWordNoJump(token1, token2, Token, TokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:twoWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "mergeToken" : Token,
+                "TokenType" : TokenType,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    //三字沒跳
+    function threeWordNoJump(token1, token2, token3, Token, TokenType){
+        console.log("Token : ", Token);
+        var res;
         return res;
     }
 </script> 

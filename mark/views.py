@@ -17,6 +17,9 @@ import copy
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+import sys, os, psutil
+from time import process_time
+
 
     # queryset = Text.objects.all()
     # serializer_class = TextSerializer
@@ -163,17 +166,44 @@ def getVocabularyByType_Ptable(request):
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        query = '''    SELECT * FROM(
-                SELECT a.*, b.token, b.tokenType, ROW_NUMBER() OVER (PARTITION BY a.tokenID ORDER BY posStart, reportID) AS rowID2
-                --a.reportID, a.tokenID, b.token, a.posStart, a.posEnd
-                FROM (
-                 SELECT *, ROW_NUMBER() OVER (PARTITION BY reportID, tokenID ORDER BY posStart, reportID) AS rowID
-                 FROM textToken
-                ) AS a
-                 inner join Vocabulary AS b ON (a.tokenID = b.tokenID) and ( b.tokenType != 'C' and b.tokenType != 'G' and b.tokenType != 'S') and b.token != '[NUM]' and b.token != '[SPACE]' and b.token != '[EOL]'
-                ) AS res
-                WHERE res.rowID=1 and res.rowID2=1
-                ORDER BY  tokenID, posStart,reportID
+        # query = '''    SELECT * FROM(
+                # SELECT a.*, b.token, b.tokenType, ROW_NUMBER() OVER (PARTITION BY a.tokenID ORDER BY posStart, reportID) AS rowID2
+                # --a.reportID, a.tokenID, b.token, a.posStart, a.posEnd
+                # FROM (
+                #  SELECT *, ROW_NUMBER() OVER (PARTITION BY reportID, tokenID ORDER BY posStart, reportID) AS rowID
+                #  FROM textToken
+                # ) AS a
+                #  inner join Vocabulary AS b ON (a.tokenID = b.tokenID) and ( b.tokenType != 'C' and b.tokenType != 'G' and b.tokenType != 'S') and b.token != '[NUM]' and b.token != '[SPACE]' and b.token != '[EOL]'
+                # ) AS res
+                # WHERE res.rowID=1 and res.rowID2=1
+                # ORDER BY  tokenID, posStart,reportID
+                # '''
+        # # print(args)
+        # cursor.execute(query)
+        # tokenID = cursor.fetchall()
+        # result['data'] = []
+            # 
+        # for ind,i in enumerate(tokenID):
+            # # print("i[0] : ",i[0])
+            # # print("i : ", i)
+            # if i[1]>0 and i[2]>0 and (i[6] == 'E' or i[6] == 'C' or i[6] == 'G' or i[6] == 'T'):
+                # result['data'].append({
+                    # 'No': ind+1,
+                    # 'ProperNoun': i[5],
+                    # 'tokenType': i[6],
+                    # 'NewRE': '<button onclick="changeSrc()" class="btn btn-secondary">NewRE</button>',
+                    # 'UnMerge':'<button onclick="UnMerge()" class="btn btn-danger">UnMerge</button>',
+                # })
+            # else:
+                # result['data'].append({
+                    # 'No': ind+1,
+                    # 'ProperNoun': i[5],
+                    # 'tokenType': i[6],
+                    # 'NewRE': '',
+                    # 'UnMerge':'',
+                # })
+
+        query = '''    SELECT * FROM Vocabulary where tokenType in ('C', 'P', 'G');
                 '''
         # # # print(args)
         cursor.execute(query)
@@ -183,19 +213,19 @@ def getVocabularyByType_Ptable(request):
         for ind,i in enumerate(tokenID):
             # # # print("i[0] : ",i[0])
             # # # print("i : ", i)
-            if i[1]>0 and i[2]>0 and (i[6] == 'E' or i[6] == 'C' or i[6] == 'G'):
+            if i[3] == 'E' or i[3] == 'C' or i[3] == 'G' or i[3] == 'T' or i[3] == 'P':
                 result['data'].append({
                     'No': ind+1,
-                    'ProperNoun': i[5],
-                    'tokenType': i[6],
+                    'ProperNoun': i[0],
+                    'tokenType': i[3],
                     'NewRE': '<button onclick="changeSrc()" class="btn btn-secondary">NewRE</button>',
                     'UnMerge':'<button onclick="UnMerge()" class="btn btn-danger">UnMerge</button>',
                 })
             else:
                 result['data'].append({
                     'No': ind+1,
-                    'ProperNoun': i[5],
-                    'tokenType': i[6],
+                    'ProperNoun': i[0],
+                    'tokenType': i[3],
                     'NewRE': '',
                     'UnMerge':'',
                 })
@@ -344,6 +374,7 @@ def insertVocabulary_U(request):
 
         for i in tokenID:
             result['data'].append(i)
+        print(result)
             
         conn.commit()
         conn.close()            
@@ -372,7 +403,7 @@ def getTextToken(request):
         args = [filter_times]
         cursor.execute(query, args)
         textTokenData = cursor.fetchall()
-        # # print("textTokenData : ", textTokenData)
+        print("textTokenData : ", textTokenData)
         result['data'] = []
         # # # # print(textTokenData[0][0])
         record = {}
@@ -380,7 +411,7 @@ def getTextToken(request):
         RE1 = re.compile(r'([^\u4e00-\u9fa50-9a-zA-Z\(\)\:\[\]\{\}\-\/\.\,\+\<\>\~\!\@\#\$\%\^\&\*\_\=\;\'\"\?\`\【\】]{1})')
         number = 1
         for ind,i in enumerate(textTokenData):
-            # print("textTokenData : ", i)
+            print("textTokenData : ", i)
 
             if request.GET['NoSign'] == 'NS':
                 first = RE.findall(i[0])
@@ -736,31 +767,21 @@ def insertTexttoken(request):
 
         tokenID1 = request.GET['tokenID1']
         tokenID2 = request.GET['tokenID2']
-        tokenID3 = request.GET['tokenID3']        
-        jump = request.GET['jump']
         # print("token : ", tokenID1, tokenID2, tokenID3)
         query = '''
-                EXEC insertTexttoken_GET @tokenID1=? , @tokenID2=?, @tokenID3=?, @jump=?
+                EXEC insertTexttoken_GET @tokenID1=? , @tokenID2=?, @tokenID3=?;
                 '''
-        args = [tokenID1, tokenID2, tokenID3, jump]
+        args = [tokenID1, tokenID2 ]
         cursor.execute(query, args)
         position = cursor.fetchall()
         result['data'] = []
         record = {}
-        if jump == "0":
-            for i in position:
-                # print( "reportID = ", i[0], "position from ", i[1], " to ", i[6])
-                record['reportID'] = i[0]
-                record['posStart'] = i[1]
-                record['posEnd'] = i[6]
-                result['data'].append(copy.deepcopy(record))
-        else:            
-            for i in position:
-                # print( "reportID = ", i[0], "position from ", i[1], " to ", i[10])
-                record['reportID'] = i[0]
-                record['posStart'] = i[1]
-                record['posEnd'] = i[10]
-                result['data'].append(copy.deepcopy(record))
+        for i in position:
+            print( "reportID = ", i[0], "position from ", i[1], " to ", i[6])
+            record['reportID'] = i[0]
+            record['posStart'] = i[1]
+            record['posEnd'] = i[6]
+            result['data'].append(copy.deepcopy(record))
         # # # print(result)
 
         result['status'] = '0'
@@ -1176,15 +1197,32 @@ def getReportText(request):
         # # # print( body['reportID'])
         
         args = [1, body['residualText'], body['reportID']]
-        
         cursor.execute(query, args)
         reportID = cursor.fetchone()
+
+        
+        # Get a list of all running processes
+        processes = psutil.process_iter()
+
+        # Filter the list to include only cmd.exe processes
+        cmd_processes = [p for p in processes if p.name() == 'cmd.exe']
+
+        # Get the number of cmd.exe processes
+        num_cmd_processes = len(cmd_processes)
+
+        print(f"There are {num_cmd_processes} cmd.exe processes running.")
+
+            
+        # print(args)
+        # print(reportID)
+
+        # Close the pipe\
 
         #有找到
         if reportID != None:
             ## # # print(reportID.reportText)
             result['status'] = '0'
-            result['reportText'] = reportID[0]        
+            result['reportText'] = reportID[0]
         conn.commit()
         conn.close()
 
@@ -1586,7 +1624,7 @@ def getNextWord(request):
         
         cursor.execute(query)
         texttoken = cursor.fetchall()
-        # # print("texttoken : ", texttoken)
+        # print("texttoken : ", texttoken)
         # for i in texttoken:
         #     # if i[0] == '[NUM]':
         #     # # print("texttoken : ", i)
@@ -1620,7 +1658,7 @@ def getNextWord(request):
                     })
 
         # # # print("PNarray : ", PNarray)
-        ("result['data'] : ", result['data'])
+        print("result['data'] : ", result['data'])
         conn.commit()
         conn.close()
     return JsonResponse(result)
@@ -1893,6 +1931,308 @@ def getMergeLog(request):
 
 
         
+        conn.commit()
+        conn.close()
+    return JsonResponse(result)
+
+@csrf_exempt
+def twoWord(request):
+    if request.method == 'POST':
+        #取得資料
+        result = {'status':'1'} #預設沒找到
+        
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824'
+        password = 'test81218'
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+        cursor = conn.cursor()
+        token1 = request.POST.get('token1')
+        token2 = request.POST.get('token2')
+
+
+        # ------------------------------------------------------- 抓舊字tokenID---------------------------------------------------------------
+        print("token1 : ", token1)
+        print("token2 : ", token2)
+        token = [token1, token2]
+        tokenIDArray = []
+        for i in token:
+            query = "select tokenID from Vocabulary where token = ?;"
+            args = [i]
+            tokenID = cursor.execute(query, args).fetchone()
+            tokenIDArray.append(tokenID.tokenID)
+        tokenID1 = tokenIDArray[0]
+        tokenID2 = tokenIDArray[1]
+
+        print(tokenID1, tokenID2)
+        # ------------------------------------------------------------------------------------------------------------------------------------
+        
+        conn.commit()
+
+
+
+        # ------------------------------------------------------- 抓原本的位置-----------------------------------------------------------------
+        query = "EXEC [twoWordNoJump] @tokenID1 = ?, @tokenID2 = ?;"
+        args = [tokenID1, tokenID2]
+        print("twoWordNoJump : ", args)
+
+        cursor.execute(query, args)
+        twoWordNoJumpRes = cursor.fetchall()
+        # print("twoWordNoJumpRes : ", twoWordNoJumpRes)
+        mergeToken = request.POST.get('mergeToken')
+        
+        argsForinsertTextToken = []
+        for i,ind in enumerate(twoWordNoJumpRes):
+            # 取得資料
+            # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+        #     args = []
+        #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+            data = {"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":mergeToken}
+            argsForinsertTextToken.append(copy.deepcopy(data))
+
+        # ------------------------------------------------------------------------------------------------------------------------------------    
+        # 
+        conn.commit()
+
+
+        
+        # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
+        query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
+        args = [tokenID1, tokenID2, 'A']
+        timesMinusOneA = cursor.execute(query, args).fetchall()
+        print("timesMinusOneA : ", len(timesMinusOneA))
+        conn.commit()
+
+        
+        
+        query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
+        args = [tokenID1, tokenID2, 'B']
+        timesMinusOneB = cursor.execute(query, args).fetchall()
+        print("timesMinusOneB : ", len(timesMinusOneB))
+        # ------------------------------------------------------------------------------------------------------------------------------------
+        conn.commit()
+
+
+        
+        # ------------------------------------------------------- 插入新字---------------------------------------------------------------------        
+        TokenType = request.POST.get('TokenType')
+        query = "select token, tokenID from Vocabulary where token = ?;"
+        args = [mergeToken]
+        selectMergeToken = cursor.execute(query, args).fetchone()
+        print("selectMergeToken : ", selectMergeToken)
+        if selectMergeToken == None:
+            query = "insert into Vocabulary (token, nWord, tokenType) output [inserted].tokenID values(?, ?, ?);"
+            args = [mergeToken, len(mergeToken), TokenType]
+            inertMergeToken = cursor.execute(query, args).fetchone()
+            print("inertMergeToken : ", inertMergeToken.tokenID)
+            newTokenID = inertMergeToken.tokenID
+        else:
+            newTokenID = selectMergeToken.tokenID
+        print("newTokenID : ", newTokenID)
+        # ------------------------------------------------------------------------------------------------------------------------------------
+        conn.commit()
+
+        
+        
+        # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
+        
+        args = []
+        for i,ind in enumerate(twoWordNoJumpRes):
+            # 取得資料
+            # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+            args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+            
+
+        print(args)
+        query = ' EXEC insertTexttoken_POST @array = ?;'
+        args = json.dumps(args)
+        selectMergeToken = cursor.execute(query, args)
+        # ------------------------------------------------------------------------------------------------------------------------------------
+        conn.commit()
+        result['status'] = '0'
+        # # print("Text : ", Text)
+        
+
+
+        
+        conn.close()
+    return JsonResponse(result)
+
+
+
+
+
+@csrf_exempt
+def chineseTwoWord(request):
+    #取得
+    if request.method == 'GET':
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+        filter_times = int(request.GET['filter_times'])
+        if filter_times == 0:
+            filter_times = 1
+        query = '''
+                EXEC cTwoCounting @LB = ?;
+                '''
+        args = [filter_times]
+        cursor.execute(query, args)
+        textTokenData = cursor.fetchall()
+        # # print("textTokenData : ", textTokenData)
+        result['data'] = []
+        # # # # print(textTokenData[0][0])
+        record = {}
+        number = 1
+        for ind,i in enumerate(textTokenData):
+            # print("textTokenData : ", i)
+            result['data'].append({
+                'No': '<button  onclick="searchReportText()" class="btn btn-secondary" name="'+ i.mergeWord +'" >' + str(number) + '</button>',
+                'First': i.token1,
+                'Second': i.token2,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="allInOne()" class="btn btn-info" mergeToken="'+ i.mergeWord +'" mergeNWord="'+ str(i.mergeNWord) +'">Merge</button>',
+            })
+            number += 1
+                    
+           
+
+        conn.commit()
+        conn.close()    
+    return JsonResponse(result)
+
+@csrf_exempt
+def chineseThreeWord(request):
+    #取得
+    if request.method == 'GET':
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        
+        filter_times = int(request.GET['filter_times'])
+        if filter_times == 0:
+            filter_times = 1
+        
+        if request.GET['English'] == 'English':
+            query = '''
+                    EXEC [gThreeCounting] @LB = ?;
+                    ''' 
+
+        else:
+            query = '''
+                    EXEC [cThreeCounting] @LB = ?;
+                    ''' 
+        args = [filter_times]
+        cursor.execute(query, args)
+        textTokenData = cursor.fetchall()
+        # # print("textTokenData : ", textTokenData)
+        result['data'] = []
+        # # # # print(textTokenData[0][0])
+        record = {}
+        number = 1
+        for ind,i in enumerate(textTokenData):
+
+            result['data'].append({
+                'No': '<button  onclick="searchReportText()" class="btn btn-secondary" name="'+ i.mergeWord +'">' + str(number) + '</button>',
+                'First': i.token1,
+                'Second': i.token2,
+                'Third': i.token3,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="merge_3()" class="btn btn-info" mergeToken="'+ i.mergeWord +'" mergeNWord="'+ str(i.mergeNWord) +'">Merge</button>',
+            })
+            number += 1
+
+        conn.commit()
+        conn.close()
+    return JsonResponse(result)
+
+@csrf_exempt
+def getTokenBynWord(request):
+    #取得
+    if request.method == 'GET':
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        
+        start = process_time()  
+        # ------------------------------------------------------- 抓token--------------------------------------------------------------------
+        query = '''
+                SELECT * FROM [buildVocabulary ].[dbo].[Vocabulary]
+                where tokenType in ('C', 'G', 'S') and token not in ('Undefined_Chinese', 'Undefined_English', 'Undefined_Sign')
+                order by nWord desc
+                ''' 
+        cursor.execute(query)
+        Vocabulary = cursor.fetchall()
+        print("Vocabulary : ", Vocabulary)
+        # -----------------------------------------------------------------------------------------------------------------------------------
+
+        
+        # ------------------------------------------------------- 處理報告殘文--------------------------------------------------------------------
+        query = '''
+                SELECT top(10000) * FROM [buildVocabulary ].[dbo].[analyseText]
+                ''' 
+        cursor.execute(query)
+        text = cursor.fetchall()
+        
+        for j in text:
+            query = j.reportText
+            restartPos = 0
+            for ind,i in enumerate(Vocabulary):
+                # print(i, ind)
+                
+                word = i.token
+                startPos = query.find(word, restartPos)
+                endPos = startPos + len(word)
+                if startPos >= 0 and endPos >= 0:
+                    # print("token : ", i.token, i.tokenType)
+                    # print("startPos : ", startPos)
+                    # print("endPos : ", endPos)
+                    # print("length : ", len(word), "\n")
+
+                    if i.tokenType == "G" and startPos-1 > 0 and endPos + 1 < len(query):
+                        # print("alpha : ", query[startPos-1], query[startPos-1].isalpha())
+
+                        if (query[startPos-1].isalpha() == False) and (query[endPos+1].isalpha() == False):
+                            replacement = ' ' * len(word)
+                            query = query[:startPos] + replacement + query[endPos:]
+                            # print("query : ", query)
+                        else:
+                            restartPos = endPos
+                            # print("restartPos changed : ", restartPos)
+                    else:
+                        replacement = ' ' * len(word)
+                        query = query[:startPos] + replacement + query[endPos:]
+                        # print("query : ", query)
+                    # print("query : ", query)
+
+        
+        
+        end = process_time()  
+        print("time : ", end - start)
+        # cursor.execute(query)
+        # Vocabulary = cursor.fetchall()
+        # print("Vocabulary : ", Vocabulary)
+        # -----------------------------------------------------------------------------------------------------------------------------------
         conn.commit()
         conn.close()
     return JsonResponse(result)

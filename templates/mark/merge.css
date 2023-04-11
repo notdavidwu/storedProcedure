@@ -217,4 +217,14 @@
   #sortTable {
     overflow:auto;
   }
+
+  button[title="Search"] {
+    z-index:-1;
+  }
+  button.btn.btn-secondary[type="button"][name="search"][title="Search"] {    
+    z-index:0;
+  }
+  button.btn.btn-secondary[type="button"][name="clearSearch"][title="Clear Search"] {    
+    z-index:0;
+  }
 </style>

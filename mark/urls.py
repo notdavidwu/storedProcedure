@@ -52,6 +52,10 @@ urlpatterns = [
     path('getSynTypo/', getSynTypo, name="getSynTypo"),
     path('getReportTextByMergeToken/', getReportTextByMergeToken, name="getReportTextByMergeToken"),
     path('getMergeLog/', getMergeLog, name="getMergeLog"),
+    path('twoWord/', twoWord, name="twoWord"),
+    path('chineseTwoWord/', chineseTwoWord, name="chineseTwoWord"),
+    path('chineseThreeWord/', chineseThreeWord, name="chineseThreeWord"),
+    path('getTokenBynWord/', getTokenBynWord, name="getTokenBynWord"),
     
     
     path('Page2/', Page2,name="Page2"),

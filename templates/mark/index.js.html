@@ -264,7 +264,9 @@
                 if (response.status === '0' || response.status === 'already_exist'){
                 }else{
                     //console.log("data not saved");
-                    display_data_not_saved();
+                    
+                    swal("Error!", "Data not Saved!", "error");
+                    //display_data_not_saved();
                 }
                 if (tokenType == 'E'){
                     BtnClicked_2(response,itemName);
@@ -300,7 +302,12 @@
                 }
                 else if (response.status === 'already_exist'){
                     //console.log("already_exist activate");
-                    display_regexExsist();
+                    
+                    swal("Error!", "Regex already exist!", "error");
+                    //display_regexExsist();
+                }
+                else if (response.status === "0"){                    
+                    swal("Success!", "Data saved!", "success");
                 }
             },
             fail:function (){              
@@ -325,7 +332,8 @@
                 success:function (response){
                     //BtnClicked_2(response);
                     if (response.status === '0'){                        
-                        display_data_saved();
+                        //display_data_saved();
+                        swal("Success!", "Data saved!", "success");
                     }
                 },
                 fail:function (){              
@@ -433,10 +441,11 @@
                 result_array = []
                 //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
                 while(null != (g = dateFormat.exec(paragraph))) {
-                    ////console.log("groups: " + g.groups);  // ouput: "a"
-                    ////console.log("pattern: " + g);
+                    //console.log("groups: " + g.groups);  // ouput: "a"
+                    console.log("pattern: " + g);
                     result_array.push(g.groups);
                 }
+                console.log(result_array);
                 //如果有用named capture groups
                 if (result_array[0] != null){
                     ////console.log(result_array);
@@ -467,7 +476,7 @@
                 }
                 var tokenType = document.getElementById('dropdownbutton').value;
                 if (tokenType === "E"){
-                    //console.log("result_array :" + Object.keys(result_array[0]));
+                    console.log("result_array : " , result_array);
                     //console.log("save pressed E");
                     //資料到後端儲存
                     BtnClicked_1(Object.keys(result_array[0]));
