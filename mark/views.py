@@ -919,19 +919,19 @@ def inserttokenRE(request):
         record['RE'] = request.POST.get('RE')
 
 
-        query = 'select * from [buildVocabulary  ].[dbo].[tokenRE] where tokenID = ? and RE = ?;'
+        query = 'select * from [buildVocabulary  ].[dbo].[vocabularyRE] where tokenID = ? and RE = ?;'
         args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
         cursor.execute(query, args)
         tokenREID_original = cursor.fetchall()
         # # # print("tokenREID_original : ", tokenREID_original)
         if tokenREID_original == []:
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[tokenRE] (tokenID, RE) OUTPUT [INSERTED].tokenREID VALUES (?, ?);'
+            query = 'INSERT into [buildVocabulary  ].[dbo].[vocabularyRE] (tokenID, RE) OUTPUT [INSERTED].REID VALUES (?, ?);'
             args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
             # # # print(args)
             cursor.execute(query, args)
             tokenREID = cursor.fetchall()
-            # # # print(tokenREID[0])       
+            # # # print(tokenREID[0])
             result['status'] = '0'
             record['tokenREID'] = tokenREID[0][0]            
             result['data'].append(record)
@@ -964,17 +964,33 @@ def inserttokenREItem(request):
         record['tokenREID'] = request.POST.get('tokenREID')
         record['serialNo'] = request.POST.get('serialNo')
         record['itemName'] = request.POST.get('itemName')
+
+        
+        query = 'select * from [itemDefinition] where itemName = ?;'
+        args = [request.POST.get('itemName')]
+        cursor.execute(query, args)
+        itemID = cursor.fetchone()
+        print("itemID : ", itemID)
+        if itemID == None:            
+            query = 'insert into [itemDefinition] (itemName) output [INSERTED].itemID values(?);'
+            args = [request.POST.get('itemName')]
+            cursor.execute(query, args)
+            itemID = cursor.fetchone()            
+            print("inserted itemID : ", itemID.itemID)
+        else:
+            print("original itemID : ", itemID.itemID)
         #插入資料表
-        query = 'INSERT into [buildVocabulary ].[dbo].[tokenREItem] (tokenREID, serialNo, itemName) OUTPUT [INSERTED].tokenREID VALUES (?, ?, ?);'
-        args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), request.POST.get('itemName') ]
+        query = 'INSERT into [REItem] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
+        args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemID.itemID ]
         # # # print(args)
         cursor.execute(query, args)
-        tokenREItemID = cursor.fetchall()
+        tokenREItemID = cursor.fetchone()
         # # # print(tokenREItemID[0])
         result['status'] = '0'
-        record['tokenREItemID'] = tokenREItemID[0][0]
+        record['tokenREItemID'] = tokenREItemID.REItemID
         result['data'].append(record)
-        # # # print("data saved(tokenREItem)")
+        # # print("data saved(tokenREItem)")
+        print(result)
         conn.commit()
         conn.close()
 

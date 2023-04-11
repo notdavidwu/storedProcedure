@@ -227,4 +227,7 @@
   button.btn.btn-secondary[type="button"][name="clearSearch"][title="Clear Search"] {    
     z-index:0;
   }
+  .pagination {    
+    z-index:0;
+  }
 </style>

@@ -19,6 +19,8 @@
 <script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
 
+
+
 <script>    
     $(document).ready(function () {
         //測試根據變數查詢資料
@@ -160,6 +162,10 @@
         return value.toString().replace(new RegExp('(' + searchText + ')', 'gim'), '<span style="background-color: pink;border: 1px solid red;border-radius:90px;padding:4px">$1</span>')
     }
 
+    function loadingTemplate(message) {
+        return '<div class="ph-item"><div class="ph-picture"></div></div>'
+    }
+
     //顯示資料
     function printAllData(){
         document.getElementById("C").selected = true;
@@ -173,7 +179,8 @@
         data-page-size="300"        
         data-show-search-button="true"
         data-show-search-clear-button="true"
-        data-height="700"
+        data-height="700"        
+        data-loading-template="loadingTemplate"
         >
         </table>`);
         $('#sortTable').bootstrapTable({
