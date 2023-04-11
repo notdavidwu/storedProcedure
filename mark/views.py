@@ -969,19 +969,19 @@ def inserttokenREItem(request):
         query = 'select * from [itemDefinition] where itemName = ?;'
         args = [request.POST.get('itemName')]
         cursor.execute(query, args)
-        itemID = cursor.fetchone()
-        print("itemID : ", itemID)
-        if itemID == None:            
+        itemDefinition = cursor.fetchone()
+        print("itemID : ", itemDefinition)
+        if itemDefinition == None:            
             query = 'insert into [itemDefinition] (itemName) output [INSERTED].itemID values(?);'
             args = [request.POST.get('itemName')]
             cursor.execute(query, args)
-            itemID = cursor.fetchone()            
-            print("inserted itemID : ", itemID.itemID)
+            itemDefinition = cursor.fetchone()            
+            print("inserted itemID : ", itemDefinition.itemID)#itemID[0]
         else:
-            print("original itemID : ", itemID.itemID)
+            print("original itemID : ", itemDefinition.itemID)
         #插入資料表
         query = 'INSERT into [REItem] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
-        args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemID.itemID ]
+        args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition.itemID ]
         # # # print(args)
         cursor.execute(query, args)
         tokenREItemID = cursor.fetchone()
@@ -2284,10 +2284,16 @@ def Page2(request):
 # class Merge(ListView):
 #     model = Text
 #     template_name = 'merge.html'
+
+
+def dictionary(request):
+    return render(request, 'mark/dictionary.html')
     
 class selectVocabulary(ListView):
     model = Text
     template_name = 'selectVocabulary.js'
+
+
 
     
 

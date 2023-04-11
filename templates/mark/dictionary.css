@@ -1,0 +1,17 @@
+#tableSelect1 {
+    width: auto;
+}
+    
+#sortTableP {
+    background-color: #C7EED4;
+  }
+
+  mark.highlight-1{
+    background-color: #C7EED4;
+    color: black;
+  }
+
+th {
+    background-color: blue;
+    color: white;
+} 

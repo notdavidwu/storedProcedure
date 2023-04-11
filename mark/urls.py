@@ -60,6 +60,7 @@ urlpatterns = [
     
     path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
+    path('dictionary/', dictionary,name="dictionary"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
     
     path('worker.js', (TemplateView.as_view(template_name="mark/worker.js", 
