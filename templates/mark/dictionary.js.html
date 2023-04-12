@@ -49,7 +49,7 @@ $(document).ready(function (e) {
     });
 
     //顯示資料
-    printAllData();
+    //printAllData();
 
     //顯示P資料
     printAllPData();
@@ -70,6 +70,9 @@ $(document).ready(function (e) {
             printAllData_3();
         }
     });
+    //loader
+    $('#loader').css('display','none')
+    $('#frame').css('visibility','visible')
 })
 
 function getTag(){
@@ -107,6 +110,7 @@ function dualBox(){
         selectedTitle: 'Selected vocabularies',
         addButtonText: '>',
         removeButtonText: '<',
+        addAllButtonText: '>>',
         removeAllButtonText: '<<',
         searchPlaceholder: 'search vocabulary',
         draggable: true,
@@ -373,6 +377,7 @@ function printAllDataBetween(){
         <option value="7">Search Times</option>
       </select>`);
     //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+    $('#sortTable tr').width(500);
 }
 
 //取得所有資料

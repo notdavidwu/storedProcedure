@@ -70,6 +70,7 @@
     {% include 'navBar.html' %}
     {{ user.username|json_script:"user_username" }}
     {{ user.last_name|json_script:"hospital" }}
+    <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="frame">
         <div id=pool class="row g-3">
             <div id='firstTag' class="col">
