@@ -56,15 +56,17 @@ urlpatterns = [
     path('chineseTwoWord/', chineseTwoWord, name="chineseTwoWord"),
     path('chineseThreeWord/', chineseThreeWord, name="chineseThreeWord"),
     path('getTokenBynWord/', getTokenBynWord, name="getTokenBynWord"),
+    path('getReportBetween2Tokens/', getReportBetween2Tokens, name="getReportBetween2Tokens"),
     
     
     path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
-    path('dictionary/', dictionary,name="dictionary"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
     
     path('worker.js', (TemplateView.as_view(template_name="mark/worker.js", 
     content_type='application/javascript', )), name='worker.js'),
-    
+    path('dictionary/', dictionary,name="dictionary"),
+    path('getTag/', getTag, name='getTag'),
+    path('getVocabularyForDictionary/', getVocabularyForDictionary, name='getVocabularyForDictionary'),
     
 ]

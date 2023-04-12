@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 import sys, os, psutil
 from time import process_time
-
+from .view_dictionary import *
 
     # queryset = Text.objects.all()
     # serializer_class = TextSerializer
@@ -2249,6 +2249,66 @@ def getTokenBynWord(request):
         # Vocabulary = cursor.fetchall()
         # print("Vocabulary : ", Vocabulary)
         # -----------------------------------------------------------------------------------------------------------------------------------
+        conn.commit()
+        conn.close()
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportBetween2Tokens(request):
+    #取得
+    if request.method == 'POST':
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+
+        raw = request.body.decode('utf-8')
+        body = json.loads(raw)
+        # # # print(body)
+        # # # # print( body['reportID1'])
+
+        firstTokenID = body['firstTokenID']
+        secondTokenID = body['secondTokenID']
+        tokens = body['tokens[]']
+        print(firstTokenID, secondTokenID, tokens)
+        string = ""
+        for i in tokens:
+            string += i + ","
+        string = string[0:len(string)-1] 
+        print("string : ", string)
+        
+        query = '''
+                EXEC [getReportBetween] @firstTokenID = ?, @secondTokenID = ?, @tokens = ?;
+                ''' 
+        args = [firstTokenID, secondTokenID, string]
+        print(args)
+        cursor.execute(query, args)
+        datatoken = cursor.fetchall()
+        print(datatoken)
+        result['data'] = []
+        number = 1
+        for ind,i in enumerate(datatoken):
+            print(i)
+            result['data'].append({
+                'No': '<button  onclick="searchReportText()" class="btn btn-secondary" name="">' + str(number) + '</button>',
+                'Token1': i.token1,
+                'Token2': i.token2,
+                'Token3': i.token3,
+                'Token4': i.token4,
+                'Token5': i.token5,
+                'NumReports': i.numReports,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="merge_3()" class="btn btn-info" mergeToken="" mergeNWord="">Merge</button>',
+            })
+            number += 1
+        
         conn.commit()
         conn.close()
     return JsonResponse(result)
