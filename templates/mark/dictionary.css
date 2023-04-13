@@ -360,6 +360,8 @@
     .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
         background-color:#FFF
     }
+
+    
     
 </style>
 {% endblock %}

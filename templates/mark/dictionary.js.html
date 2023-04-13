@@ -19,6 +19,9 @@
 
 <script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+
+
+
 <script>
 $(document).ready(function (e) {
     //取得T型態
@@ -237,7 +240,7 @@ function printAllData_3(){
 }
 
 //顯示P資料
-function printAllPData(searchWord){
+function printAllPData(searchWord){    
     response = getVocabularyData();
     var tokenP = response.data;
     ////console.log("response.data : ", response.data);
@@ -247,7 +250,8 @@ function printAllPData(searchWord){
     data-pagination-h-align="left"
     data-pagination-detail-h-align="right"
     data-page-size="300"
-    data-height=""      >  
+    data-height=""    
+    data-show-search-button="true">  
     </table>`);
     $('#sortTableP').bootstrapTable({
         columns: [{
@@ -282,13 +286,15 @@ function printAllPData(searchWord){
         stickyHeader: true,
     })
     $('#view .fixed-table-toolbar').attr('id', 'table_p;');
-    if (searchWord){                        
-        var resultDataP = document.querySelector('#view.table.table-bordered');
-        var searchInput = resultDataP.querySelector('input.search-input');            
-        var searchbutton = resultDataP.querySelector('button');
-        searchInput.value = Token;
-        searchbutton.id = "inputPbutton";
-        document.getElementById('inputPbutton').click(); 
+
+
+    $('#view button[name="search"] i').removeClass('fa fa-search').addClass('bi bi-search');
+
+    if (searchWord){
+        var resultDataP = document.querySelector('#view');
+        var searchInput = resultDataP.querySelector('input.search-input');       
+        searchInput.value = searchWord;            
+        $('#view button[name="search"] i').trigger('click');
     }
 }
 
@@ -596,29 +602,34 @@ function customSearch(data, text) {
         var Token =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeToken');
         
         var nWord =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeNWord');
-
+        var tokenType = "G";
         console.log("Token = ", Token);
         console.log("nWord = ", nWord);
         //response = insertVocabulary_new(Token, lenOfToken, TokenType);
 
 
         //合併五字
-        response = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord);
+        responseFiveWord = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType);
         printAllDataBetween();
+        printAllPData(Token);
         var end = Date.now();
-        if(response.status === "0"){
+        console.log("responseFiveWord : ", responseFiveWord);
+        if(responseFiveWord.status == "0"){
             swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
         }
         else{
-            if (response.ERRMSG){
-                swal("Failed!", response.ERRMSG , "error");
+            if (responseFiveWord.ERRMSG){
+                swal("Failed!", responseFiveWord.ERRMSG + ",\nblock : " + responseFiveWord.block, "error");
+            }
+            else{
+                swal("Failed!", "block : " + responseFiveWord.block, "error");
             }
         }
 
     }
 
     //合併五字
-    function mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord){
+    function mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType){
         console.log("Token : ", Token);
         var res;
         $.ajax({
@@ -631,6 +642,7 @@ function customSearch(data, text) {
                 "token3" : token3,
                 "token4" : token4,
                 "token5" : token5,
+                "TokenType" : tokenType,
                 "mergeToken" : Token,
                 "nWord" : nWord,
             },

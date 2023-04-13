@@ -2278,25 +2278,25 @@ def getReportBetween2Tokens(request):
         firstTokenID = body['firstTokenID']
         secondTokenID = body['secondTokenID']
         tokens = body['tokens[]']
-        print(firstTokenID, secondTokenID, tokens)
+        # print(firstTokenID, secondTokenID, tokens)
         string = ""
         for i in tokens:
             string += i + ","
         string = string[0:len(string)-1] 
-        print("string : ", string)
+        # print("string : ", string)
         
         query = '''
                 EXEC [getReportBetween] @firstTokenID = ?, @secondTokenID = ?, @tokens = ?;
                 ''' 
         args = [firstTokenID, secondTokenID, string]
-        print(args)
+        # print(args)
         cursor.execute(query, args)
         datatoken = cursor.fetchall()
-        print(datatoken)
+        # print(datatoken)
         result['data'] = []
         number = 1
         for ind,i in enumerate(datatoken):
-            print(i)
+            # print(i)
             result['data'].append({
                 'No': '<button  onclick="searchReportText()" class="btn btn-secondary btn_view" name="">' + str(number) + '</button>',
                 'Token1': i.token1,
@@ -2391,7 +2391,7 @@ def fiveWord(request):
             #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
                 data = {"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":mergeToken}
                 argsForinsertTextToken.append(copy.deepcopy(data))
-            print("argsForinsertTextToken : ", argsForinsertTextToken)
+            # print("argsForinsertTextToken : ", argsForinsertTextToken)
 
             #------------------------------------------------------------------------------------------------------------------------------------    
             
@@ -2400,17 +2400,26 @@ def fiveWord(request):
             block = 2
             
             # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
-            query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
-            args = [tokenID1, tokenID2, 'A']
-            timesMinusOneA = cursor.execute(query, args).fetchall()
-            print("timesMinusOneA : ", len(timesMinusOneA))
+            query = "EXEC [fiveWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, 'A']
+            timesMinusOneA = cursor.execute(query, args)
+            # print("timesMinusOneA : ", len(timesMinusOneA))
 
             
             
-            query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
-            args = [tokenID1, tokenID2, 'B']
-            timesMinusOneB = cursor.execute(query, args).fetchall()
-            print("timesMinusOneB : ", len(timesMinusOneB))
+            query = "EXEC [fiveWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, 'B']
+            timesMinusOneB = cursor.execute(query, args)
+            query = "EXEC [fiveWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, 'C']
+            timesMinusOneB = cursor.execute(query, args)
+            query = "EXEC [fiveWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, 'D']
+            timesMinusOneB = cursor.execute(query, args)
+            query = "EXEC [fiveWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, 'E']
+            timesMinusOneB = cursor.execute(query, args)
+            # print("timesMinusOneB : ", len(timesMinusOneB))
             # ------------------------------------------------------------------------------------------------------------------------------------
 
             
@@ -2418,6 +2427,7 @@ def fiveWord(request):
             
             # ------------------------------------------------------- 插入新字---------------------------------------------------------------------           
             TokenType = request.POST.get('TokenType')
+            print("TokenType : ", TokenType)
             query = "select token, tokenID from Vocabulary where token = ?;"
             args = [mergeToken]
             selectMergeToken = cursor.execute(query, args).fetchone()
@@ -2435,32 +2445,32 @@ def fiveWord(request):
             # ------------------------------------------------------------------------------------------------------------------------------------
 
             
-            # block = 4
+            block = 4
             
-            # # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
+            # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
             
-            # args = []
-            # for i,ind in enumerate(twoWordNoJumpRes):
-            #     # 取得資料
-            #     # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
-            #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+            args = []
+            for i,ind in enumerate(fiveWordRes):
+                # 取得資料
+                # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+                args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
                 
 
-            # print(args)
-            # query = ' EXEC insertTexttoken_POST @array = ?;'
-            # args = json.dumps(args)
-            # selectMergeToken = cursor.execute(query, args)
-            # # ------------------------------------------------------------------------------------------------------------------------------------
-            # result['status'] = '0'
-            # # # print("Text : ", Text)
+            print(args)
+            query = ' EXEC insertTexttoken_POST @array = ?;'
+            args = json.dumps(args)
+            selectMergeToken = cursor.execute(query, args)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            result['status'] = '0'
+            # # print("Text : ", Text)
             
 
 
             
             # block = 5
             
-            # # conn.commit()
-            # print("committed")
+            conn.commit()
+            print("committed")
         except Exception as e:
             conn.rollback()
             print("rollbacked, error message : ", e, " block : ", block)
