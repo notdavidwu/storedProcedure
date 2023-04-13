@@ -1,0 +1,13 @@
+COPYING.md
+MANIFEST.in
+README.md
+setup.cfg
+setup.py
+link_traits/__init__.py
+link_traits/link_traits.py
+link_traits/test_link_traits.py
+link_traits.egg-info/PKG-INFO
+link_traits.egg-info/SOURCES.txt
+link_traits.egg-info/dependency_links.txt
+link_traits.egg-info/requires.txt
+link_traits.egg-info/top_level.txt

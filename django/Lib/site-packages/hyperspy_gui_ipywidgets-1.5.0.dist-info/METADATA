@@ -1,0 +1,95 @@
+Metadata-Version: 2.1
+Name: hyperspy-gui-ipywidgets
+Version: 1.5.0
+Summary: ipywidgets GUI elements for HyperSpy.
+Home-page: https://github.com/hyperspy/hyperspy_gui_ipywidgets
+Author: The HyperSpy Developers
+License: GPLv3
+Project-URL: Bug Tracker, https://github.com/hyperspy/hyperspy_gui_ipywidgets/issues
+Project-URL: Changelog, https://github.com/hyperspy/hyperspy_gui_ipywidgets/blob/main/CHANGES.md
+Project-URL: Conda-Forge, https://anaconda.org/conda-forge/hyperspy-gui-ipywidgets
+Project-URL: Documentation, https://hyperspy.org/hyperspy-doc/current/index.html
+Project-URL: Source Code, https://github.com/hyperspy/hyperspy_gui_ipywidgets
+Project-URL: Support, https://gitter.im/hyperspy/hyperspy
+Keywords: hyperspy ipywidgets
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Physics
+Requires-Python: ~=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: hyperspy (>=1.7)
+Requires-Dist: ipywidgets (>=7.0)
+Requires-Dist: link-traits
+Provides-Extra: coverage
+Requires-Dist: pytest-cov ; extra == 'coverage'
+Requires-Dist: codecov ; extra == 'coverage'
+Provides-Extra: tests
+Requires-Dist: pytest ; extra == 'tests'
+
+# hyperspy_gui_ipywidgets
+[![Tests](https://github.com/hyperspy/hyperspy_gui_ipywidgets/workflows/Tests/badge.svg)](https://github.com/hyperspy/hyperspy_gui_ipywidgets/actions)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hyperspy_gui_ipywidgets.svg)](https://pypi.org/project/hyperspy-gui-ipywidgets)
+[![PyPI](https://img.shields.io/pypi/v/hyperspy_gui_ipywidgets.svg)](https://pypi.org/project/hyperspy-gui-ipywidgets)
+[![Anaconda Cloud](https://anaconda.org/conda-forge/hyperspy-gui-ipywidgets/badges/version.svg)](https://anaconda.org/conda-forge/hyperspy-gui-ipywidgets)
+
+
+**hyperspy_gui_ipywidgets** provides ipywidgets graphic user interface (GUI) elements for hyperspy.
+
+
+## Installation
+
+### Option 1: With pip
+Make sure you have
+[pip installed](https://pip.pypa.io/en/stable/installing/) and run:
+
+```bash
+pip install hyperspy_gui_ipywidgets
+```
+
+### Option 2: With Anaconda
+
+Install anaconda for your platform and run
+
+```bash
+conda install hyperspy-gui-ipywidgets -c conda-forge
+
+```
+
+## Running the tests
+
+py.test is required to run the tests.
+
+```bash
+pip install "hyperspy_gui_ipywidgets[test]"
+py.test --pyargs hyperspy_gui_ipywidgets
+```
+
+## Usage
+
+Please refer to the [HyperSpy documentation](http://hyperspy.org/hyperspy-doc/current/index.html) for details. Example (to run in the [Jupyter Notebook](http://jupyter.org/)):
+
+```python
+
+import hyperspy.api as hs
+hs.preferences.gui(toolkit="ipywidgets")
+```
+![HyperSpy preferences ipywidget](https://github.com/hyperspy/hyperspy_gui_ipywidgets/raw/main/images/preferences_gui.png "HyperSpy preferences ipywidget")
+
+
+## Development
+
+Contributions through pull requests are welcome. See the
+[HyperSpy Developer Guide](http://hyperspy.org/hyperspy-doc/current/dev_guide.html).
+
+

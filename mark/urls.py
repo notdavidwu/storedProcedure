@@ -57,6 +57,7 @@ urlpatterns = [
     path('chineseThreeWord/', chineseThreeWord, name="chineseThreeWord"),
     path('getTokenBynWord/', getTokenBynWord, name="getTokenBynWord"),
     path('getReportBetween2Tokens/', getReportBetween2Tokens, name="getReportBetween2Tokens"),
+    path('fiveWord/', fiveWord, name="fiveWord"),
     
     
     path('Page2/', Page2,name="Page2"),

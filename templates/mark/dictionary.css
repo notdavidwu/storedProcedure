@@ -7,7 +7,7 @@
     @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
     /* Set the width of the #pool element to 100% for screens 768px and below */
 
-    @media (max-width: 820px ){
+    @media (max-width: 1793px ){
         #frame {
             position: absolute;
             top: 65px;
@@ -15,24 +15,57 @@
             right: 0;
             height:calc(100% - 65px);
         }
+        #cover {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            right: 0;
+            height:calc(100% - 65px);
+            display:none;
+            z-index:9;
+            background-color: #000;
+            opacity: 0.4;
+        }
         #pool {
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#FFF;
             width: 100%;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
             height:300px
         }
         #statisticsArea{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#FFF;
+            height:100%;
+            width:100%;
+            
+        }
+        #view{
+            background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
             height:100%;
             width:100%;
         }
-        #view{
-            background-color:#321;
-            height:100%;
-            width:100%;
-        }
     }
-    @media(min-width: 821px){
+    .table{
+        background-color:#FFF
+    }
+    @media(min-width: 1793px){
+        
+        #cover {
+            position: absolute;
+            top: 56px;
+            left: 0;
+            right: 0;
+            height:calc(100% - 56px);
+            display: flex;
+            overflow-x:auto;
+            display:none;
+            z-index:9;
+            background-color: #000;
+            opacity: 0.4;
+        }
         #frame {
             position: absolute;
             top: 56px;
@@ -40,9 +73,12 @@
             right: 0;
             height:calc(100% - 56px);
             display: flex;
+            overflow-x:auto
         }
         #pool {
-            width: 30%;
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#FFF;
+            width: 20%;
             height: calc(100% - 100px);
             min-width:350px;
         }
@@ -50,20 +86,23 @@
             height:calc(100vh - 370px)
         }
         #statisticsArea{
+            background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
             height:100%;
 
-            width:50%;
+            width:62%;
         }
         #view{
-            background-color:#321;
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#FFF;
             height:100%;
-            width:50%;
+            width:38%;
 
         }
         #view > div > .fixed-table-container{
             height:calc(100% - 120px) !important;
         }
+        
     }
     /* Define the scrollbar styles */
     ::-webkit-scrollbar {
@@ -137,24 +176,21 @@
     .dual-listbox .dual-listbox__button{
         background-color:#111
     }
-    #statisticsArea > #setting{
-        background-color:#FFF
-    }
     #statisticsArea > #statistics > div{
         height:100%;
         padding-left:10px;
         padding-right:10px;
-        background-color:#FFF
+
     }
     #statisticsArea > #statistics {
-        height:calc(100% - 66px);
+        height:calc(100%);
         
     }
     #view > div{
         height:100%;
         padding-left:10px;
         padding-right:10px;
-        background-color:#FFF
+
     }
 
     .fixed-table-container{
@@ -208,8 +244,8 @@
         top:50%;
         left:50%;
         transform: translate(-50%, -25%) scale(1);
-        
     }
+    
     #frame{
         visibility:hidden;
     }
@@ -295,7 +331,36 @@
         opacity: 0;
     }
     }
-      
+    th > div{
+        
+        word-break: break-all;
+        font-size:12pt;
+    }
+    td{
+        width:10px;
+        word-break: break-all;
+        font-size:10pt;
+    }
+    .bootstrap-table .fixed-table-container .table > thead > tr > th > div{
+        padding-left:5px!important;
+        padding-right:20px!important;
+        font-size:10pt;
+    }
+    .btn_view{
+        font-size:10pt;
+        padding:10px
+    }
+
+    #searchingButton{
+        display:none
+    }
+    .dual-listbox .dual-listbox__title{
+        background-color:#FFF
+    }
+    .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
+        background-color:#FFF
+    }
+    
 </style>
 {% endblock %}
 

@@ -92,33 +92,21 @@
             </div>
             <div id="search" class="col-12">
                 <button type="button" class="btn btn-primary form-control" id="searchButton">查詢</button>
+                <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
             </div>
         </div>
         <div id="statisticsArea">
-            <div id="setting" class="row g-3">
-                <div id="selectArea" class="col-6">
-                    <div class="optionbox">
-                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="twoOrThree">
-                            <option value="2" selected>2</option>
-                            <option value="3">3</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="selectArea" class="col-6">
-                    <div class="optionbox">
-                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="filter">
-                            <option selected>Chinese</option>
-                            <option  id="fG" value="English">English</option>
-                        </select>
-                    </div>
-                </div>
-            </div> 
             <div id="statistics">
             </div>
         </div>
         <div id="view">
         </div>
     </div>
+    <div id="cover">
+    <div>
 </html>
 {% endblock %}
 

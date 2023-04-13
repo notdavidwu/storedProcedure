@@ -1,0 +1,1 @@
+call djangoCMD.bat

@@ -1424,69 +1424,38 @@ function forwardBackward(text, pattern, count, startCount, endCount){
     //測試一次做完
     function allInOne(){
         var twoOrThree = document.getElementById("twoOrThree").value;
+        var start = Date.now();
+        //插新字
+        let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        ////console.log("token1 = ", token1);
+        let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        ////console.log("token2 = ", token2);
+        let times = $(event.target).parents('tr').children('td').eq(3).html();
+        ////console.log("times = ", times);
+        let jump = "0";
+        console.log("jump = ", jump, typeof(jump));
+        var Token =  $(event.target).parents('tr').children('td').eq(4).children('button').attr('mergeToken');            
+        var nWord =  $(event.target).parents('tr').children('td').eq(4).children('button').attr('mergeNWord');
+        console.log("Token = ", Token);
+        var lenOfToken = Token.length;
+        var TokenType = document.getElementById("selectTokenType").value;
+        //response = insertVocabulary_new(Token, lenOfToken, TokenType);
 
-        if (twoOrThree === "2"){
-            var start = Date.now();
-            //插新字
-            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            ////console.log("token1 = ", token1);
-            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            ////console.log("token2 = ", token2);
-            let times = $(event.target).parents('tr').children('td').eq(3).html();
-            ////console.log("times = ", times);
-            let jump = "0";
-            console.log("jump = ", jump, typeof(jump));
-            var Token =  $(event.target).parents('tr').children('td').eq(0).children('button').attr('name');
-            console.log("Token = ", Token);
-            var lenOfToken = Token.length;
-            var TokenType = document.getElementById("selectTokenType").value;
-            //response = insertVocabulary_new(Token, lenOfToken, TokenType);
-    
-    
-            //二字沒跳
-            if (jump == "0"){
-                twoWordNoJump(token1, token2, Token, TokenType);
-                printAllPData();
-                $('#result_data').empty();
-                $('#sortTable').empty();
-                printAllData();
-                var end = Date.now();
-                swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
-            }
 
-        }
-        else if (twoOrThree === "3"){
-            var start = Date.now();
-            let token1 = $(event.target).parents('tr').children('td').eq(1).html();
-            ////console.log("token1 = ", token1);
-            let token2 = $(event.target).parents('tr').children('td').eq(2).html();
-            ////console.log("token2 = ", token2);
-            let token3 = $(event.target).parents('tr').children('td').eq(3).html();
-            ////console.log("token3 = ", token3);
-            let times = $(event.target).parents('tr').children('td').eq(4).html();
-            ////console.log("times = ", times);
-            var Token = token1 + token2 + token3;
-            var lenOfToken = Token.length;
-            var TokenType = document.getElementById("selectTokenType").value;
-
-            var jump = "0";
-            //三字沒跳
-            if (jump == "0"){
-                threeWordNoJump(token1, token2, token3, Token, TokenType);
-                printAllPData();
-                $('#result_data').empty();
-                $('#sortTable').empty();
-                printAllData();
-                var end = Date.now();
-                swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
-            }
-            
-
+        //二字沒跳
+        if (jump == "0"){
+            twoWordNoJump(token1, token2, Token, TokenType, nWord);
+            printAllPData();
+            $('#result_data').empty();
+            $('#sortTable').empty();
+            printAllData();
+            var end = Date.now();
+            swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
         }
     }
 
     //二字沒跳
-    function twoWordNoJump(token1, token2, Token, TokenType){
+    function twoWordNoJump(token1, token2, Token, TokenType, nWord){
         console.log("Token : ", Token);
         var res;
         $.ajax({
@@ -1496,6 +1465,7 @@ function forwardBackward(text, pattern, count, startCount, endCount){
             data:{
                 "token1" : token1,
                 "token2" : token2,
+                "nWord" : nWord,
                 "mergeToken" : Token,
                 "TokenType" : TokenType,
             },

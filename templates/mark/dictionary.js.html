@@ -19,7 +19,6 @@
 
 <script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
-{% block content %}
 <script>
 $(document).ready(function (e) {
     //取得T型態
@@ -71,8 +70,8 @@ $(document).ready(function (e) {
         }
     });
     //loader
-    $('#loader').css('display','none')
-    $('#frame').css('visibility','visible')
+    $('#loader').css('display','none');
+    $('#frame').css('visibility','visible');
 })
 
 function getTag(){
@@ -295,6 +294,7 @@ function printAllPData(searchWord){
 
 //顯示資料
 function printAllDataBetween(){
+
     tokenID1 = document.getElementById("token1").value;
     tokenID2 = document.getElementById("token2").value;
     console.log("tokenID1 : ", tokenID1);
@@ -306,78 +306,8 @@ function printAllDataBetween(){
     response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray);
     ////console.log("response.data : ", response.data);
     
-    $('#statistics').empty();
-    $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
-    data-pagination="true"
-    data-pagination-h-align="left"
-    data-pagination-detail-h-align="right"
-    data-page-size="300"        
-    data-height="">
-    </table>`);
-    $('#sortTable').bootstrapTable({
-        columns: [{
-            field: 'No',
-            title: 'No',
-            align: 'center',
-            valign: 'middle',
-            sortable:true,
-        },
-        {
-            field: 'Token1',
-            title: 'Token1',
-            sortable:true,
-
-        }, 
-        {
-            field: 'Token2',
-            title: 'Token2',
-            sortable:true,
-        }, 
-        {
-            field: 'Token3',
-            title: 'Token3',
-            sortable:true,
-        }, 
-        {
-            field: 'Token4',
-            title: 'Token4',
-            sortable:true,
-        }, 
-        {
-            field: 'Token5',
-            title: 'Token5',
-            sortable:true,
-        }, 
-        {
-            field: 'NumReports',
-            title: 'NumReports',
-            sortable:true,
-        }, 
-        {
-            field: 'Times',
-            title: 'Times',
-            sortable:true,
-        },
-        {
-            field: 'Mergecheck',
-            title: 'Mergecheck',
-        }],
-        data:response.data,
-        paginationParts: ["pageSize", "pageList"],
-        stickyHeader: true,
-    })
-    $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
-    $('#table_3word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
-        <option selected value="1">Search Token1</option>
-        <option value="2">Search Token2</option>
-        <option value="3">Search Token3</option>
-        <option value="4">Search Token4</option>
-        <option value="5">Search Token5</option>
-        <option value="6">Search NumReports</option>
-        <option value="7">Search Times</option>
-      </select>`);
-    //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
-    $('#sortTable tr').width(500);
+    
+    
 }
 
 //取得所有資料
@@ -427,6 +357,7 @@ function getVocabularyData(){
         },
         success:function (response){
             res = response;
+            
             //////console.log("res : ", res);
         },
     });
@@ -435,8 +366,13 @@ function getVocabularyData(){
 
 //取得所有資料
 function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
+    $('#searchingButton').css('display','inline');
+    $('#searchButton').css('display','none');
+    $('#loader').css('display','inline');
+    $('#loader').css('z-index','10');
+    $('#cover').css('display','inline');
     $.ajax({
-        async: false,
+        async: true,
         type: 'POST',
         url: '{% url 'mark:getReportBetween2Tokens' %}',
         data:JSON.stringify({
@@ -446,10 +382,89 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
         }),
         success:function (response){
             res = response;
-            //////console.log("res : ", res);
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="300"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token6',
+                    title: 'Token6',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+            $('#table_3word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
+                <option selected value="1">Search Token1</option>
+                <option value="2">Search Token2</option>
+                <option value="3">Search Token3</option>
+                <option value="4">Search Token4</option>
+                <option value="5">Search Token5</option>
+                <option value="6">Search NumReports</option>
+                <option value="7">Search Times</option>
+            </select>`);
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
         },
     });
-    return res;
 }
 
 function customSearch(data, text) {
@@ -562,6 +577,70 @@ function customSearch(data, text) {
     })
   }
 
+    //測試一次做完
+    function allInOneFiveWord(){
+        var start = Date.now();
+        //插新字
+        let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        console.log("token1 = ", token1);
+        let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        console.log("token2 = ", token2);
+        let token3 = $(event.target).parents('tr').children('td').eq(3).html();
+        console.log("token3 = ", token3);
+        let token4 = $(event.target).parents('tr').children('td').eq(4).html();
+        console.log("token4 = ", token4);
+        let token5 = $(event.target).parents('tr').children('td').eq(5).html();
+        console.log("token5 = ", token5);
+        let times = $(event.target).parents('tr').children('td').eq(7).html();
+        ////console.log("times = ", times);
+        var Token =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeToken');
+        
+        var nWord =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeNWord');
+
+        console.log("Token = ", Token);
+        console.log("nWord = ", nWord);
+        //response = insertVocabulary_new(Token, lenOfToken, TokenType);
+
+
+        //合併五字
+        response = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord);
+        printAllDataBetween();
+        var end = Date.now();
+        if(response.status === "0"){
+            swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+        }
+        else{
+            if (response.ERRMSG){
+                swal("Failed!", response.ERRMSG , "error");
+            }
+        }
+
+    }
+
+    //合併五字
+    function mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:fiveWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "token4" : token4,
+                "token5" : token5,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
 </script>
-{% endblock %}
 
