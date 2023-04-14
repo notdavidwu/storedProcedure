@@ -20,8 +20,16 @@
 <script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
 
+<!-- Styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
 
-
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function (e) {
     //取得T型態
@@ -75,6 +83,27 @@ $(document).ready(function (e) {
     //loader
     $('#loader').css('display','none');
     $('#frame').css('visibility','visible');
+    $( '#multiple-select-field' ).select2( {
+        theme: "bootstrap-5",
+        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+        placeholder: $( this ).data( 'placeholder' ),
+        closeOnSelect: false,
+        
+    } );
+
+    // 監聽選tokenType的元素
+    var targetNode = $('#select2-multiple-select-field-container')[0];
+    // 建立一個 MutationObserver 實例
+    var observer = new MutationObserver(function(mutations) {
+        //有變動執行以下程序
+        console.log($('#select2-multiple-select-field-container').children('li').length)
+    });
+    // 設定觀察選項
+    var config = { childList: true };
+    // 開始觀察目標節點
+    observer.observe(targetNode, config);
+
+    
 })
 
 function getTag(){
@@ -82,7 +111,13 @@ function getTag(){
         type: 'POST',
         url: '{% url "mark:getTag" %}',
         success:function (response){
+            const preElement = `<option value=-9999>【文章開始】</option>
+            <option value=-10000>【文章結束】</option>
+            `
+            $('#firstTag .optionbox .form-select').append(preElement);
+            $('#secondTag .optionbox .form-select').append(preElement);
             for(let i=0;i<response.token.length;i++){
+
                 const element = `<option value=${response.tokenID[i]}>${response.token[i]}</option>`;
                 $('#firstTag .optionbox .form-select').append(element);
                 $('#secondTag .optionbox .form-select').append(element);
@@ -454,15 +489,7 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
                 stickyHeader: true,
             })
             $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
-            $('#table_3word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
-                <option selected value="1">Search Token1</option>
-                <option value="2">Search Token2</option>
-                <option value="3">Search Token3</option>
-                <option value="4">Search Token4</option>
-                <option value="5">Search Token5</option>
-                <option value="6">Search NumReports</option>
-                <option value="7">Search Times</option>
-            </select>`);
+
             //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
             $('#sortTable tr').width(500);
             $('#searchingButton').css('display','none');
@@ -610,7 +637,7 @@ function customSearch(data, text) {
         //response = insertVocabulary_new(Token, lenOfToken, TokenType);
     
         Swal.fire({
-            title: 'Do you want to continue?',
+            title: 'Do you want to continue?',fiveWord,
             text: 'The merged Token will be : "' + Token + '"',
             icon: 'question',
             showCancelButton: true,

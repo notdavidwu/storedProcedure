@@ -2307,7 +2307,7 @@ def getReportBetween2Tokens(request):
                 'Token6': i.token6,
                 'NumReports': i.numReports,
                 'Times': i.times,
-                'Mergecheck':'<button onclick="allInOneFiveWord()" class="btn btn-info btn_view" mergeToken="'+ i.mergeToken +'" mergeNWord="'+ str(i.mergeNWord) +'">Merge</button>',
+                'Mergecheck':'<button onclick="allInOneFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord="'+ str(i.mergeNWord) +'">Merge</button>',
             })
             number += 1
         
@@ -2499,7 +2499,7 @@ def threeWord(request):
             token1 = request.POST.get('token1')
             token2 = request.POST.get('token2')
             token3 = request.POST.get('token3')
-            if token1 == None or token2 == None or token3 :
+            if token1 == None or token2 == None or token3 == None:
                 raise Exception("token None")
             # ------------------------------------------------------- 抓舊字tokenID---------------------------------------------------------------
             print("token1 : ", token1)
@@ -2569,7 +2569,7 @@ def threeWord(request):
             query = "EXEC [getTextToken_3_PATCH] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
             args = [tokenID1, tokenID2, tokenID3, 'B']
             timesMinusOneB = cursor.execute(query, args)
-            query = "EXEC [getTextToken_3_PATCH]] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
+            query = "EXEC [getTextToken_3_PATCH] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
             args = [tokenID1, tokenID2, tokenID3, 'C']
             timesMinusOneB = cursor.execute(query, args)
             # print("timesMinusOneB : ", len(timesMinusOneB))
@@ -2584,7 +2584,7 @@ def threeWord(request):
             query = "select token, tokenID from Vocabulary where token = ?;"
             args = [mergeToken]
             selectMergeToken = cursor.execute(query, args).fetchone()
-            print("selectMergeToken : ", selectMergeToken)        
+            print("selectMergeToken : ", selectMergeToken)
             nWord = request.POST.get('nWord')
             if selectMergeToken == None:
                 query = "insert into Vocabulary (token, nWord, tokenType) output [inserted].tokenID values(?, ?, ?);"
