@@ -585,6 +585,8 @@ function customSearch(data, text) {
 
     //測試一次做完
     function allInOneFiveWord(){
+        
+
         var start = Date.now();
         //插新字
         let token1 = $(event.target).parents('tr').children('td').eq(1).html();
@@ -606,26 +608,62 @@ function customSearch(data, text) {
         console.log("Token = ", Token);
         console.log("nWord = ", nWord);
         //response = insertVocabulary_new(Token, lenOfToken, TokenType);
+    
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
 
+            if (result.isConfirmed) {
+                // Action to be executed when OK is clicked
+                console.log('User clicked OK');
+                //var words = document.getElementById("words").value;
+                //switch (words) {
+                //    case '2':
+                //        console.log('Oranges are $0.59 a pound.');
+                //        break;
+                //    case '3':
+//
+                //    case '5':
+                //        console.log('Mangoes and papayas are $2.79 a pound.');
+                //        // Expected output: "Mangoes and papayas are $2.79 a pound."
+                //        break;
+                //    default:
+                //        console.log(`Sorry, we are out of ${expr}.`);
+                //}
+                //合併五字
+                responseFiveWord = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseFiveWord : ", responseFiveWord);
+                printResultMerge(responseFiveWord, start, end, Token);
+            } else if (result.isDenied) {
+                // Action to be executed when Cancel is clicked
+                console.log('User clicked Cancel');
+            }
+        });
+    }
 
-        //合併五字
-        responseFiveWord = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType);
-        printAllDataBetween();
-        printAllPData(Token);
-        var end = Date.now();
-        console.log("responseFiveWord : ", responseFiveWord);
-        if(responseFiveWord.status == "0"){
+    //顯示結果
+    function printResultMerge(response, start, end, Token){
+        if(response.status == "0"){
             swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
         }
         else{
-            if (responseFiveWord.ERRMSG){
-                swal("Failed!", responseFiveWord.ERRMSG + ",\nblock : " + responseFiveWord.block, "error");
+            if (response.ERRMSG){
+                swal("Failed!", response.ERRMSG + ",\nblock : " + response.block, "error");
             }
             else{
-                swal("Failed!", "block : " + responseFiveWord.block, "error");
+                swal("Failed!", "block : " + response.block, "error");
             }
         }
-
+        
     }
 
     //合併五字
