@@ -2418,7 +2418,7 @@ def fourWord(request):
 
 
             # ------------------------------------------------------- 抓原本的位置-----------------------------------------------------------------
-            query = "EXEC [fourWord] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?;"
+            query = "EXEC [fourWord] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?;"
             args = [tokenID1, tokenID2, tokenID3, tokenID4]
 
             cursor.execute(query, args)
