@@ -2184,12 +2184,12 @@ def getReportBetween2Tokens(request):
             # print(i)
             result['data'].append({
                 'No': '<div >' + str(number) + '</div>',
-                'Token1': i.token1,
-                'Token2': i.token2,
-                'Token3': i.token3,
-                'Token4': i.token4,
-                'Token5': i.token5,
-                'Token6': i.token6,
+                'Token1': i.token1 if i.token1 != ' ' else '[SPACE]',
+                'Token2': i.token2 if i.token2 != ' ' else '[SPACE]',
+                'Token3': i.token3 if i.token3 != ' ' else '[SPACE]',
+                'Token4': i.token4 if i.token4 != ' ' else '[SPACE]',
+                'Token5': i.token5 if i.token5 != ' ' else '[SPACE]',
+                'Token6': i.token6 if i.token6 != ' ' else '[SPACE]',
                 'NumReports': i.numReports,
                 'Times': i.times,
                 'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord2="'+ str(i.mergeNWord2) +'" mergeNWord3="'+ str(i.mergeNWord3) +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
@@ -2236,8 +2236,9 @@ def fiveWord(request):
                 query = "select tokenID from Vocabulary where token = ?;"
                 args = [i]
                 tokenID = cursor.execute(query, args).fetchone()
+                print("tokenID : ", tokenID)
                 tokenIDArray.append(tokenID.tokenID)
-            print("tokenID : ", tokenIDArray)
+            print("tokenIDArray : ", tokenIDArray)
             # tokenIDArray.append(tokenID.tokenID)
             tokenID1 = tokenIDArray[0]
             tokenID2 = tokenIDArray[1]
