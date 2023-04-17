@@ -932,5 +932,62 @@ function customSearchForBetween(data, text) {
         return res;
     }
 
+    //開啟網頁傳值
+    function changeSrc() {
+        // Get the iframe element
+        var iframe = document.getElementById("iframe");
+        var overlay = document.querySelector('.overlay');
+        var iframeDoc = iframe.contentWindow.document;
+        var feedbackElement = iframeDoc.querySelector('.warning-feedback');
+        feedbackElement.textContent = "";
+        ////console.log(" regexName : ", $("#regexName"));
+        var drop = iframeDoc.getElementById("regexName");
+        drop.classList.remove("is-warning");
+
+        if(iframe.style.display == "block"){            
+            iframe.style.display = "none";
+            overlay.style.display = "none";
+        }
+        else{
+            document.addEventListener("click", function(event) {
+                // Check if the clicked element is inside the iframe or the button that opened the iframe
+                if (event.target !== iframe && !event.target.classList.contains("btn")) {
+                    // If it is not, hide the iframe
+                    iframe.style.display = "none";                  
+                    overlay.style.display = "none";
+                }
+            });
+            
+            overlay.style.display = "block";
+
+            iframe.style.display = "block";
+            
+        
+            var navbar = iframeDoc.getElementById("navbar");
+            navbar.style.display = "none";
+            
+            var box = iframeDoc.getElementById("regexName");
+            var drop = iframeDoc.getElementById("dropdownbutton");
+            iframeDoc.getElementById("E").selected = true;
+
+            let Token = $(event.target).parents('tr').children('td').eq(1).html();
+
+            box.value = Token;
+            var firstWord = iframeDoc.getElementById("firstWordValue");
+            firstWord.value = Token;
+            box.readOnly = true;
+            var firstWordValue = iframeDoc.getElementById("firstWordValue");
+            firstWordValue.readOnly = true;
+            firstWordValue.style.userSelect = "none";
+            var regexName = iframeDoc.getElementById("regexName");
+            firstWordValue.readOnly = true;
+            regexName.style.userSelect = "none";
+            
+            iframeDoc.getElementById("search").style.display = "";
+            iframeDoc.getElementById("wordNumber").style.display = "";
+            iframeDoc.getElementById("firstWord").style.display = "";
+        }
+    }   
+
 </script>
 
