@@ -218,7 +218,7 @@ def getVocabularyByType_Ptable(request):
                     'No': ind+1,
                     'ProperNoun': i[0],
                     'tokenType': i[3],
-                    'NewRE': '<button onclick="changeSrc()" class="btn btn-secondary btn_view">NewRE</button>',
+                    'NewRE': '<button onclick="changeSrc()" class="btn btn-secondary btn_view" tokenID="' + str(i.tokenID) + '">NewRE</button>',
                     'UnMerge':'<button onclick="UnMerge()" class="btn btn-danger btn_view">UnMerge</button>',
                 })
             else:
@@ -2192,7 +2192,7 @@ def getReportBetween2Tokens(request):
                 'Token6': i.token6 if i.token6 != ' ' else '[SPACE]',
                 'NumReports': i.numReports,
                 'Times': i.times,
-                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord2="'+ str(i.mergeNWord2) +'" mergeNWord3="'+ str(i.mergeNWord3) +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken4="'+ i.mergeToken4 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord2="'+ str(i.mergeNWord2) +'" mergeNWord3="'+ str(i.mergeNWord3) +'" mergeNWord4="'+ str(i.mergeNWord4) +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
                 'Type': i.firstTokenType,
             })
             number += 1
@@ -2366,6 +2366,164 @@ def fiveWord(request):
         print(result)
     return JsonResponse(result)
 
+
+@csrf_exempt
+def fourWord(request):
+    if request.method == 'POST':
+        #取得資料
+        result = {'status':'1'} #預設沒找到
+        
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824'
+        password = 'test81218'
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+        cursor = conn.cursor()
+        block = 0
+        try:
+            token1 = request.POST.get('token1')
+            token2 = request.POST.get('token2')
+            token3 = request.POST.get('token3')
+            token4 = request.POST.get('token4')
+            if token1 == None or token2 == None or token3 == None or token4 == None:
+                raise Exception("token None")
+            # ------------------------------------------------------- 抓舊字tokenID---------------------------------------------------------------
+            print("token1 : ", token1)
+            print("token2 : ", token2)
+            print("token3 : ", token3)
+            print("token4 : ", token4)
+            token = [token1, token2, token3, token4]
+            tokenIDArray = []
+            for i in token:
+                query = "select tokenID from Vocabulary where token = ?;"
+                args = [i]
+                tokenID = cursor.execute(query, args).fetchone()
+                print("tokenID : ", tokenID)
+                tokenIDArray.append(tokenID.tokenID)
+            print("tokenIDArray : ", tokenIDArray)
+            # tokenIDArray.append(tokenID.tokenID)
+            tokenID1 = tokenIDArray[0]
+            tokenID2 = tokenIDArray[1]
+            tokenID3 = tokenIDArray[2]
+            tokenID4 = tokenIDArray[3]
+
+            if tokenID1 == None or tokenID2 == None or tokenID3 == None or tokenID4 == None:
+                raise Exception("tokenID None")
+            
+            print(tokenID1, tokenID2)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            
+            block = 1
+
+
+            # ------------------------------------------------------- 抓原本的位置-----------------------------------------------------------------
+            query = "EXEC [fourWord] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @tokenID5 = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4]
+
+            cursor.execute(query, args)
+            fourWordRes = cursor.fetchall()
+            # print("twoWordNoJumpRes : ", twoWordNoJumpRes)
+            
+            if fourWordRes == None :
+                raise Exception("twoWordNoJumpRes None")
+            
+            mergeToken = request.POST.get('mergeToken')
+            if mergeToken == None :
+                raise Exception("mergeToken None")
+            
+            argsForinsertTextToken = []
+            for i,ind in enumerate(fourWordRes):
+                # 取得資料
+                # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+            #     args = []
+            #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+                data = {"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":mergeToken}
+                argsForinsertTextToken.append(copy.deepcopy(data))
+            # print("argsForinsertTextToken : ", argsForinsertTextToken)
+
+            #------------------------------------------------------------------------------------------------------------------------------------    
+            
+
+            
+            block = 2
+            
+            # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
+            query = "EXEC [fourWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, 'A']
+            timesMinusOneA = cursor.execute(query, args)
+            # print("timesMinusOneA : ", len(timesMinusOneA))
+
+            
+            
+            query = "EXEC [fourWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, 'B']
+            timesMinusOneB = cursor.execute(query, args)
+            query = "EXEC [fourWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, 'C']
+            timesMinusOneB = cursor.execute(query, args)
+            query = "EXEC [fourWord*-1] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @tokenID4 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, tokenID3, tokenID4, 'D']
+            timesMinusOneB = cursor.execute(query, args)
+            # print("timesMinusOneB : ", len(timesMinusOneB))
+            # ------------------------------------------------------------------------------------------------------------------------------------
+
+            
+            block = 3
+            
+            # ------------------------------------------------------- 插入新字---------------------------------------------------------------------           
+            TokenType = request.POST.get('TokenType')
+            print("TokenType : ", TokenType)
+            query = "select token, tokenID from Vocabulary where token = ?;"
+            args = [mergeToken]
+            selectMergeToken = cursor.execute(query, args).fetchone()
+            print("selectMergeToken : ", selectMergeToken)        
+            nWord = request.POST.get('nWord')
+            if selectMergeToken == None:
+                query = "insert into Vocabulary (token, nWord, tokenType) output [inserted].tokenID values(?, ?, ?);"
+                args = [mergeToken, nWord, TokenType]
+                inertMergeToken = cursor.execute(query, args).fetchone()
+                print("inertMergeToken : ", inertMergeToken.tokenID)
+                newTokenID = inertMergeToken.tokenID
+            else:
+                newTokenID = selectMergeToken.tokenID
+            print("newTokenID : ", newTokenID)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+
+            
+            block = 4
+            
+            # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
+            
+            args = []
+            for i,ind in enumerate(fourWordRes):
+                # 取得資料
+                # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+                args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+                
+
+            print(args)
+            query = ' EXEC insertTexttoken_POST @array = ?;'
+            args = json.dumps(args)
+            selectMergeToken = cursor.execute(query, args)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            result['status'] = '0'
+            # # print("Text : ", Text)
+            
+
+
+            
+            # block = 5
+            
+            conn.commit()
+            print("committed")
+        except Exception as e:
+            conn.rollback()
+            print("rollbacked, error message : ", e, " block : ", block)
+            result['ERRMSG'] = str(e)
+        conn.close()
+        print(result)
+    return JsonResponse(result)
 
 
 @csrf_exempt

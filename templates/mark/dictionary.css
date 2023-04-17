@@ -396,13 +396,25 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
     display: none;
-  }  
+  }    
 
   #iframe {
-    height:750px;
-    width:1715px;
+    height:800px;
+    width:1890px;
+    position:absolute;
+    top:65px;
+    left:15px;
+    user-select:none;
     display:none;    
     z-index: 2;
+  }
+  
+  button.btn.btn-secondary[type="button"][name="search"][title="Search"] {    
+    z-index:0;
+  }
+
+  .pagination {    
+    z-index:0;
   }
     
 </style>

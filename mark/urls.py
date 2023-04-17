@@ -59,6 +59,7 @@ urlpatterns = [
     path('getReportBetween2Tokens/', getReportBetween2Tokens, name="getReportBetween2Tokens"),
     path('fiveWord/', fiveWord, name="fiveWord"),
     path('threeWord/', threeWord, name="threeWord"),
+    path('fourWord/', fourWord, name="fourWord"),
     
     
     path('Page2/', Page2,name="Page2"),

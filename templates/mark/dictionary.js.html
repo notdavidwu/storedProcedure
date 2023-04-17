@@ -759,6 +759,10 @@ function customSearchForBetween(data, text) {
                console.log("3");
                selectThree(token1, token2, token3, tokenType, start, target);
                break;
+           case "4":
+               console.log("4");
+               selectFour(token1, token2, token3, token4, tokenType, start, target);
+               break;
            case "5":
                console.log("5");
                selectFive(token1, token2, token3, token4, token5, tokenType, start, target);
@@ -820,6 +824,38 @@ function customSearchForBetween(data, text) {
                 var end = Date.now();
                 console.log("responseThreeWord : ", responseThreeWord);
                 printResultMerge(responseThreeWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+
+    //選四字
+    function selectFour(token1, token2, token3, token4, tokenType, start, target){
+        var Token = target.attr('mergeToken4');
+        var nWord = target.attr('mergeNword4');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併三字
+                responseFourWord = mergeFourWord(token1, token2, token3, token4, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseFourWord : ", responseFourWord);
+                printResultMerge(responseFourWord, start, end, Token);
                 console.log("merged : ", Token, nWord);
             } else{
                 Swal.fire({
@@ -915,6 +951,31 @@ function customSearchForBetween(data, text) {
                 "token1" : token1,
                 "token2" : token2,
                 "token3" : token3,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }    
+
+    //合併四字
+    function mergeFourWord(token1, token2, token3, token4, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:fourWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "token4" : token4,
                 "TokenType" : tokenType,
                 "mergeToken" : Token,
                 "nWord" : nWord,
