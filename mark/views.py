@@ -2191,7 +2191,7 @@ def getReportBetween2Tokens(request):
                 'Token6': i.token6,
                 'NumReports': i.numReports,
                 'Times': i.times,
-                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord2="'+ str(i.mergeNWord2) +'" mergeNWord3="'+ str(i.mergeNWord3) +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
                 'Type': i.firstTokenType,
             })
             number += 1

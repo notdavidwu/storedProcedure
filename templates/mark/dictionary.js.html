@@ -708,15 +708,15 @@ function customSearchForBetween(data, text) {
         var start = Date.now();
         
         //插新字
-        let token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        let token1 = $(event.target).parents('tr').children('td').eq(2).html();
         console.log("token1 = ", token1);
-        let token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        let token2 = $(event.target).parents('tr').children('td').eq(3).html();
         console.log("token2 = ", token2);
-        let token3 = $(event.target).parents('tr').children('td').eq(3).html();
+        let token3 = $(event.target).parents('tr').children('td').eq(4).html();
         console.log("token3 = ", token3);
-        let token4 = $(event.target).parents('tr').children('td').eq(4).html();
+        let token4 = $(event.target).parents('tr').children('td').eq(5).html();
         console.log("token4 = ", token4);
-        let token5 = $(event.target).parents('tr').children('td').eq(5).html();
+        let token5 = $(event.target).parents('tr').children('td').eq(6).html();
 
         // get the select element by ID
         var selectElement = document.getElementById("mergeTokenNumber");
@@ -728,7 +728,7 @@ function customSearchForBetween(data, text) {
         //console.log("selectedOption : ", selectedOption);
         //先設成英文 之後要加選擇Type 可能是存在mergeButton裡面
         var tokenType = "G";
-        var target = $(event.target).parents('tr').children('td').eq(9).children('button');
+        var target = $(event.target).parents('tr').children('td').eq(10).children('button');
         switch (selectedOption){
            case "2":
                console.log("2");
