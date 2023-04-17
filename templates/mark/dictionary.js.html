@@ -83,12 +83,12 @@ $(document).ready(function (e) {
     //loader
     $('#loader').css('display','none');
     $('#frame').css('visibility','visible');
+
     $( '#multiple-select-field' ).select2( {
         theme: "bootstrap-5",
         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
         placeholder: $( this ).data( 'placeholder' ),
         closeOnSelect: false,
-        
     } );
 
     // 監聽選tokenType的元素
@@ -96,14 +96,12 @@ $(document).ready(function (e) {
     // 建立一個 MutationObserver 實例
     var observer = new MutationObserver(function(mutations) {
         //有變動執行以下程序
-        console.log($('#select2-multiple-select-field-container').children('li').length)
+        console.log($('#select2-multiple-select-field-container').children('li').length);
     });
     // 設定觀察選項
     var config = { childList: true };
     // 開始觀察目標節點
-    observer.observe(targetNode, config);
-
-    
+    observer.observe(targetNode, config);    
 })
 
 function getTag(){
@@ -111,14 +109,11 @@ function getTag(){
         type: 'POST',
         url: '{% url "mark:getTag" %}',
         success:function (response){
-            var preElement = `<option value=-9999 id=-9999 selected>【文章開始】</option>
-                                <option value=-10000 id=-10000>【文章結束】</option>`
+            var preElement = `<option value=-9999 id=-9999 selected>【文章開始】</option>`
             $('#firstTag .optionbox .form-select').append(preElement);
-            preElement = `<option value=-9999 id=-9999>【文章開始】</option>
-                                <option value=-10000 id=-10000 selected>【文章結束】</option>`
+            preElement = `<option value=-10000 id=-10000 selected>【文章結束】</option>`
             $('#secondTag .optionbox .form-select').append(preElement);
             for(let i=0;i<response.token.length;i++){
-
                 var element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "1" + `">${response.token[i]}</option>`;
                 $('#firstTag .optionbox .form-select').append(element);
                 element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "2" + `">${response.token[i]}</option>`;
@@ -277,7 +272,7 @@ function printAllData_3(){
 }
 
 //顯示P資料
-function printAllPData(searchWord){    
+function printAllPData(searchWord){
     response = getVocabularyData();
     var tokenP = response.data;
     ////console.log("response.data : ", response.data);
@@ -286,7 +281,7 @@ function printAllPData(searchWord){
     data-pagination="true"
     data-pagination-h-align="left"
     data-pagination-detail-h-align="right"
-    data-page-size="300"
+    data-page-size="100"
     data-height=""    
     data-show-search-button="true">  
     </table>`);
@@ -337,6 +332,8 @@ function printAllPData(searchWord){
 
 //顯示資料
 function printAllDataBetween(){
+    tokenTypes = getSelectedType();
+    console.log("tokenTypes : ", tokenTypes);
 
     tokenID1 = document.getElementById("token1").value;
     tokenID2 = document.getElementById("token2").value;
@@ -346,11 +343,29 @@ function printAllDataBetween(){
     var liElements = ulElement.querySelectorAll('li');
     var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
     console.log(liHTMLArray);
-    response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray);
-    ////console.log("response.data : ", response.data);
+    response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes);
+    //console.log("response.data : ", response.data);
     
     
     
+}
+
+//取得所有已選Type
+function getSelectedType(){
+    // Get the Select2 element by its ID
+    var selectElement = document.getElementById("select2-multiple-select-field-container");
+    console.log("selectElement : ", selectElement);
+
+    // Get all the <li> elements inside the <ul> element
+    var liElements = selectElement.querySelectorAll("li");
+
+    // Loop through the <li> elements and log their contents
+    var arr = [];
+    liElements.forEach(function(liElement) {
+        arr.push(liElement.title.split(':')[0]);
+        console.log(liElement.title.split(':')[0]);
+    });
+    return arr;
 }
 
 //取得所有資料
@@ -408,7 +423,7 @@ function getVocabularyData(){
 }
 
 //取得所有資料
-function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
+function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
     $('#searchingButton').css('display','inline');
     $('#searchButton').css('display','none');
     $('#loader').css('display','inline');
@@ -422,6 +437,7 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
             "firstTokenID" : tokenID1,
             "secondTokenID" : tokenID2,
             "tokens[]" : liHTMLArray,
+            "tokenTypes[]" : tokenTypes,
         }),
         success:function (response){
             res = response;
@@ -430,7 +446,7 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
             data-pagination="true"
             data-pagination-h-align="left"
             data-pagination-detail-h-align="right"
-            data-page-size="300"        
+            data-page-size="100"        
             data-height="">
             </table>`);
             $('#sortTable').bootstrapTable({
@@ -439,6 +455,11 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
                     title: 'No',
                     align: 'center',
                     valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
                     sortable:true,
                 },
                 {
@@ -498,6 +519,8 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
             $('#searchButton').css('display','inline');
             $('#loader').css('display','none');
             $('#cover').css('display','none');
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
         },
     });
 }
@@ -544,12 +567,76 @@ function customSearch(data, text) {
     
 
     return data.filter(function (row) {
-      return row.Times >= text
+      return row.Times >= text;
     })
   }
 
-  function customSearchForBetween(data, text) {
-    console.log("customSearchForBetween in ");
+function customSearchForBetween(data, text) {
+  console.log("customSearchForBetween in ");
+  var search = document.getElementsByClassName("form-control search-input");
+  //console.log("search : ", search[0]);
+  var selectValue = document.getElementById("tableSelect1").value;
+  //console.log("selectValue : ", selectValue);
+  //console.log("data : ", data);
+  //console.log("text : ", text);
+  if (text != ""){
+      switch (selectValue) {
+          case '1':
+              //console.log('select 1');
+              return data.filter(function (row) {
+                return row.Token1 == text;
+              })
+              break;
+          case '2':
+              //console.log('select 2');
+              return data.filter(function (row) {
+                return row.Token2 == text;
+              })
+              break;
+          case '3':
+              //console.log('select 3');
+              return data.filter(function (row) {
+                return row.Token3 == text;
+              })
+              break;
+          case '4':
+              //console.log('select 4');
+              return data.filter(function (row) {
+                return row.Token4 == text;
+              })
+              break;
+          case '5':
+              //console.log('select 4');
+              return data.filter(function (row) {
+                  return row.Token5 == text;
+              })
+              break;
+          case '6':
+              //console.log('select 4');
+              return data.filter(function (row) {
+                  return row.NumReports >= text;
+              })
+              break;
+          case '7':
+              //console.log('select 4');
+              return data.filter(function (row) {
+                  return row.Times >= text;
+              })
+              break;
+          
+          case '0':
+              //console.log('select 0');
+              return data;
+              break;
+      }
+  }
+  return data.filter(function (row) {
+    return row.Times >= text;
+  })
+}
+
+  function customFilter(data, text) {
+    console.log("customFilter in 123");
     var search = document.getElementsByClassName("form-control search-input");
     //console.log("search : ", search[0]);
     var selectValue = document.getElementById("tableSelect1").value;
@@ -608,15 +695,18 @@ function customSearch(data, text) {
         }
     }
     return data.filter(function (row) {
-      return row.Times >= text
+      return row.Times >= text;
     })
   }
 
     //測試一次做完
-    function allInOneFiveWord(){
-        
-
+    function allInOneTwoThreeFiveWord(){
+        // $('#sortTable').attr("data-custom-search", 'customFilter');
+        // $('#sortTable').bootstrapTable('filterBy', {
+        //     Type: 'C'
+        // });
         var start = Date.now();
+        
         //插新字
         let token1 = $(event.target).parents('tr').children('td').eq(1).html();
         console.log("token1 = ", token1);
@@ -627,19 +717,40 @@ function customSearch(data, text) {
         let token4 = $(event.target).parents('tr').children('td').eq(4).html();
         console.log("token4 = ", token4);
         let token5 = $(event.target).parents('tr').children('td').eq(5).html();
-        console.log("token5 = ", token5);
-        let times = $(event.target).parents('tr').children('td').eq(7).html();
-        ////console.log("times = ", times);
-        var Token =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeToken');
-        
-        var nWord =  $(event.target).parents('tr').children('td').eq(9).children('button').attr('mergeNWord');
+
+        // get the select element by ID
+        var selectElement = document.getElementById("mergeTokenNumber");
+
+        // get the selected option value
+        var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+
+        // log the selected option value to the console
+        //console.log("selectedOption : ", selectedOption);
+        //先設成英文 之後要加選擇Type 可能是存在mergeButton裡面
         var tokenType = "G";
-        console.log("Token = ", Token);
-        console.log("nWord = ", nWord);
-        //response = insertVocabulary_new(Token, lenOfToken, TokenType);
-    
+        var target = $(event.target).parents('tr').children('td').eq(9).children('button');
+        switch (selectedOption){
+           case "2":
+               console.log("2");
+               selectTwo(token1, token2, tokenType, start, target);
+               break;
+           case "3":
+               console.log("3");
+               selectThree(token1, token2, token3, tokenType, start, target);
+               break;
+           case "5":
+               console.log("5");
+               selectFive(token1, token2, token3, token4, token5, tokenType, start, target);
+               break;
+        }
+    }
+
+    //選二字
+    function selectTwo(token1, token2, tokenType, start, target){
+        var Token = target.attr('mergeToken2');
+        var nWord = target.attr('mergeNword2');
         Swal.fire({
-            title: 'Do you want to continue?',fiveWord,
+            title: 'Do you want to continue?',
             text: 'The merged Token will be : "' + Token + '"',
             icon: 'question',
             showCancelButton: true,
@@ -647,24 +758,72 @@ function customSearch(data, text) {
             cancelButtonText: 'No'
         })
         .then((result) => {
-
             if (result.isConfirmed) {
-                // Action to be executed when OK is clicked
-                console.log('User clicked OK');
-                //var words = document.getElementById("words").value;
-                //switch (words) {
-                //    case '2':
-                //        console.log('Oranges are $0.59 a pound.');
-                //        break;
-                //    case '3':
-//
-                //    case '5':
-                //        console.log('Mangoes and papayas are $2.79 a pound.');
-                //        // Expected output: "Mangoes and papayas are $2.79 a pound."
-                //        break;
-                //    default:
-                //        console.log(`Sorry, we are out of ${expr}.`);
-                //}
+                //合併二字
+                responseTwoWord = mergeTwoWord(token1, token2, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseTwoWord : ", responseTwoWord);
+                printResultMerge(responseTwoWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+    
+
+    //選三字
+    function selectThree(token1, token2, token3, tokenType, start, target){
+        var Token = target.attr('mergeToken3');
+        var nWord = target.attr('mergeNword3');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併三字
+                responseThreeWord = mergeThreeWord(token1, token2, token3, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseThreeWord : ", responseThreeWord);
+                printResultMerge(responseThreeWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+
+    //選五字
+    function selectFive(token1, token2, token3, token4, token5, tokenType, start, target){
+        var Token = target.attr('mergeToken5');
+        var nWord = target.attr('mergeNword5');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
                 //合併五字
                 responseFiveWord = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType);
                 printAllDataBetween();
@@ -672,11 +831,15 @@ function customSearch(data, text) {
                 var end = Date.now();
                 console.log("responseFiveWord : ", responseFiveWord);
                 printResultMerge(responseFiveWord, start, end, Token);
-            } else if (result.isDenied) {
-                // Action to be executed when Cancel is clicked
-                console.log('User clicked Cancel');
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
             }
-        });
+        });        
     }
 
     //顯示結果
@@ -693,6 +856,54 @@ function customSearch(data, text) {
             }
         }
         
+    }
+
+
+    //合併二字
+    function mergeTwoWord(token1, token2, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:twoWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    //合併三字
+    function mergeThreeWord(token1, token2, token3, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:threeWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
     }
 
     //合併五字

@@ -1951,130 +1951,7 @@ def getMergeLog(request):
         conn.close()
     return JsonResponse(result)
 
-@csrf_exempt
-def twoWord(request):
-    if request.method == 'POST':
-        #取得資料
-        result = {'status':'1'} #預設沒找到
-        
-        #建立連線
-        server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
-        username = 'N824'
-        password = 'test81218'
-        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
-        cursor = conn.cursor()
-        token1 = request.POST.get('token1')
-        token2 = request.POST.get('token2')
 
-
-        # ------------------------------------------------------- 抓舊字tokenID---------------------------------------------------------------
-        print("token1 : ", token1)
-        print("token2 : ", token2)
-        token = [token1, token2]
-        tokenIDArray = []
-        for i in token:
-            query = "select tokenID from Vocabulary where token = ?;"
-            args = [i]
-            tokenID = cursor.execute(query, args).fetchone()
-            tokenIDArray.append(tokenID.tokenID)
-        tokenID1 = tokenIDArray[0]
-        tokenID2 = tokenIDArray[1]
-
-        print(tokenID1, tokenID2)
-        # ------------------------------------------------------------------------------------------------------------------------------------
-        
-        conn.commit()
-
-
-
-        # ------------------------------------------------------- 抓原本的位置-----------------------------------------------------------------
-        query = "EXEC [twoWordNoJump] @tokenID1 = ?, @tokenID2 = ?;"
-        args = [tokenID1, tokenID2]
-        print("twoWordNoJump : ", args)
-
-        cursor.execute(query, args)
-        twoWordNoJumpRes = cursor.fetchall()
-        # print("twoWordNoJumpRes : ", twoWordNoJumpRes)
-        mergeToken = request.POST.get('mergeToken')
-        
-        argsForinsertTextToken = []
-        for i,ind in enumerate(twoWordNoJumpRes):
-            # 取得資料
-            # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
-        #     args = []
-        #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
-            data = {"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":mergeToken}
-            argsForinsertTextToken.append(copy.deepcopy(data))
-
-        # ------------------------------------------------------------------------------------------------------------------------------------    
-        # 
-        conn.commit()
-
-
-        
-        # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
-        query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
-        args = [tokenID1, tokenID2, 'A']
-        timesMinusOneA = cursor.execute(query, args).fetchall()
-        print("timesMinusOneA : ", len(timesMinusOneA))
-        conn.commit()
-
-        
-        
-        query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
-        args = [tokenID1, tokenID2, 'B']
-        timesMinusOneB = cursor.execute(query, args).fetchall()
-        print("timesMinusOneB : ", len(timesMinusOneB))
-        # ------------------------------------------------------------------------------------------------------------------------------------
-        conn.commit()
-
-
-        
-        # ------------------------------------------------------- 插入新字---------------------------------------------------------------------        
-        TokenType = request.POST.get('TokenType')
-        query = "select token, tokenID from Vocabulary where token = ?;"
-        args = [mergeToken]
-        selectMergeToken = cursor.execute(query, args).fetchone()
-        print("selectMergeToken : ", selectMergeToken)        
-        nWord = request.POST.get('nWord')
-        if selectMergeToken == None:
-            query = "insert into Vocabulary (token, nWord, tokenType) output [inserted].tokenID values(?, ?, ?);"
-            args = [mergeToken, nWord, TokenType]
-            inertMergeToken = cursor.execute(query, args).fetchone()
-            print("inertMergeToken : ", inertMergeToken.tokenID)
-            newTokenID = inertMergeToken.tokenID
-        else:
-            newTokenID = selectMergeToken.tokenID
-        print("newTokenID : ", newTokenID)
-        # ------------------------------------------------------------------------------------------------------------------------------------
-        conn.commit()
-
-        
-        
-        # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
-        
-        args = []
-        for i,ind in enumerate(twoWordNoJumpRes):
-            # 取得資料
-            # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
-            args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
-            
-
-        print(args)
-        query = ' EXEC insertTexttoken_POST @array = ?;'
-        args = json.dumps(args)
-        selectMergeToken = cursor.execute(query, args)
-        # ------------------------------------------------------------------------------------------------------------------------------------
-        conn.commit()
-        result['status'] = '0'
-        # # print("Text : ", Text)
-        
-
-
-        
-        conn.close()
-    return JsonResponse(result)
 
 
 
@@ -2283,12 +2160,19 @@ def getReportBetween2Tokens(request):
         for i in tokens:
             string += i + ","
         string = string[0:len(string)-1] 
+        
+        tokenTypes = body['tokenTypes[]']
+        # print(firstTokenID, secondTokenID, tokens)
+        Types = ""
+        for i in tokenTypes:
+            Types += i + ","
+        Types = Types[0:len(Types)-1] 
         # print("string : ", string)
         
         query = '''
-                EXEC [getReportBetween] @firstTokenID = ?, @secondTokenID = ?, @tokens = ?;
+                EXEC [getReportBetween] @firstTokenID = ?, @secondTokenID = ?, @tokens = ?, @tokenTypes = ?;
                 ''' 
-        args = [firstTokenID, secondTokenID, string]
+        args = [firstTokenID, secondTokenID, string, Types]
         # print(args)
         cursor.execute(query, args)
         datatoken = cursor.fetchall()
@@ -2298,7 +2182,7 @@ def getReportBetween2Tokens(request):
         for ind,i in enumerate(datatoken):
             # print(i)
             result['data'].append({
-                'No': '<button  onclick="searchReportText()" class="btn btn-secondary btn_view" name="">' + str(number) + '</button>',
+                'No': '<div >' + str(number) + '</div>',
                 'Token1': i.token1,
                 'Token2': i.token2,
                 'Token3': i.token3,
@@ -2307,7 +2191,8 @@ def getReportBetween2Tokens(request):
                 'Token6': i.token6,
                 'NumReports': i.numReports,
                 'Times': i.times,
-                'Mergecheck':'<button onclick="allInOneFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord="'+ str(i.mergeNWord) +'">Merge</button>',
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
+                'Type': i.firstTokenType,
             })
             number += 1
         
@@ -2631,6 +2516,153 @@ def threeWord(request):
         conn.close()
         print(result)
     return JsonResponse(result)
+
+
+@csrf_exempt
+def twoWord(request):
+    if request.method == 'POST':
+        #取得資料
+        result = {'status':'1'} #預設沒找到
+        
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'buildVocabulary ' 
+        username = 'N824'
+        password = 'test81218'
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+        cursor = conn.cursor()
+        token1 = request.POST.get('token1')
+        token2 = request.POST.get('token2')
+
+        block = 0
+        
+        try:
+            # ------------------------------------------------------- 抓舊字tokenID---------------------------------------------------------------
+            print("token1 : ", token1)
+            print("token2 : ", token2)
+            
+            if token1 == None or token2 == None:
+                raise Exception("token None")
+            token = [token1, token2]
+            tokenIDArray = []
+            for i in token:
+                query = "select tokenID from Vocabulary where token = ?;"
+                args = [i]
+                tokenID = cursor.execute(query, args).fetchone()
+                tokenIDArray.append(tokenID.tokenID)
+            tokenID1 = tokenIDArray[0]
+            tokenID2 = tokenIDArray[1]
+            
+
+            if tokenID1 == None or tokenID2 == None:
+                raise Exception("tokenID None")
+
+            print(tokenID1, tokenID2)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            block = 1
+
+
+
+            # ------------------------------------------------------- 抓原本的位置-----------------------------------------------------------------
+            query = "EXEC [twoWordNoJump] @tokenID1 = ?, @tokenID2 = ?;"
+            args = [tokenID1, tokenID2]
+            print("twoWordNoJump : ", args)
+
+            cursor.execute(query, args)
+            twoWordNoJumpRes = cursor.fetchall()
+            
+            
+            if twoWordNoJumpRes == None :
+                raise Exception("twoWordNoJumpRes None")
+            # print("twoWordNoJumpRes : ", twoWordNoJumpRes)
+            mergeToken = request.POST.get('mergeToken')
+            if mergeToken == None :
+                raise Exception("mergeToken None")
+            
+            argsForinsertTextToken = []
+            for i,ind in enumerate(twoWordNoJumpRes):
+                # 取得資料
+                # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+            #     args = []
+            #     args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+                data = {"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":mergeToken}
+                argsForinsertTextToken.append(copy.deepcopy(data))
+
+            # ------------------------------------------------------------------------------------------------------------------------------------  
+            block = 2  
+            # 
+
+
+            
+            # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
+            query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, 'A']
+            timesMinusOneA = cursor.execute(query, args).fetchall()
+            print("timesMinusOneA : ", len(timesMinusOneA))
+
+            
+            
+            query = "EXEC [twoWordNoJump*-1] @tokenID1 = ?, @tokenID2 = ?, @block = ?;"
+            args = [tokenID1, tokenID2, 'B']
+            timesMinusOneB = cursor.execute(query, args).fetchall()
+            print("timesMinusOneB : ", len(timesMinusOneB))
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            block = 3
+
+
+            
+            # ------------------------------------------------------- 插入新字---------------------------------------------------------------------        
+            TokenType = request.POST.get('TokenType')
+            query = "select token, tokenID from Vocabulary where token = ?;"
+            args = [mergeToken]
+            selectMergeToken = cursor.execute(query, args).fetchone()
+            print("selectMergeToken : ", selectMergeToken)        
+            nWord = request.POST.get('nWord')
+            if selectMergeToken == None:
+                query = "insert into Vocabulary (token, nWord, tokenType) output [inserted].tokenID values(?, ?, ?);"
+                args = [mergeToken, nWord, TokenType]
+                inertMergeToken = cursor.execute(query, args).fetchone()
+                print("inertMergeToken : ", inertMergeToken.tokenID)
+                newTokenID = inertMergeToken.tokenID
+            else:
+                newTokenID = selectMergeToken.tokenID
+            print("newTokenID : ", newTokenID)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            block = 4
+
+            
+            
+            # ------------------------------------------------------- 插入新textToken--------------------------------------------------------------
+            
+            args = []
+            for i,ind in enumerate(twoWordNoJumpRes):
+                # 取得資料
+                # print("reportID :", ind[0], "|posStart :", ind[1], "|posEnd :", ind[2], "|mergeToken : ", mergeToken)
+                args.append({"reportID":ind[0], "posStart":ind[1], "posEnd":ind[2], "newTokenID":newTokenID})
+                
+
+            print(args)
+            query = ' EXEC insertTexttoken_POST @array = ?;'
+            args = json.dumps(args)
+            selectMergeToken = cursor.execute(query, args)
+            # ------------------------------------------------------------------------------------------------------------------------------------
+            block = 5
+            conn.commit()
+            result['status'] = '0'
+        
+        except Exception as e:
+            conn.rollback()
+            print("rollbacked, error message : ", e, " block : ", block)
+            result['ERRMSG'] = str(e)
+        # # print("Text : ", Text)
+        
+
+
+        
+        conn.close()
+    return JsonResponse(result)
+
+
 
 
 import django.forms
