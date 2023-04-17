@@ -109,9 +109,9 @@ function getTag(){
         type: 'POST',
         url: '{% url "mark:getTag" %}',
         success:function (response){
-            var preElement = `<option value=-9999 id=-9999 selected>【文章開始】</option>`
+            var preElement = `<option value=-1 id=-1 selected>【文章開始】</option>`
             $('#firstTag .optionbox .form-select').append(preElement);
-            preElement = `<option value=-10000 id=-10000 selected>【文章結束】</option>`
+            preElement = `<option value=-1 id=-1 selected>【文章結束】</option>`
             $('#secondTag .optionbox .form-select').append(preElement);
             for(let i=0;i<response.token.length;i++){
                 var element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "1" + `">${response.token[i]}</option>`;
@@ -422,6 +422,25 @@ function getVocabularyData(){
     return res;
 }
 
+//取得被合併的兩個tokenID
+function getTokenIDByName(Name){
+        console.log("Name : ", Name);
+        var res = [];
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '{% url 'mark:checkName' %}',
+            data:{
+                "Name[]" : Name,
+            },
+            success:function (response){
+                res = response;
+                ////console.log("res : ", res);
+            },
+        });
+        return res;
+}
+
 //取得所有資料
 function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
     $('#searchingButton').css('display','inline');
@@ -429,6 +448,8 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
     $('#loader').css('display','inline');
     $('#loader').css('z-index','10');
     $('#cover').css('display','inline');
+    tokenID = getTokenIDByName(liHTMLArray);
+    console.log("tokenID : ", tokenID.tokenID);
     $.ajax({
         async: true,
         type: 'POST',
@@ -436,7 +457,7 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
         data:JSON.stringify({
             "firstTokenID" : tokenID1,
             "secondTokenID" : tokenID2,
-            "tokens[]" : liHTMLArray,
+            "tokens[]" : tokenID.tokenID,
             "tokenTypes[]" : tokenTypes,
         }),
         success:function (response){
@@ -936,6 +957,7 @@ function customSearchForBetween(data, text) {
     function changeSrc() {
         // Get the iframe element
         var iframe = document.getElementById("iframe");
+        console.log("iframe : ", iframe);
         var overlay = document.querySelector('.overlay');
         var iframeDoc = iframe.contentWindow.document;
         var feedbackElement = iframeDoc.querySelector('.warning-feedback');
@@ -961,6 +983,8 @@ function customSearchForBetween(data, text) {
             overlay.style.display = "block";
 
             iframe.style.display = "block";
+            
+            console.log("iframe : ", iframe);
             
         
             var navbar = iframeDoc.getElementById("navbar");

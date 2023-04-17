@@ -69,6 +69,10 @@
 
 <body >
     
+    <div class="overlay">
+        <iframe src="{% url 'mark:home' %}" id="iframe">
+        </iframe>
+    </div>
     {% include 'navBar.html' %}
     {{ user.username|json_script:"user_username" }}
     {{ user.last_name|json_script:"hospital" }}
@@ -140,10 +144,8 @@
     <div>
         
 
-    <iframe src="{% url 'mark:home' %}" id="iframe">
-    </iframe>
-    <div class="overlay"></div>
-    </br>
+
+</body >
 </html>
 {% endblock %}
 

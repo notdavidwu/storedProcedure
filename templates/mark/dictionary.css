@@ -372,7 +372,8 @@
         display:none;
     }
     #setting > .col-12{
-        margin-top:0px
+        margin-top:0px;
+        z-index: 0;
     }
     .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice{
         font-size:10pt;
@@ -400,10 +401,6 @@
   #iframe {
     height:750px;
     width:1715px;
-    position:absolute;
-    top:65px;
-    left:15px;
-    user-select:none;
     display:none;    
     z-index: 2;
   }
