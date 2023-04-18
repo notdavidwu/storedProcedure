@@ -748,7 +748,7 @@ function customSearchForBetween(data, text) {
         // log the selected option value to the console
         //console.log("selectedOption : ", selectedOption);
         //先設成英文 之後要加選擇Type 可能是存在mergeButton裡面
-        var tokenType = "G";
+        var tokenType = document.getElementById("mergeType").value;
         var target = $(event.target).parents('tr').children('td').eq(10).children('button');
         switch (selectedOption){
            case "2":
@@ -776,7 +776,7 @@ function customSearchForBetween(data, text) {
         var nWord = target.attr('mergeNword2');
         Swal.fire({
             title: 'Do you want to continue?',
-            text: 'The merged Token will be : "' + Token + '"',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -809,7 +809,7 @@ function customSearchForBetween(data, text) {
         var nWord = target.attr('mergeNword3');
         Swal.fire({
             title: 'Do you want to continue?',
-            text: 'The merged Token will be : "' + Token + '"',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -841,7 +841,7 @@ function customSearchForBetween(data, text) {
         var nWord = target.attr('mergeNword4');
         Swal.fire({
             title: 'Do you want to continue?',
-            text: 'The merged Token will be : "' + Token + '"',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -873,7 +873,7 @@ function customSearchForBetween(data, text) {
         var nWord = target.attr('mergeNword5');
         Swal.fire({
             title: 'Do you want to continue?',
-            text: 'The merged Token will be : "' + Token + '"',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes',
