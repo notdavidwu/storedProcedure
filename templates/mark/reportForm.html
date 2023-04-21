@@ -77,50 +77,53 @@
     {{ user.username|json_script:"user_username" }}
     {{ user.last_name|json_script:"hospital" }}
     <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    
     <div id="frame">
         <div id=pool class="row g-3">
             <div id='tag' class="col-12">
                 <div class="optionbox">
                     <select class="form-select" id="token1">
-                        <option value="T" selected>Test & append</option>
+                        <option value="T">Test</option>
                         <option value="C">Create</option>
                     </select>
                 </div>
             </div>
-
             <div id='reportFormName' class="col-12">
-                <input type='text' class="form-control" id='reportFormNameInput' placeholder="Input New Form Name">
-            </div>
-            
-            <div  class="col-12">
-                <div class="optionbox">
-                    <select id='reportFormNameSelect' class="form-select">    
-                    </select>            
-                </div>
-            </div>
-
-            <div id="selectArea" class="col-12">
-                <select class="selectVocabulary" id="selectVocabulary"multiple>
+                <select class="form-select" id="selectDiease">
                 </select>
-            </div>           
-            <div id="search" class="col-6">
-                <button type="button" class="btn btn-primary form-control" id="searchButton">Test</button>
-                <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                    Loading...
-                </button>
-            </div>            
-            <div id="append" class="col-6">
-                <button type="button" class="btn btn-primary form-control" id="searchButton">Append</button>
+            </div>
+            <div id='reportFormName' class="col-12">
+                <select class="form-select" id="selectProcedure">
+                    <option value="7">Search Times</option>
+                    <option value="C">Chinese Type</option>
+                    <option value="G">English Type</option>
+                </select>
+            </div>
+            <div id="selectArea" class="col-12">
+                <select class="selectVocabulary" multiple id="selectVocabulary">
+                    <option>a</option>
+                </select>
+            </div>
+            <div id="search" class="col-12">
+                <button type="button" class="btn btn-primary form-control" id="searchButton">查詢</button>
                 <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
                     <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
                     Loading...
                 </button>
             </div>
         </div>
-
-        <div id="textBox">
-            <textarea id=text></textarea>
+        <div id='reportList'></div>
+        <div id='reportArea'>
+            <div class="checkPannel" id="extractedFactor" data-window=1 data-windowSeq=1>
+                <div class="ascriptionHeader">
+                    報告萃取
+                    <!-- <select class="form-select form-select-sm customSelect changeSeq" onchange="changeSeq()"  data-form=0></select>-->
+                </div>
+                <div id="factorGroupArea0"  class="row factorGroupArea"></div>
+            </div>
+            <div id="textBox">
+                <textarea id=text></textarea>
+            </div>
         </div>
     </div>
     <div id="cover">

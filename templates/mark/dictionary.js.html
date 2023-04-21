@@ -109,10 +109,10 @@ function getTag(){
         type: 'POST',
         url: '{% url "mark:getTag" %}',
         success:function (response){
-            var preElement = `<option value=-1 id=-1 selected>【文章開始】</option>`
-            $('#firstTag .optionbox .form-select').append(preElement);
-            preElement = `<option value=-1 id=-1 selected>【文章結束】</option>`
-            $('#secondTag .optionbox .form-select').append(preElement);
+            // var preElement = `<option value=-1 id=-1 selected>【文章開始】</option>`
+            // $('#firstTag .optionbox .form-select').append(preElement);
+            // preElement = `<option value=-1 id=-1 selected>【文章結束】</option>`
+            // $('#secondTag .optionbox .form-select').append(preElement);
             for(let i=0;i<response.token.length;i++){
                 var element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "1" + `">${response.token[i]}</option>`;
                 $('#firstTag .optionbox .form-select').append(element);

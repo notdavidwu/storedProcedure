@@ -48,6 +48,31 @@
             height:100%;
             width:100%;
         }
+        #reportList{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#32435F;
+            height:100%;
+            width:100%;
+            overflow-y:auto;
+        }
+        #reportArea{
+            width:100%;
+            height:100%;
+        }
+        #textBox{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#fffaf0;
+            height:50%;
+
+            width:100%;
+        }
+        #extractedFactor{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#fffaf0;
+            height:50%;
+
+            width:100%;
+        }
     }
     body{
         background:url("{% static 'image/texture.png' %}");
@@ -82,22 +107,40 @@
         #pool {
             background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
-            width: 40%;
+            width: 20%;
             height: calc(100% - 100px);
             min-width:350px;
             margin:0px;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
-            height:calc(100vh - 420px)
+            height:calc(100vh - 500px)
+        }
+        #reportList{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#32435F;
+            height:100%;
+            width:20%;
+            overflow-y:auto;
+        }
+        #reportArea{
+            width:60%;
         }
         #textBox{
             background:url("{% static 'image/texture.png' %}");
             background-color:#fffaf0;
-            height:100%;
+            height:50%;
 
-            width:60%;
+            width:100%;
         }
-        
+        #extractedFactor{
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#fffaf0;
+            height:50%;
+
+            width:100%;
+        }
+
+
     }
     /* Define the scrollbar styles */
     ::-webkit-scrollbar {
@@ -164,6 +207,7 @@
       -webkit-appearance: button;
       outline: none;
     }
+    
     .row{margin:0}
     .form-select{
         font-family: 'Noto Sans TC', sans-serif;
@@ -364,32 +408,35 @@
     .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice{
         padding:2px 5px 2px 5px
     }
+    #extractedFactor .ascriptionHeader{border-radius:0px;}
+    #extractedFactor li{font-size:10pt}
+    .factorGroupArea{height:calc(100% - 30px);overflow-y:auto;overflow-x:hidden}
     
-    .highlight {
-        background-color: #27B7DE;
-        color: white;
-    }    
-    
-    .hwt-container {
+    #extractedFactor label{padding-left:5px}
+    #extractedFactor ul{margin-left: 0; padding-left: 20px;}
+    .row{margin:0px !important}
+    .col-md-6{padding:2px}
+    .col-md-12{padding:2px}
+    .ascriptionContentHeader{
         width:100%;
-        height:100%
+        text-align:center;
+        border-bottom:1px solid #AAAAAA;
+        z-index:500;
     }
-    
-    #reportFormNameSelect {
-        display:block;
+    .ascriptionHeader{
+        border-radius:10px 10px 0px 0px;
+        width:100%;
+        height:30px;
+        background:url("{% static 'image/texture.png' %}");
+        background-color:#000;
+        text-align:center;
+        line-height:30px;
+        font-weight:900;
+        color:#FFFFFF;
+        z-index:500;
     }
-    
-    #reportFormNameInput {
-        display:none;
-    }
-    
-    #append {
-    }
-    
-    .red {
-        background-color: red;
-        color: white;
-    }    
+    .customSelect{background-image:none;width:20%;font-size:5pt;padding:0px;padding-left:5px}
+    .submit{height:40px;line-height:8px;width:calc(100% - 8px);position:relative;bottom:5px;margin-left:4px}
     
 </style>
 {% endblock %}

@@ -40,71 +40,72 @@ $(document).ready(function (e) {
     $('#loader').css('display','none');
     $('#frame').css('visibility','visible');
 
-    var reportFormID = document.getElementById("reportFormNameSelect").value;
-    var boxNum = 0;
+    // var reportFormID = document.getElementById("reportFormNameSelect").value;
+    // var boxNum = 0;
+    var reportFormID = "1";
     getVocaubulary(reportFormID);
     
-    var FormSelect = document.getElementById("reportFormNameSelect");
-    FormSelect.addEventListener("change", () => {
-        $('#selectVocabulary').find('option').remove();
-        var box = document.getElementsByClassName("dual-listbox selectVocabulary")[0];
-        box.remove();          
-        var reportFormID = document.getElementById("reportFormNameSelect").value;
-        getVocaubulary(reportFormID);
-        // boxNum += 1;
-    });
+    // // var FormSelect = document.getElementById("reportFormNameSelect");
+    // // FormSelect.addEventListener("change", () => {
+    // //     $('#selectVocabulary').find('option').remove();
+    // //     var box = document.getElementsByClassName("dual-listbox selectVocabulary")[0];
+    // //     box.remove();          
+    // //     var reportFormID = document.getElementById("reportFormNameSelect").value;
+    // //     getVocaubulary(reportFormID);
+    // //     // boxNum += 1;
+    // // });
     
 
-    $( '#multiple-select-field' ).select2( {
-        theme: "bootstrap-5",
-        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-        placeholder: $( this ).data( 'placeholder' ),
-        closeOnSelect: false,
-    });
+    // $( '#multiple-select-field' ).select2( {
+    //     theme: "bootstrap-5",
+    //     width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    //     placeholder: $( this ).data( 'placeholder' ),
+    //     closeOnSelect: false,
+    // });
 
-    // 監聽選tokenType的元素
-    var targetNode = $('#select2-multiple-select-field-container')[0];
-    // 建立一個 MutationObserver 實例
-    var observer = new MutationObserver(function(mutations) {
-        //有變動執行以下程序
-        //console.log($('#select2-multiple-select-field-container').children('li').length);
-    });
-    // 設定觀察選項
-    var config = { childList: true };
-    // 開始觀察目標節點
-    //observer.observe(targetNode, config);    
+    // // 監聽選tokenType的元素
+    // var targetNode = $('#select2-multiple-select-field-container')[0];
+    // // 建立一個 MutationObserver 實例
+    // var observer = new MutationObserver(function(mutations) {
+    //     //有變動執行以下程序
+    //     //console.log($('#select2-multiple-select-field-container').children('li').length);
+    // });
+    // // 設定觀察選項
+    // var config = { childList: true };
+    // // 開始觀察目標節點
+    // //observer.observe(targetNode, config);    
 
-    //搜尋按鈕
-    $("#searchButton").click(function(){
-        getReport();
-    });
+    // //搜尋按鈕
+    // $("#searchButton").click(function(){
+    //     getReport();
+    // });
 
-    const tokenSelect = document.getElementById("token1");
-    const searchButton = document.getElementById("searchButton");
-    const searchButtonDIV = document.getElementById("search");
-    var inputBox = document.getElementById("reportFormNameInput");
-    var selectForm = document.getElementById("reportFormNameSelect");
-    var append = document.getElementById("append");
+    // const tokenSelect = document.getElementById("token1");
+    // const searchButton = document.getElementById("searchButton");
+    // const searchButtonDIV = document.getElementById("search");
+    // var inputBox = document.getElementById("reportFormNameInput");
+    // var selectForm = document.getElementById("reportFormNameSelect");
+    // var append = document.getElementById("append");
 
-    tokenSelect.addEventListener("change", () => {
-    if (tokenSelect.value === "C") {
-        searchButton.textContent = "Create";
-        searchButtonDIV.className = "col-12";
-        inputBox.style.display = "block";
-        selectForm.style.display = "none";
-        append.style.display = "none";
-    } else {
-        searchButtonDIV.className = "col-6";
-        searchButton.textContent = "Test";
-        inputBox.style.display = "none";
-        selectForm.style.display = "block";
-        append.style.display = "block";
-    }
-    });
+    // tokenSelect.addEventListener("change", () => {
+    // if (tokenSelect.value === "C") {
+    //     searchButton.textContent = "Create";
+    //     searchButtonDIV.className = "col-12";
+    //     inputBox.style.display = "block";
+    //     selectForm.style.display = "none";
+    //     append.style.display = "none";
+    // } else {
+    //     searchButtonDIV.className = "col-6";
+    //     searchButton.textContent = "Test";
+    //     inputBox.style.display = "none";
+    //     selectForm.style.display = "block";
+    //     append.style.display = "block";
+    // }
+    // });
 })
 
 function getVocaubulary(reportFormID){
-    $('#reportFormNameSelect').prop('disabled', true);
+    // $('#reportFormNameSelect').prop('disabled', true);
     $.ajax({
         type: 'POST',
         url: '{% url "mark:getAllWordExsisting" %}',
@@ -125,7 +126,7 @@ function getVocaubulary(reportFormID){
             $('#selectVocabulary').append(element);
             dualBox();
             
-            $('#reportFormNameSelect').prop('disabled', false);
+            // $('#reportFormNameSelect').prop('disabled', false);
         },
     });
 }
@@ -224,7 +225,7 @@ function getReport(){
         console.log("regexTotal :", regexTotal);
         console.log("regexTotalNotExist :", regexTotalNotExist);
         //console.log("reg :", reg);
-        var reg = new RegExp(regexTotal, 'gi');
+        var reg = new RegExp(regexTotal, 'g');
         console.log("reg :", reg);
         $('#text').highlightWithinTextarea({
             highlight: [
@@ -320,12 +321,12 @@ function getreportFormID(){
         success:function (response){
             res = response;
             printResult(res);
-            //console.log("res : ", res);            
+            console.log("res : ", res);            
             let element = '';
             for(let i=0;i<response.reportFormID.length;i++){
-                element += `<option value=${response.reportFormID[i]}>${response.reportFormID[i]}</option>`;
+                element += `<option value=${response.reportFormID[i]}>${response.reportFormName[i]}</option>`;
             }
-            $('#reportFormNameSelect').append(element);
+            $('#selectDiease').append(element);
         },
     });
     return res;

@@ -207,7 +207,7 @@ def getVocabularyByType_Ptable(request):
                     # 'UnMerge':'',
                 # })
 
-        query = '''    SELECT * FROM Vocabulary where tokenType in ('C', 'P', 'G');
+        query = '''    SELECT * FROM Vocabulary where tokenType in ('C', 'P', 'G', 'T', 'E');
                 '''
         # # # # print(args)
         cursor.execute(query)
@@ -2180,29 +2180,49 @@ def getReportBetween2Tokens(request):
         # # print("string : ", string)
         
         query = '''
-                EXEC [getReportBetween] @firstTokenID = ?, @secondTokenID = ?, @tokens = ?, @tokenTypes = ?, @num = ?;
+                select * from [summary_6f](?,?,?) order by 1 desc
                 ''' 
-        args = [firstTokenID, secondTokenID, string, Types, 0]
+        args = [firstTokenID, secondTokenID, string]
         print(Types)
+        print(args)
         cursor.execute(query, args)
         datatoken = cursor.fetchall()
-        # # print(datatoken)
+        print(datatoken)
         result['data'] = []
         number = 1
         for ind,i in enumerate(datatoken):
             # # print(i)
+            token1 = i.token1 if i.token1 != ' ' else '[SPACE]'
+            token2 = i.token2 if i.token2 != ' ' else '[SPACE]'
+            token3 = i.token3 if i.token3 != ' ' else '[SPACE]'
+            token4 = i.token4 if i.token4 != ' ' else '[SPACE]'
+            token5 = i.token5 if i.token5 != ' ' else '[SPACE]'
+            token6 = i.token6 if i.token6 != ' ' else '[SPACE]'
+            mergeToken2 = i.token1 + i.token2
+            mergeToken3 = i.token1 + i.token2 + i.token3
+            mergeToken4 = i.token1 + i.token2 + i.token3 + i.token4
+            mergeToken5 = i.token1 + i.token2 + i.token3 + i.token4 + i.token5
             result['data'].append({
                 'No': '<div >' + str(number) + '</div>',
-                'Token1': i.token1 if i.token1 != ' ' else '[SPACE]',
-                'Token2': i.token2 if i.token2 != ' ' else '[SPACE]',
-                'Token3': i.token3 if i.token3 != ' ' else '[SPACE]',
-                'Token4': i.token4 if i.token4 != ' ' else '[SPACE]',
-                'Token5': i.token5 if i.token5 != ' ' else '[SPACE]',
-                'Token6': i.token6 if i.token6 != ' ' else '[SPACE]',
+                'Token1': token1,
+                'Token2': token2,
+                'Token3': token3,
+                'Token4': token4,
+                'Token5': token5,
+                'Token6': token6,
                 'NumReports': i.numReports,
                 'Times': i.times,
-                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" mergeToken2="'+ i.mergeToken2 +'" mergeToken3="'+ i.mergeToken3 +'" mergeToken4="'+ i.mergeToken4 +'" mergeToken5="'+ i.mergeToken5 +'" mergeNWord2="'+ str(i.mergeNWord2) +'" mergeNWord3="'+ str(i.mergeNWord3) +'" mergeNWord4="'+ str(i.mergeNWord4) +'" mergeNWord5="'+ str(i.mergeNWord5) +'">Merge</button>',
-                'Type': i.firstTokenType,
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" ' + 
+                'mergeToken2="'+ mergeToken2 +
+                '" mergeToken3="'+ mergeToken3 + 
+                '" mergeToken4="'+ mergeToken4 + 
+                '" mergeToken5="'+ mergeToken5 + 
+                '" mergeNWord2="'+ str(i.nWord2) +
+                '" mergeNWord3="'+ str(i.nWord3) +
+                '" mergeNWord4="'+ str(i.nWord4) +
+                '" mergeNWord5="'+ str(i.nWord5) +
+                '">Merge</button>',
+                'Type': i.tokenType,
             })
             number += 1
         
@@ -3064,10 +3084,13 @@ def getAllForms(request):
             data = cursor.fetchall()
             print(data)
             reportFormID = []
+            reportFormName = []
             for i in data:
                 reportFormID.append(i.reportFormID)
             # print(datatoken)
+                reportFormName.append(str(i.reportFormName) + "_" + str(i.procedureType))
             result['reportFormID'] = reportFormID
+            result['reportFormName'] = reportFormName
             result['status'] = "0"
             
             conn.commit()
