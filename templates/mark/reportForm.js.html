@@ -1,0 +1,387 @@
+
+
+{% load static%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+
+<link href="https://unpkg.com/perfect-scrollbar@1.4.0/css/perfect-scrollbar.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+
+<!-- Styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function (e) {
+    //取得所有類ID
+    getreportFormID();
+
+
+    //loader
+    $('#loader').css('display','none');
+    $('#frame').css('visibility','visible');
+
+    var reportFormID = document.getElementById("reportFormNameSelect").value;
+    var boxNum = 0;
+    getVocaubulary(reportFormID);
+    
+    var FormSelect = document.getElementById("reportFormNameSelect");
+    FormSelect.addEventListener("change", () => {
+        $('#selectVocabulary').find('option').remove();
+        var box = document.getElementsByClassName("dual-listbox selectVocabulary")[0];
+        box.remove();          
+        var reportFormID = document.getElementById("reportFormNameSelect").value;
+        getVocaubulary(reportFormID);
+        // boxNum += 1;
+    });
+    
+
+    $( '#multiple-select-field' ).select2( {
+        theme: "bootstrap-5",
+        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+        placeholder: $( this ).data( 'placeholder' ),
+        closeOnSelect: false,
+    });
+
+    // 監聽選tokenType的元素
+    var targetNode = $('#select2-multiple-select-field-container')[0];
+    // 建立一個 MutationObserver 實例
+    var observer = new MutationObserver(function(mutations) {
+        //有變動執行以下程序
+        //console.log($('#select2-multiple-select-field-container').children('li').length);
+    });
+    // 設定觀察選項
+    var config = { childList: true };
+    // 開始觀察目標節點
+    //observer.observe(targetNode, config);    
+
+    //搜尋按鈕
+    $("#searchButton").click(function(){
+        getReport();
+    });
+
+    const tokenSelect = document.getElementById("token1");
+    const searchButton = document.getElementById("searchButton");
+    const searchButtonDIV = document.getElementById("search");
+    var inputBox = document.getElementById("reportFormNameInput");
+    var selectForm = document.getElementById("reportFormNameSelect");
+    var append = document.getElementById("append");
+
+    tokenSelect.addEventListener("change", () => {
+    if (tokenSelect.value === "C") {
+        searchButton.textContent = "Create";
+        searchButtonDIV.className = "col-12";
+        inputBox.style.display = "block";
+        selectForm.style.display = "none";
+        append.style.display = "none";
+    } else {
+        searchButtonDIV.className = "col-6";
+        searchButton.textContent = "Test";
+        inputBox.style.display = "none";
+        selectForm.style.display = "block";
+        append.style.display = "block";
+    }
+    });
+})
+
+function getVocaubulary(reportFormID){
+    $('#reportFormNameSelect').prop('disabled', true);
+    $.ajax({
+        type: 'POST',
+        url: '{% url "mark:getAllWordExsisting" %}',
+        data:JSON.stringify({
+            "reportFormID" : reportFormID,
+        }),
+        success:function (response){
+            //console.log("response : ", response);
+            let element = '';
+            for(let i=0;i<response.token.length;i++){
+                if (response.selected[i] === 'Y'){
+                    element += `<option value=${response.tokenID[i]}>${response.token[i]}</option>`;
+                }
+                else{
+                    element += `<option value=${response.tokenID[i]} selected>${response.token[i]}</option>`;
+                }
+            }
+            $('#selectVocabulary').append(element);
+            dualBox();
+            
+            $('#reportFormNameSelect').prop('disabled', false);
+        },
+    });
+}
+
+
+function dualBox(){
+    //console.log("dualBox in ");
+    let dlb2 = new DualListbox('.selectVocabulary', {
+        availableTitle:'Available vocabularies',
+        selectedTitle: 'Selected vocabularies',
+        addButtonText: '>',
+        removeButtonText: '<',
+        addAllButtonText: '>>',
+        removeAllButtonText: '<<',
+        searchPlaceholder: 'search vocabulary',
+        draggable: true,
+        sortable: true,
+        refresh:true,
+    });
+    // let dlb2 = $('#selectVocabulary').bootstrapDualListbox( {
+    //     availableTitle:'Available vocabularies',
+    //     selectedTitle: 'Selected vocabularies',
+    //     addButtonText: '>',
+    //     removeButtonText: '<',
+    //     addAllButtonText: '>>',
+    //     removeAllButtonText: '<<',
+    //     searchPlaceholder: 'search vocabulary',
+    //     draggable: true,
+    //     sortable: true,
+    //     refresh:true,
+    // });
+    dlb2.addEventListener('added', function(event){
+        //console.log(event);
+    });
+    dlb2.addEventListener('removed', function(event){
+        //console.log(event);
+    });
+}
+
+//顯示資料
+function getReport(){
+    var tokenID1 = "-1";
+    var tokenID2 = "-1";
+    //console.log("tokenID1 : ", tokenID1);
+    //console.log("tokenID2 : ", tokenID2);
+    var ulElement = document.querySelector('.dual-listbox__selected');
+    var liElements = ulElement.querySelectorAll('li');
+    var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
+    var liHTMLArray1 = Array.from(liElements).map(li => li.dataset.id);
+    console.log("liHTMLArray : ", liHTMLArray);
+    console.log("liHTMLArray1 : ", liHTMLArray1);
+    response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray);
+    //console.log("response", response);
+    document.getElementById("text").innerHTML = response.reportText;
+
+    var reportFormID = document.getElementById("reportFormNameSelect").value;
+    //console.log("reportFormID : ", reportFormID);
+    if (liHTMLArray1 != []){
+        var response = getRE(reportFormID, liHTMLArray1);
+    }
+    regexArray = response.REarray;
+    existArray = response.existArray;
+    console.log("regexArray : ", regexArray);
+    console.log("existArray : ", existArray);
+    if (regexArray == undefined){        
+        swal("Failed!", "No RE or Tag found" , "error");
+        $('#text').highlightWithinTextarea({
+            highlight: [
+                {
+                    highlight: "", // string, regexp, array, function, or custom object
+                    className: 'highlight',
+                },
+            ]}
+        );
+        $("#text").html("No RE or Tag found");
+        return;
+    }
+    if (regexArray.length > 0){
+        var regexTotal = "";
+        var regexTotalNotExist = "";
+        // for (var i=0 ; i<regexArray.length ; i++){
+        //     if (existArray[i] === "Y"){
+        //         regexTotal += regexArray[i] + '|';
+        //     }
+        //     else if (existArray[i] === "N"){
+        //         regexTotalNotExist += regexArray[i] + '|';
+        //     }
+        // }
+        for (var i=0 ; i<regexArray.length ; i++){
+            regexTotal += regexArray[i] + '|';
+        }
+        regexTotal = regexTotal.slice(0, regexTotal.length-1);
+        
+        regexTotal = regexTotal.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+        regexTotalNotExist = regexTotalNotExist.slice(0, regexTotalNotExist.length-1);
+        console.log("regexTotal :", regexTotal);
+        console.log("regexTotalNotExist :", regexTotalNotExist);
+        //console.log("reg :", reg);
+        var reg = new RegExp(regexTotal, 'gi');
+        console.log("reg :", reg);
+        $('#text').highlightWithinTextarea({
+            highlight: [
+                {
+                    highlight: reg, // string, regexp, array, function, or custom object
+                    className: 'highlight',
+                },
+            ]}
+        );        
+        swal("Success!","", "success");
+    }
+
+    // if (regexTotal != "" && regexTotalNotExist != ""){
+    //     var reg = new RegExp(regexTotal, 'gi');
+    //     var regN = new RegExp(regexTotalNotExist, 'gi');
+    //     console.log("reg :", reg);
+    //     console.log("regN :", regN);
+    //     // $('#text').highlightWithinTextarea({
+    //     //     highlight: [
+    //     //         {
+    //     //             highlight: reg, // string, regexp, array, function, or custom object
+    //     //             className: 'highlight',
+    //     //         },
+    //     //         {
+    //     //             highlight: regN, // string, regexp, array, function, or custom object
+    //     //             className: 'highlight',
+    //     //         },
+    //     //     ]}
+    //     // );
+    //     $('textarea').highlightWithinTextarea({
+    //         highlight: [
+    //             {
+    //                 highlight: reg,
+    //                 className: 'highlight'
+    //             },
+    //             {
+    //                 highlight: regN,
+    //                 className: 'red'
+    //             }
+    //         ],
+    //     });
+    // }
+    // if (regexTotalNotExist != ""){
+    //     var regN = new RegExp(regexTotalNotExist, 'gi');
+    //     $('#text').highlightWithinTextarea({
+    //         highlight: regN, // string, regexp, array, function, or custom object
+    //         className: 'highlight',
+    //     });
+    // }
+    
+    ////console.log("response.data : ", response.data);    
+}
+
+//取得所有該類的tag或是RE
+function getRE(reportFormID, token){
+    //console.log("reportFormID : ", reportFormID);
+    //console.log("token : ", token);
+    var res = [];
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: '{% url 'mark:getREForTest' %}',
+        data:JSON.stringify({
+            "reportFormID" : reportFormID,
+            "token[]" : token,
+        }),
+        success:function (response){
+            res = response;
+            //console.log("res : ", res);
+            printResult(res);
+        },
+    });
+    return res;
+}
+
+
+//顯示結果
+function printResult(response){
+    if (response.ERRMSG){
+        swal("Failed!", response.ERRMSG , "error");
+    }
+}
+
+//取得所有類ID
+function getreportFormID(){    
+    var res = [];
+    $.ajax({
+        async:false,
+        type: 'POST',
+        url: '{% url 'mark:getAllForms' %}',
+        data:{
+        },
+        success:function (response){
+            res = response;
+            printResult(res);
+            //console.log("res : ", res);            
+            let element = '';
+            for(let i=0;i<response.reportFormID.length;i++){
+                element += `<option value=${response.reportFormID[i]}>${response.reportFormID[i]}</option>`;
+            }
+            $('#reportFormNameSelect').append(element);
+        },
+    });
+    return res;
+}
+
+//取得所有資料
+function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
+    $('#searchingButton').css('display','inline');
+    $('#searchButton').css('display','none');
+    $('#loader').css('display','inline');
+    $('#loader').css('z-index','10');
+    $('#cover').css('display','inline');
+    
+    var res = [];
+    tokenID = getTokenIDByName(liHTMLArray);
+    //console.log("tokenID : ", tokenID.tokenID);
+    $.ajax({
+        async: false,
+        type: 'POST',
+        url: '{% url 'mark:testVocabularyGetReport' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+        }),
+        success:function (response){
+            res = response;
+            //console.log("res", res);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');            
+        },
+    });
+    return res;
+}
+
+//取得被合併的兩個tokenID
+function getTokenIDByName(Name){
+    //console.log("Name : ", Name);
+    var res = [];
+    $.ajax({
+        async: false,
+        type: 'GET',
+        url: '{% url 'mark:checkName' %}',
+        data:{
+            "Name[]" : Name,
+        },
+        success:function (response){
+            res = response;
+            //////console.log("res : ", res);
+        },
+    });
+    return res;
+}
+
+
+</script>
+

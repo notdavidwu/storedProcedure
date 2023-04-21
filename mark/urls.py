@@ -60,16 +60,22 @@ urlpatterns = [
     path('fiveWord/', fiveWord, name="fiveWord"),
     path('threeWord/', threeWord, name="threeWord"),
     path('fourWord/', fourWord, name="fourWord"),
+    path('getAllWordExsisting/', getAllWordExsisting, name="getAllWordExsisting"),
     
     
     path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
     
+    path('reportForm/', reportForm,name="reportForm"),
+    
     path('worker.js', (TemplateView.as_view(template_name="mark/worker.js", 
     content_type='application/javascript', )), name='worker.js'),
     path('dictionary/', dictionary,name="dictionary"),
     path('getTag/', getTag, name='getTag'),
     path('getVocabularyForDictionary/', getVocabularyForDictionary, name='getVocabularyForDictionary'),
+    path('testVocabularyGetReport/', testVocabularyGetReport, name='testVocabularyGetReport'),
+    path('getREForTest/', getREForTest, name='getREForTest'),
+    path('getAllForms/', getAllForms, name='getAllForms'),
     
 ]
