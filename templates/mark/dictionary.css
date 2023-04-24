@@ -86,7 +86,7 @@
             min-width:350px;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
-            height:calc(100vh - 370px)
+            height:calc(100vh - 430px)
         }
         #statisticsArea{
             background:url("{% static 'image/texture.png' %}");

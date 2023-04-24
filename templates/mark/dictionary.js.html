@@ -96,7 +96,8 @@ $(document).ready(function (e) {
         placeholder: $( this ).data( 'placeholder' ),
         closeOnSelect: false,
     } );
-
+    
+    $("#multiple-select-field").prop("disabled", true);
     // 監聽選tokenType的元素
     var targetNode = $('#select2-multiple-select-field-container')[0];
     // 建立一個 MutationObserver 實例
@@ -143,6 +144,20 @@ $(document).ready(function (e) {
         }
         else{
             $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", false);
+        }
+    });
+
+    $("#searchOption").on("change", function() {
+        var selectedValue = $(this).val();
+        if (selectedValue === "A"){            
+            $("#token1").prop("disabled", true);
+            $("#token2").prop("disabled", true);
+            $(".dual-listbox select").prop("disabled", true);
+        }
+        else{
+            $("#token1").prop("disabled", false);
+            $("#token2").prop("disabled", false);
+            $(".dual-listbox select").prop("disabled", false);
         }
     });
 })
@@ -491,22 +506,65 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
     tokenID = getTokenIDByName(liHTMLArray);
     console.log("tokenID : ", tokenID.tokenID);
     var word = document.getElementById("mergeTokenNumber").value;
+    var option = document.getElementById("searchOption").value;
+    if (tokenID.tokenID == undefined && option === "T"){
+        Swal.fire({
+            title: 'Error',
+            text: '如果要使用 between 搜尋，請至少選擇一個單字',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+        })
+        $('#sortTable tr').width(500);
+        $('#searchingButton').css('display','none');
+        $('#searchButton').css('display','inline');
+        $('#loader').css('display','none');
+        $('#cover').css('display','none');
+        return;
+    }
     switch(word){
         case "5":
             console.log("5");
-            print6words();
+            if (option === "A"){
+                console.log("print6wordsall");
+                print6wordsall();
+            }
+            else{
+                console.log("print6words");
+                print6words();
+            }
             break;
         case "4":
             console.log("4");
-            print5words();
+            if (option === "A"){
+                console.log("print5wordsall");
+                print5wordsall();
+            }
+            else{
+                console.log("print5words");
+                print5words();
+            }
             break;
         case "3":
             console.log("3");
-            print4words();
+            if (option === "A"){
+                console.log("print4wordsall");
+                print4wordsall();
+            }
+            else{
+                console.log("print4words");
+                print4words();
+            }
             break;
         case "2":
             console.log("2");
-            print3words();
+            if (option === "A"){
+                console.log("print3wordsall");
+                print3wordsall();
+            }
+            else{
+                console.log("print3words");
+                print3words();
+            }
             break;
     }
 }
@@ -529,7 +587,101 @@ function print6words(){
             data-pagination="true"
             data-pagination-h-align="left"
             data-pagination-detail-h-align="right"
-            data-page-size="100"        
+            data-page-size="100"
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token6',
+                    title: 'Token6',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "6");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print6wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens6All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"
             data-height="">
             </table>`);
             $('#sortTable').bootstrapTable({
@@ -702,6 +854,95 @@ function print5words(){
     });
 }
 
+function print5wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens5All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "5");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
 function print4words(){    
     $.ajax({
         async: true,
@@ -712,6 +953,90 @@ function print4words(){
             "secondTokenID" : tokenID2,
             "tokens[]" : tokenID.tokenID,
             "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "4");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print4wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens4All' %}',
+        data:JSON.stringify({
         }),
         success:function (response){
             res = response;
@@ -873,6 +1198,85 @@ function print3words(){
     });
 }
 
+function print3wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens3All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "3");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
 
 function customSearch(data, text) {
     var search = document.getElementsByClassName("form-control search-input");
@@ -921,67 +1325,85 @@ function customSearch(data, text) {
   }
 
 function customSearchForBetween(data, text) {
-  console.log("customSearchForBetween in ");
-  var search = document.getElementsByClassName("form-control search-input");
-  //console.log("search : ", search[0]);
-  var selectValue = document.getElementById("tableSelect1").value;
-  //console.log("selectValue : ", selectValue);
-  //console.log("data : ", data);
-  //console.log("text : ", text);
-  if (text != ""){
-      switch (selectValue) {
-          case '1':
-              //console.log('select 1');
-              return data.filter(function (row) {
-                return row.Token1 == text;
-              })
-              break;
-          case '2':
-              //console.log('select 2');
-              return data.filter(function (row) {
-                return row.Token2 == text;
-              })
-              break;
-          case '3':
-              //console.log('select 3');
-              return data.filter(function (row) {
-                return row.Token3 == text;
-              })
-              break;
-          case '4':
-              //console.log('select 4');
-              return data.filter(function (row) {
-                return row.Token4 == text;
-              })
-              break;
-          case '5':
-              //console.log('select 4');
-              return data.filter(function (row) {
-                  return row.Token5 == text;
-              })
-              break;
-          case '6':
-              //console.log('select 4');
-              return data.filter(function (row) {
-                  return row.NumReports >= text;
-              })
-              break;
-          case '7':
-              //console.log('select 4');
-              return data.filter(function (row) {
-                  return row.Times >= text;
-              })
-              break;
-          
-          case '0':
-              //console.log('select 0');
-              return data;
-              break;
-      }
-  }
-  return data.filter(function (row) {
-    return row.Times >= text;
-  })
+    console.log("customSearchForBetween in ");
+    var search = document.getElementsByClassName("form-control search-input");
+    //console.log("search : ", search[0]);
+    var selectValue = document.getElementById("tableSelect1").value;
+    //console.log("selectValue : ", selectValue);
+    //console.log("data : ", data);
+    //console.log("text : ", text);  
+    var ulElement = document.querySelector('.dual-listbox__selected');
+    var liElements = ulElement.querySelectorAll('li');
+    var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
+    console.log(liHTMLArray);
+    if (text != ""){
+        switch (selectValue) {
+            case '1':
+                //console.log('select 1');
+                return data.filter(function (row) {
+                    return row.Token1 == text;
+                })
+                break;
+            case '2':
+                //console.log('select 2');
+                return data.filter(function (row) {
+                    return row.Token2 == text;
+                })
+                break;
+            case '3':
+                //console.log('select 3');
+                return data.filter(function (row) {
+                    return row.Token3 == text;
+                })
+                break;
+            case '4':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Token4 == text;
+                })
+                break;
+            case '5':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Token5 == text;
+                })
+                break;
+            case '6':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.NumReports >= text;
+                })
+                break;
+            case '7':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Times >= text;
+                })
+                break;
+            
+            case '0':
+                //console.log('select 0');
+                return data;
+                break;
+        }
+    }
+    switch (selectValue) {
+        case 'C':
+            //console.log('select 4');
+            return data.filter(function (row) {
+                return row.Type == 'C';
+            })
+            break;
+        case 'G':
+            //console.log('select 4');
+            return data.filter(function (row) {
+                return row.Type == 'G';
+            })
+            break;
+    }
+    return data.filter(function (row) {
+        return row.Times >= text;
+    })
 }
 
   function customFilter(data, text) {
@@ -1034,6 +1456,18 @@ function customSearchForBetween(data, text) {
                 //console.log('select 4');
                 return data.filter(function (row) {
                     return row.Times >= text;
+                })
+                break;
+            case 'C':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Type == text;
+                })
+                break;
+            case 'G':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Times == text;
                 })
                 break;
             

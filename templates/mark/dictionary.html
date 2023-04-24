@@ -78,10 +78,16 @@
     {{ user.last_name|json_script:"hospital" }}
     <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="frame">
-        <div id=pool class="row g-3">
+        <div id=pool class="row g-3"> 
+            <div id='reportProcedureName' class="col-12">
+                <select class="form-select" id="searchOption">                 
+                    <option value="T" selected>Search between 2 Tokens</option>
+                    <option value="A">Search All</option>
+                </select>
+            </div>
             <div id='firstTag' class="col">
                 <div class="optionbox">
-                    <select class="form-select" id="token1">
+                    <select class="form-select" id="token1">       
                     </select>
                 </div>
             </div>
@@ -122,10 +128,10 @@
                 </div>
                 <div class="col-4">
                     <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="mergeTokenNumber">
-                        <option value="2">merge two tokens</option>
-                        <option value="3">merge three tokens</option>
-                        <option value="4">merge four tokens</option>
-                        <option selected value="5">merge five tokens</option>
+                        <option value="2">merge 2 tokens (print 3)</option>
+                        <option value="3">merge 3 tokens (print 4)</option>
+                        <option value="4">merge 4 tokens (print 5)</option>
+                        <option selected value="5">merge 5 tokens (print 6)</option>
                     </select>
                 </div>
                 <div class="col-4">
