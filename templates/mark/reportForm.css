@@ -113,7 +113,7 @@
             margin:0px;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
-            height:calc(100vh - 500px)
+            height:calc(100vh - 550px)
         }
         #reportList{
             background:url("{% static 'image/texture.png' %}");

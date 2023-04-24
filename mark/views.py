@@ -2141,7 +2141,7 @@ def getTokenBynWord(request):
 
 
 @csrf_exempt
-def getReportBetween2Tokens(request):
+def getReportBetween2Tokens6(request):
     #取得
     if request.method == 'POST':
         
@@ -2221,6 +2221,259 @@ def getReportBetween2Tokens(request):
                 '" mergeNWord3="'+ str(i.nWord3) +
                 '" mergeNWord4="'+ str(i.nWord4) +
                 '" mergeNWord5="'+ str(i.nWord5) +
+                '">Merge</button>',
+                'Type': i.tokenType,
+            })
+            number += 1
+        
+        conn.commit()
+        conn.close()
+        
+        end = time.time()
+        print("start - end = ",  end - start)
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportBetween2Tokens5(request):
+    #取得
+    if request.method == 'POST':
+        
+        start = time.time()
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        raw = request.body.decode('utf-8')
+        body = json.loads(raw)
+        # # # # print(body)
+        # # # # # print( body['reportID1'])
+
+        firstTokenID = body['firstTokenID']
+        secondTokenID = body['secondTokenID']
+        tokens = body['tokens[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        string = ""
+        for i in tokens:
+            string += str(i) + " "
+        string = string[0:len(string)-1] 
+        # print("string : ", string)
+        
+        tokenTypes = body['tokenTypes[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        Types = ""
+        for i in tokenTypes:
+            Types += i + ","
+        Types = Types[0:len(Types)-1] 
+        # # print("string : ", string)
+        
+        query = '''
+                select * from [summary_5f](?,?,?) order by 1 desc
+                ''' 
+        args = [firstTokenID, secondTokenID, string]
+        print(Types)
+        print(args)
+        cursor.execute(query, args)
+        datatoken = cursor.fetchall()
+        print(datatoken)
+        result['data'] = []
+        number = 1
+        for ind,i in enumerate(datatoken):
+            # # print(i)
+            token1 = i.token1 if i.token1 != ' ' else '[SPACE]'
+            token2 = i.token2 if i.token2 != ' ' else '[SPACE]'
+            token3 = i.token3 if i.token3 != ' ' else '[SPACE]'
+            token4 = i.token4 if i.token4 != ' ' else '[SPACE]'
+            token5 = i.token5 if i.token5 != ' ' else '[SPACE]'
+            mergeToken2 = i.token1 + i.token2
+            mergeToken3 = i.token1 + i.token2 + i.token3
+            mergeToken4 = i.token1 + i.token2 + i.token3 + i.token4
+            result['data'].append({
+                'No': '<div >' + str(number) + '</div>',
+                'Token1': token1,
+                'Token2': token2,
+                'Token3': token3,
+                'Token4': token4,
+                'Token5': token5,
+                'NumReports': i.numReports,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" ' + 
+                'mergeToken2="'+ mergeToken2 +
+                '" mergeToken3="'+ mergeToken3 + 
+                '" mergeToken4="'+ mergeToken4 + 
+                '" mergeNWord2="'+ str(i.nWord2) +
+                '" mergeNWord3="'+ str(i.nWord3) +
+                '" mergeNWord4="'+ str(i.nWord4) +
+                '">Merge</button>',
+                'Type': i.tokenType,
+            })
+            number += 1
+        
+        conn.commit()
+        conn.close()
+        
+        end = time.time()
+        print("start - end = ",  end - start)
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportBetween2Tokens4(request):
+    #取得
+    if request.method == 'POST':
+        
+        start = time.time()
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        raw = request.body.decode('utf-8')
+        body = json.loads(raw)
+        # # # # print(body)
+        # # # # # print( body['reportID1'])
+
+        firstTokenID = body['firstTokenID']
+        secondTokenID = body['secondTokenID']
+        tokens = body['tokens[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        string = ""
+        for i in tokens:
+            string += str(i) + " "
+        string = string[0:len(string)-1] 
+        # print("string : ", string)
+        
+        tokenTypes = body['tokenTypes[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        Types = ""
+        for i in tokenTypes:
+            Types += i + ","
+        Types = Types[0:len(Types)-1] 
+        # # print("string : ", string)
+        
+        query = '''
+                select * from [summary_4f](?,?,?) order by 1 desc
+                ''' 
+        args = [firstTokenID, secondTokenID, string]
+        print(Types)
+        print(args)
+        cursor.execute(query, args)
+        datatoken = cursor.fetchall()
+        print(datatoken)
+        result['data'] = []
+        number = 1
+        for ind,i in enumerate(datatoken):
+            # # print(i)
+            token1 = i.token1 if i.token1 != ' ' else '[SPACE]'
+            token2 = i.token2 if i.token2 != ' ' else '[SPACE]'
+            token3 = i.token3 if i.token3 != ' ' else '[SPACE]'
+            token4 = i.token4 if i.token4 != ' ' else '[SPACE]'
+            mergeToken2 = i.token1 + i.token2
+            mergeToken3 = i.token1 + i.token2 + i.token3
+            result['data'].append({
+                'No': '<div >' + str(number) + '</div>',
+                'Token1': token1,
+                'Token2': token2,
+                'Token3': token3,
+                'Token4': token4,
+                'NumReports': i.numReports,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" ' + 
+                'mergeToken2="'+ mergeToken2 +
+                '" mergeToken3="'+ mergeToken3 + 
+                '" mergeNWord2="'+ str(i.nWord2) +
+                '" mergeNWord3="'+ str(i.nWord3) +
+                '">Merge</button>',
+                'Type': i.tokenType,
+            })
+            number += 1
+        
+        conn.commit()
+        conn.close()
+        
+        end = time.time()
+        print("start - end = ",  end - start)
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportBetween2Tokens3(request):
+    #取得
+    if request.method == 'POST':
+        
+        start = time.time()
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        raw = request.body.decode('utf-8')
+        body = json.loads(raw)
+        # # # # print(body)
+        # # # # # print( body['reportID1'])
+
+        firstTokenID = body['firstTokenID']
+        secondTokenID = body['secondTokenID']
+        tokens = body['tokens[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        string = ""
+        for i in tokens:
+            string += str(i) + " "
+        string = string[0:len(string)-1] 
+        # print("string : ", string)
+        
+        tokenTypes = body['tokenTypes[]']
+        # # print(firstTokenID, secondTokenID, tokens)
+        Types = ""
+        for i in tokenTypes:
+            Types += i + ","
+        Types = Types[0:len(Types)-1] 
+        # # print("string : ", string)
+        
+        query = '''
+                select * from [summary_3f](?,?,?) order by 1 desc
+                ''' 
+        args = [firstTokenID, secondTokenID, string]
+        print(Types)
+        print(args)
+        cursor.execute(query, args)
+        datatoken = cursor.fetchall()
+        print(datatoken)
+        result['data'] = []
+        number = 1
+        for ind,i in enumerate(datatoken):
+            # # print(i)
+            token1 = i.token1 if i.token1 != ' ' else '[SPACE]'
+            token2 = i.token2 if i.token2 != ' ' else '[SPACE]'
+            token3 = i.token3 if i.token3 != ' ' else '[SPACE]'
+            mergeToken2 = i.token1 + i.token2
+            mergeToken3 = i.token1 + i.token2 + i.token3
+            result['data'].append({
+                'No': '<div >' + str(number) + '</div>',
+                'Token1': token1,
+                'Token2': token2,
+                'Token3': token3,
+                'NumReports': i.numReports,
+                'Times': i.times,
+                'Mergecheck':'<button onclick="allInOneTwoThreeFiveWord()" class="btn btn-info btn_view" ' + 
+                'mergeToken2="'+ mergeToken2 +
+                '" mergeNWord2="'+ str(i.nWord2) +
                 '">Merge</button>',
                 'Type': i.tokenType,
             })
@@ -3088,9 +3341,110 @@ def getAllForms(request):
             for i in data:
                 reportFormID.append(i.reportFormID)
             # print(datatoken)
-                reportFormName.append(str(i.reportFormName) + "_" + str(i.procedureType))
+                reportFormName.append(str(i.reportFormName))
             result['reportFormID'] = reportFormID
             result['reportFormName'] = reportFormName
+            result['status'] = "0"
+            
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            print("rollbacked, error message : ", e)
+            result['ERRMSG'] = str(e)
+
+        conn.close()
+        
+        end = time.time()
+        # print("start - end = ",  end - start)
+    return JsonResponse(result)
+
+@csrf_exempt
+def getAllFormProcedures(request):
+    #取得
+    if request.method == 'POST':
+        
+        start = time.time()
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        raw = request.body.decode('utf-8')
+        try :
+            print("in")
+            body = json.loads(raw)
+            reportFormID = body['reportFormID']
+            query = '''
+                    SELECT * FROM [reportFormProcedure] where reportFormID = ?; 
+                    ''' 
+            args = [reportFormID]
+            cursor.execute(query, args)
+            data = cursor.fetchall()
+            print(data)
+            procedureName = []
+            procedureID = []
+            for i in data:
+                procedureName.append(i.procedureName)
+                procedureID.append(i.procedureID)
+            result['procedureName'] = procedureName
+            result['procedureID'] = procedureID
+            result['status'] = "0"
+            
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            print("rollbacked, error message : ", e)
+            result['ERRMSG'] = str(e)
+
+        conn.close()
+        
+        end = time.time()
+        # print("start - end = ",  end - start)
+    return JsonResponse(result)
+
+@csrf_exempt
+def getAllFormVocabularies(request):
+    #取得
+    if request.method == 'POST':
+        
+        start = time.time()
+        #取得資料
+        result = {'status':'1'} #預設失敗
+        #建立連線
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+        raw = request.body.decode('utf-8')
+        try :
+            print("in")
+            body = json.loads(raw)
+            reportFormID = body['reportFormID']
+            procedureID = body['procedureID']
+            print(reportFormID, procedureID)
+            query = '''
+                    SELECT * FROM [reportFormVocabulary]
+                    where reportFormID = ? and [procedureID] = ?; 
+                    ''' 
+            args = [reportFormID, procedureID]
+            cursor.execute(query, args)
+            data = cursor.fetchall()
+            print(data)
+            reportItem = []
+            tokenID = []
+            for i in data:
+                reportItem.append(i.reportItem)
+                tokenID.append(i.tokenID)
+            result['reportItem'] = reportItem
+            result['tokenID'] = tokenID
             result['status'] = "0"
             
             conn.commit()

@@ -34,6 +34,12 @@
 $(document).ready(function (e) {
     //取得所有類ID
     getreportFormID();
+    //取得所有該類ID的相關包
+    getreportFormProcedure();
+    //取得所有該類ID的相關包的所有字
+    getreportFormVocabulary();
+    //取得所有的該類報告
+    GetTime("7904");
 
 
     //loader
@@ -332,6 +338,59 @@ function getreportFormID(){
     return res;
 }
 
+
+//取得所有該類ID的相關包
+function getreportFormProcedure(){    
+    var reportFormID = document.getElementById("selectDiease").value;
+    var res = [];
+    $.ajax({
+        async:false,
+        type: 'POST',
+        url: '{% url 'mark:getAllFormProcedures' %}',
+        data:JSON.stringify({
+            "reportFormID":reportFormID,
+        }),
+        success:function (response){
+            res = response;
+            printResult(res);
+            console.log("res : ", res);            
+            let element = '';
+            for(let i=0;i<response.procedureID.length;i++){
+                element += `<option value=${response.procedureID[i]}>${response.procedureName[i]}</option>`;
+            }
+            $('#selectProcedure').append(element);
+        },
+    });
+    return res;
+}
+
+//取得所有該類ID的相關包的所有字
+function getreportFormVocabulary(){
+    var reportFormID = document.getElementById("selectDiease").value;
+    var procedureID = document.getElementById("selectProcedure").value;
+    var res = [];
+    $.ajax({
+        async:false,
+        type: 'POST',
+        url: '{% url 'mark:getAllFormVocabularies' %}',
+        data:JSON.stringify({
+            "reportFormID":reportFormID,
+            "procedureID":procedureID,
+        }),
+        success:function (response){
+            res = response;
+            printResult(res);
+            console.log("res : ", res);            
+            let element = '';
+            for(let i=0;i<response.reportItem.length;i++){
+                element += `<option tokenID=` + String(response.tokenID[i]) + `>` + String(response.reportItem[i]) + `</option>`;
+            }
+            $('#selectVocabularyProcedure').append(element);
+        },
+    });
+    return res;
+}
+
 //取得所有資料
 function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray){
     $('#searchingButton').css('display','inline');
@@ -382,6 +441,133 @@ function getTokenIDByName(Name){
     });
     return res;
 }
+
+function GetTime(patientNum){
+        console.log(patientNum)
+        var id = $('input[type="radio"][name="confirmPID"]:checked').attr('id')
+
+        $('input[type="radio"][name="confirmPID"]').prop('disabled',true)
+        $('input[type="radio"][name="confirmPID"]').next('label').prop('disabled',true)
+        $('#timetable').css('visibility','hidden')
+        $('.loader2').css('display','inline')
+        $('.factorGroupArea').empty()
+        $('.procedureOfForm').empty()
+        $('.formVersion').empty()
+        // ascriptionClose(detect=true)
+        // cancerRegistCheckClose()
+        // patientStatusCheckClose()
+        // extractedFactorClose()
+        // batchDefiniteClose()
+        text=parseInt($('input[name="confirmPID"]:checked').attr('data-chartNo'))
+        seqNoOption='<option value=0>?</option>'
+        let scrollTop = $('#patient').scrollTop()
+        let excludeFilter = $('#excludeFilter').is(':checked')
+        let data_medtype = $('.medtypeFilter').map(function(){
+            if($(this).is(':checked')==false){
+                return $(this).attr('data-medtype')    
+            }
+        }).get()
+
+        
+        $.ajax({
+            type: 'post',
+            url: '{% url "eventDefinition:getSeqNoOption" %}', // this is the mapping between the url and view
+            data:{
+                'patientNum':patientNum,
+                'csrfmiddlewaretoken': window.CSRF_TOKEN
+            },
+            success:function (response){
+                console.log("response")
+                console.log(response)
+                seqNoOption+=response.seqNo
+            },
+            complete:function(){
+                $.ajax({
+                    type: 'post',
+                    url: '{% url "eventDefinition:confirmpat2" %}', // this is the mapping between the url and view
+                    data:{
+                        'ID':text,
+                        'scrollTop':scrollTop,
+                        'excludeFilter':excludeFilter,
+                        'medtype':data_medtype,
+                        'csrfmiddlewaretoken': window.CSRF_TOKEN
+                    },
+                    success:function (response){
+                        $('#time').children('tbody').children('tr').remove()
+                        var HeavyDisease=[30001,30002]
+                        if(response.objectArray.length!=0){
+                            $('#accordionExample').empty()
+                            for(var i=0;i<response.objectArray.length;i++){
+                                if(response.MedType[i]==30001 || response.MedType[i]==30002){
+                                    $('#time').append(response.objectArray[i])
+                                    $('#timePID'+i).parents('td').css('background-color', '#33333a')
+                                    $('#timePID'+i).next('label').css('color', 'red')
+                                    
+                                }else if(response.MedType[i]==1218401){
+                                    $('#time').append(response.objectArray[i])
+                                    $('#timePID'+i).parents('td').css('background-color', '#aef2f1')
+                                }else{
+                                    $('#time').append(response.objectArray[i])
+                                }
+
+                                if (!response.eventCheckedArray[i] && typeof(response.eventCheckedArray[i])!='undefined' && response.eventCheckedArray[i]!=0){ 
+                                    $('.eventChecked').eq(i).css('display','inline')
+                                }
+
+                                
+                            }
+                            searchRecord(i,response.eventID,response.MedType,seqNoOption,response.objectArray.length)
+                            total_num = response.objectArray.length
+                            var InducedEvent_ind=[]
+                            var targetID = []
+                            if(response.eventID_F.length!=0){
+                                for(let i=0;i<response.eventID_F.length;i++){
+                                    let eventIDGroup = $('#timetable .eventID').map(function(){return parseInt($(this).html())}).get()
+                                    let index = eventIDGroup.indexOf(response.eventID_F[i])
+                                    let target = $('#timetable .eventID').eq(index)
+                                    targetID.push($('#timetable .eventID').eq(index).parents('label').prevAll('input').attr('id'))
+                                    target.parents('label').append(`<div class="btn btn-primary accordion accordion-toggle" data-bs-toggle="collapse" data-bs-target="#collapse${i}" ></div>`)
+                                    target.nextAll('.accordion').css('height',target.parents('label').height()+16+'px')
+                                    InducedEvent_ind.push(i)
+                                    
+                                }
+
+                                addInducedEvent(InducedEvent_ind,response.eventID_F,targetID)
+                            }
+                        }else{
+                            $('#accordionExample').html('<p style="postion:absolute;width:100%;font-size: 40pt;font-weight:700;text-align: center;font-family: font-family: "LiGothic", "FangSong", Arial, serif;">查無資料</p>')
+                            $('#timetable').css('visibility','visible')
+                            $('#timetable').css('visibility','visible')
+                            $('.loader2').css('display','none')
+                            
+                        }
+                        $(`input[type="radio"][name="confirmPID"][id=${id}]`).prop('checked',true)
+                        $('input[type="radio"][name="confirmPID"]').prop('disabled',false)
+                        $('input[type="radio"][name="confirmPID"]').next('label').prop('disabled',false)
+
+                    }
+                })
+                
+            }
+        })
+        
+        
+        $.ajax({
+            type: 'post',
+            url: '{% url "eventDefinition:getCancerRegistData" %}', // this is the mapping between the url and view
+            data:{
+                'chartNo':text,
+                'csrfmiddlewaretoken': window.CSRF_TOKEN
+            },
+            success:function (response){
+                $('#cancerRegistInfo').children('tbody').empty()
+                for(let i=0;i<response.PD.length;i++){
+                    $('#cancerRegistInfo').children('tbody').append(`<tr><td>${response.PD[i]}</td><td>${response.chartNo[i]}</td><td>${response.disease[i]}</td><td>${response.caSeqNo[i]}</td></tr>`)
+                }
+            }
+        })
+        return true
+    }
 
 
 </script>

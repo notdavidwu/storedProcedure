@@ -56,7 +56,10 @@ urlpatterns = [
     path('chineseTwoWord/', chineseTwoWord, name="chineseTwoWord"),
     path('chineseThreeWord/', chineseThreeWord, name="chineseThreeWord"),
     path('getTokenBynWord/', getTokenBynWord, name="getTokenBynWord"),
-    path('getReportBetween2Tokens/', getReportBetween2Tokens, name="getReportBetween2Tokens"),
+    path('getReportBetween2Tokens6/', getReportBetween2Tokens6, name="getReportBetween2Tokens6"),
+    path('getReportBetween2Tokens5/', getReportBetween2Tokens5, name="getReportBetween2Tokens5"),
+    path('getReportBetween2Tokens4/', getReportBetween2Tokens4, name="getReportBetween2Tokens4"),
+    path('getReportBetween2Tokens3/', getReportBetween2Tokens3, name="getReportBetween2Tokens3"),
     path('fiveWord/', fiveWord, name="fiveWord"),
     path('threeWord/', threeWord, name="threeWord"),
     path('fourWord/', fourWord, name="fourWord"),
@@ -77,5 +80,7 @@ urlpatterns = [
     path('testVocabularyGetReport/', testVocabularyGetReport, name='testVocabularyGetReport'),
     path('getREForTest/', getREForTest, name='getREForTest'),
     path('getAllForms/', getAllForms, name='getAllForms'),
+    path('getAllFormProcedures/', getAllFormProcedures, name='getAllFormProcedures'),
+    path('getAllFormVocabularies/', getAllFormVocabularies, name='getAllFormVocabularies'),
     
 ]

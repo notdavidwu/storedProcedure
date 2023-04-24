@@ -30,6 +30,12 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<link href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
 <script>
 $(document).ready(function (e) {
     //取得T型態
@@ -102,6 +108,43 @@ $(document).ready(function (e) {
     var config = { childList: true };
     // 開始觀察目標節點
     observer.observe(targetNode, config);    
+
+    $("#mergeTokenNumber").on("change", function() {
+    //     $('#searchingButton').css('display','inline');
+    //     $('#searchButton').css('display','none');
+    //     $('#loader').css('display','inline');
+    //     $('#loader').css('z-index','10');
+    //     $('#cover').css('display','inline');
+        var selectedValue = $(this).val();
+        
+    //     switch(selectedValue){
+    //         case "5":
+    //             console.log("5");
+    //             print6words();
+    //             break;
+    //         case "4":
+    //             console.log("4");
+    //             print5words();
+    //             break;
+    //         case "3":
+    //             console.log("3");
+    //             print4words();
+    //             break;
+    //         case "2":
+    //             console.log("2");
+    //             print3words();
+    //             break;
+    //     }
+        var lastsearchedValue = $("#table_3word").attr("lastsearched");
+        // console.log("selectedValue : ", selectedValue);
+        // console.log("lastsearchedValue : ", lastsearchedValue);
+        if (parseInt(selectedValue)+1 != parseInt(lastsearchedValue)){
+            $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", true);
+        }
+        else{
+            $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", false);
+        }
+    });
 })
 
 function getTag(){
@@ -447,10 +490,32 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
     $('#cover').css('display','inline');
     tokenID = getTokenIDByName(liHTMLArray);
     console.log("tokenID : ", tokenID.tokenID);
+    var word = document.getElementById("mergeTokenNumber").value;
+    switch(word){
+        case "5":
+            console.log("5");
+            print6words();
+            break;
+        case "4":
+            console.log("4");
+            print5words();
+            break;
+        case "3":
+            console.log("3");
+            print4words();
+            break;
+        case "2":
+            console.log("2");
+            print3words();
+            break;
+    }
+}
+
+function print6words(){    
     $.ajax({
         async: true,
         type: 'POST',
-        url: '{% url 'mark:getReportBetween2Tokens' %}',
+        url: '{% url 'mark:getReportBetween2Tokens6' %}',
         data:JSON.stringify({
             "firstTokenID" : tokenID1,
             "secondTokenID" : tokenID2,
@@ -537,11 +602,277 @@ function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
             $('#searchButton').css('display','inline');
             $('#loader').css('display','none');
             $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "6");
             
             //$('#sortTable').bootstrapTable('hideColumn', 'Type');
         },
     });
 }
+
+function print5words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens5' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "5");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print4words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens4' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "4");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print3words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens3' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "3");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
 
 function customSearch(data, text) {
     var search = document.getElementsByClassName("form-control search-input");
@@ -719,7 +1050,7 @@ function customSearchForBetween(data, text) {
 
     //測試一次做完
     function allInOneTwoThreeFiveWord(){
-        // $('#sortTable').attr("data-custom-search", 'customFilter');
+        // $('#table_3word').attr("data-custom-search", 'customFilter');
         // $('#sortTable').bootstrapTable('filterBy', {
         //     Type: 'C'
         // });
@@ -741,26 +1072,30 @@ function customSearchForBetween(data, text) {
 
         // get the selected option value
         var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+        console.log("selectedOption : ", selectedOption);
 
         // log the selected option value to the console
         //console.log("selectedOption : ", selectedOption);
         //先設成英文 之後要加選擇Type 可能是存在mergeButton裡面
         var tokenType = document.getElementById("mergeType").value;
-        var target = $(event.target).parents('tr').children('td').eq(10).children('button');
         switch (selectedOption){
            case "2":
+               var target = $(event.target).parents('tr').children('td').eq(7).children('button');
                console.log("2");
                selectTwo(token1, token2, tokenType, start, target);
                break;
            case "3":
+               var target = $(event.target).parents('tr').children('td').eq(8).children('button');
                console.log("3");
                selectThree(token1, token2, token3, tokenType, start, target);
                break;
            case "4":
+               var target = $(event.target).parents('tr').children('td').eq(9).children('button');
                console.log("4");
                selectFour(token1, token2, token3, token4, tokenType, start, target);
                break;
            case "5":
+               var target = $(event.target).parents('tr').children('td').eq(10).children('button');
                console.log("5");
                selectFive(token1, token2, token3, token4, token5, tokenType, start, target);
                break;
