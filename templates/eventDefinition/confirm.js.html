@@ -477,6 +477,7 @@
     }
 
     function addMainBlock(){
+        console.log("addMainBlock in ");
         $('#extraFactorMenu').css('display','none')
         var object = $('[data-prepareAdd=1]').clone()
         var objectHTML = object.html()
@@ -818,6 +819,7 @@
 
     /*--------------------------右上報告萃取---------------------------*/
     function extractedFactorOpen(data_form,procedureID,diseaseId,source){
+        console.log("extractedFactorOpen in ");
         let pd = $('input[name="timePID"]:checked').next('label').children('.menu').children('.menublock').eq(0).attr('id').split('_')[3]
         let eventID = $('input[name="timePID"]:checked').next('label').children('.eventID').html()
         let medType= $('input[name="timePID"]:checked').next('label').children('.medType').html()
@@ -842,10 +844,11 @@
                 'csrfmiddlewaretoken': window.CSRF_TOKEN
             },
             success:function (response){
+                //版本
                 $(`.formVersion[data-form=${data_form}]`).empty()
                 for(let i=0;i<response.eventFactorCode.length;i++){
                     $(`.formVersion[data-form=${data_form}]`).append(`<option value=${response.eventFactorCode[i]}>版本${response.version[i]}</option>`)
-                }
+                }                
                 if(source==1){
                     for(let j=response.isRecorded.length-1;j>=0;j--){
                         if(response.isRecorded[j]==1){
@@ -887,6 +890,7 @@
     }
 
     function changeSeq(){
+        console.log("changeSeq in ");
         let data_form = $('input[name="extractedFactorPannel"]:checked').attr('data-windowSeq')-1
         let eventID = $('input[name="timePID"]:checked').next('label').children('.eventID').html()
         $(`#factorGroupArea${data_form} .formStructure`).remove()
@@ -899,6 +903,7 @@
     }
 
     function formGenerator(eventID,eventFactorCode,pannel,method,otherFunction,form){
+        console.log("formGenerator in ");
         $.ajax({
             type: 'post',
             url: '{% url "eventDefinition:formGenerator" %}', // this is the mapping between the url and view
@@ -928,6 +933,7 @@
     }
 
     function extractedFactorSubmit(form){
+        console.log("extractedFactorSubmit in ");
         let container = `#factorGroupArea${form}`
         let eventID = $(container).attr('data-eventID')
         //------------------------------------------------------------
@@ -1024,6 +1030,7 @@
     }
 
     function searchExtractedFactorsRecord(form){
+        console.log("searchExtractedFactorsRecord in ");
 
         let container = `#factorGroupArea${form}`
         
@@ -1142,6 +1149,7 @@
     }
 
     function changeForm(){
+        console.log("changeForm in ");
         let data_form = $(event.target).attr('data-form')
         getExtractedFactorsRecordSeq(data_form)
         let eventID = $('input[name="timePID"]:checked').next('label').children('.eventID').html()
@@ -1732,7 +1740,7 @@
                 'csrfmiddlewaretoken': window.CSRF_TOKEN
             },
             success:function (response){
-                //formGenerator(-999999,code[0],'#preview','append','')
+                formGenerator(-999999,code[0],'#preview','append','')
                 addGenerateValue('formFilter',response)
                 addGenerateValue('formGeneratorMenu',response)
             }

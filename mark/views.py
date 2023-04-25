@@ -3711,6 +3711,36 @@ def getAllFormVocabularies(request):
         # # print("start - end = ",  end - start)
     return JsonResponse(result)
 
+@csrf_exempt
+def getTag(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest '
+    username = 'N824' 
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    query = "SELECT [token],[tokenID] FROM [Vocabulary] where tokenType='T' order by tokenID"
+    cursor.execute(query,[])
+    res = cursor.fetchall()
+    token = [row[0] for row in res]
+    tokenID = [row[1] for row in res]
+    return JsonResponse({'token':token,'tokenID':tokenID})
+
+@csrf_exempt
+def getVocabularyForDictionary(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest '
+    username = 'N824' 
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    query = "SELECT [token],[tokenID] FROM [Vocabulary] order by tokenID"
+    cursor.execute(query,[])
+    res = cursor.fetchall()
+    token = [row[0] for row in res]
+    tokenID = [row[1] for row in res]
+    return JsonResponse({'token':token,'tokenID':tokenID})
+
 
 
 
