@@ -5,7 +5,7 @@ from mark.models import *
 from mark.forms import *
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connections
-DATABASE_NAME = 'buildVocabulary' 
+DATABASE_NAME = 'nlpVocabularyLatest' 
 
 @csrf_exempt
 def getTag(request):

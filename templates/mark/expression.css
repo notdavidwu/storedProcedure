@@ -54,7 +54,7 @@
     .table{
         background-color:#FFF
     }
-    @media(min-width: 1793px){
+    @media(min-width: 800px){
         
         #cover {
             position: absolute;
@@ -434,7 +434,8 @@
         height:100%;
     }
     #inputTextArea{
-        height:100%;
+        margin-top:20px;
+        height:calc(100% - 100px);
     }
     #ExtractOutputArea{
         height:30%
@@ -507,7 +508,16 @@
     text-decoration: none;
     cursor: pointer;
   }
-  
+  #finalArea{
+    height:100%;
+  }
+  #searchArticle{
+    color:#FFF;
+    width:100%;
+  }
+  #inputkeywordsArea{
+    margin-bottom:10px;
+  }
 </style>
 {% endblock %}
 

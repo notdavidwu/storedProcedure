@@ -76,6 +76,19 @@ $(document).ready(function (e) {
         }
     }); 
 
+    //查詢文章
+    $("#searchArticle").click(function(){
+        ////console.log("check clicked");
+        word = document.getElementById("inputkeywords").value;
+        console.log("word : ", word);
+        
+        var responseReport = searchReport(word);
+        printResult(responseReport);
+        if (responseReport.status === "0"){
+            document.getElementById("inputText").innerHTML = responseReport.Text;
+        }
+    }); 
+
     //新增按鈕
     $("#insertDef").click(function(){
         var itemID = document.getElementById("itemDefinition_itemID").value;
@@ -136,6 +149,23 @@ $(document).ready(function (e) {
         
     }); 
 })
+
+//找文章
+function searchReport(word){
+    var res;
+    $.ajax({
+        async: false, 
+        type: 'POST',
+        url: '{% url 'mark:getReportTextByMergeTokenExpression' %}',
+        data:JSON.stringify({
+            'tokens': word,
+        }),
+        success:function (response){
+            res = response;
+        },
+    })
+    return res;
+}
 
 //存itemDef
 function insertItemDefinition(itemID, rootID, itemName, engName, chtName){

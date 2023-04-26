@@ -95,5 +95,6 @@ urlpatterns = [
     path('getItemDefinition/', getItemDefinition, name='getItemDefinition'),
     path('getItemByRootID/', getItemByRootID, name='getItemByRootID'),
     path('insertintoItemDefinition/', insertintoItemDefinition, name='insertintoItemDefinition'),
+    path('getReportTextByMergeTokenExpression/', getReportTextByMergeTokenExpression, name='getReportTextByMergeTokenExpression'),
     
 ]

@@ -175,10 +175,18 @@
                 
             </div>
             <div id="statistics" class="row g-3">
-                <div class="col-md-6" id="inputTextArea">
-                    <textarea class="form-control" placeholder="Paste your text here" id="inputText" ></textarea>
+                <div class="col-md-6" id="testArea">
+                    <div class="col-md-12" id="inputkeywordsArea">
+                        <input class="form-control" placeholder="Paste your keywords here" id="inputkeywords" type="text">
+                    </div>
+                    <div class="col-md-12">
+                        <a class='btn btn-primary form-control' id="searchArticle" >查詢文章</a>
+                    </div>
+                    <div class="col-md-12" id="inputTextArea">
+                        <textarea class="form-control" placeholder="Paste your text here" id="inputText" ></textarea>
+                    </div>
                 </div>
-                <div class="col-md-6" id="inputTextArea">
+                <div class="col-md-6" id="finalArea">
                     <div class="col-md-12" id="ExtractOutputArea">
                         <textarea class="form-control" placeholder="Extracted String(s)" id="ExtractOutput"  ></textarea>
                     </div>
