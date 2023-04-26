@@ -301,6 +301,18 @@ DATABASES = {
                 'MARS_Connection': True,
             },
         },
+        'nlpVocabularyLatest': {
+            'ENGINE': 'mssql',
+            'NAME': 'nlpVocabularyLatest',
+            'USER': 'N824',
+            'PASSWORD': 'test81218',
+            'HOST': '172.31.6.22',
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+                'MARS_Connection': True,
+            },
+        },
         
     }
 DATABASE_CONNECTION_POOLING  =  False

@@ -76,16 +76,61 @@ $(document).ready(function (e) {
         }
     }); 
 
+    var lastSearch = "";
+    var indexOfReports = 0;
+    var reportArray = [];
     //查詢文章
     $("#searchArticle").click(function(){
         ////console.log("check clicked");
         word = document.getElementById("inputkeywords").value;
         console.log("word : ", word);
         
-        var responseReport = searchReport(word);
-        printResult(responseReport);
-        if (responseReport.status === "0"){
-            document.getElementById("inputText").innerHTML = responseReport.Text;
+        console.log("lastSearch : ", lastSearch);
+        if (lastSearch != word){        
+            var responseReport = searchReport(word);
+            printResult(responseReport);
+            if (responseReport.status === "0"){
+                indexOfReports = 0;
+                reportArray = responseReport.data;
+
+                console.log("report: ", responseReport);
+                console.log("reportArray: ", reportArray);
+                document.getElementById("inputText").value = reportArray[indexOfReports].Text;
+                document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
+                lastSearch = word;
+                document.getElementById("searchArticle").innerHTML = "查詢文章 " + (indexOfReports+1).toString() + "/" + reportArray.length.toString();
+            }
+        }
+        else{
+            indexOfReports +=1;
+            if (indexOfReports > reportArray.length-1){
+                Swal.fire({
+                    title: 'Last report?',
+                    html: "已經是最後一篇文章，從頭開始查看?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        indexOfReports = 0;
+                        document.getElementById("inputText").value = reportArray[indexOfReports].Text;
+                        document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
+                        document.getElementById("searchArticle").innerHTML = "查詢文章 " + (indexOfReports+1).toString() + "/" + reportArray.length.toString();
+                    } else{
+                        Swal.fire({
+                            title: 'Canceled',
+                            icon: 'info',
+                        })
+                    }
+                });
+            }
+            else{
+                document.getElementById("inputText").value = reportArray[indexOfReports].Text;
+                document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
+                document.getElementById("searchArticle").innerHTML = "查詢文章 " + (indexOfReports+1).toString() + "/" + reportArray.length.toString();
+            }
         }
     }); 
 
@@ -384,8 +429,11 @@ function getItemDefinition(){
                         var  entries = Object.entries(result_array[i]);
                         for (const [key, value] of entries) {
                             console.log(`Key: ${key}, Value: ${value}`);
-                            keyArray.push(key);
-                            valueArray.push(value);
+                            if(!keyArray.includes(key)){
+                                keyArray.push(key);
+                                valueArray.push(value);
+
+                            }
                         }
                     }
                     console.log("keyArray : ", keyArray);
@@ -513,8 +561,8 @@ function getItemDefinition(){
             modal.style.display = 'none';
         });
 
-        console.log("keyArray : ", keyArray);
-        console.log("valueArray : ", valueArray);
+        //console.log("keyArray : ", keyArray);
+        //console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
@@ -562,8 +610,14 @@ function getItemDefinition(){
                 var select = document.getElementById(`selectItem${i}`)
                 console.log("select : ", select);
                 var selectedValue = select.value.toString();
+                var text = select.innerHTML;
+                var selectedOption = select.options[select.selectedIndex];
+
+                // Get the innerHTML value of the selected option element
+                var selectedOptionInnerHTML = selectedOption.innerHTML;
+
                 console.log("selectedValue : ", selectedValue);
-                html += (keyArray[i]).toString() + ": " + selectedValue + " " + chtArray[i].toString() + "<br>"
+                html += (keyArray[i]).toString() + ": " + selectedOptionInnerHTML + "<br>"
                 itemName.push(selectedValue);
             }
 

@@ -3889,7 +3889,7 @@ def getReportTextByMergeTokenExpression(request):
             for i in tokenList:
                 mergetoken += i
             print("mergetoken : ", mergetoken)
-            query = 'select top (1) a.* from ( '
+            query = 'select top (10) a.* from ( '
             query += 'select '
             for i in range(len(tokenList)):
                 query += f'b{i}.token as token{i+1}, '
@@ -3912,7 +3912,9 @@ def getReportTextByMergeTokenExpression(request):
                     # # # # print(mergetoken)
 
             
-            print("query : ", query)
+
+            
+            # print("query : ", query)
 
                     
 
@@ -3920,14 +3922,23 @@ def getReportTextByMergeTokenExpression(request):
             Text = cursor.fetchall()
             if Text == None:
                 raise Exception("無相對應文章")
-            print("Text : ", Text)
+            print("Text : ", len(Text))
+
+            record = {}
+            result['data'] = []
+            for i in Text:
+                # print(i.reportText)
+                record['Text'] = i.reportText
+                result['data'].append(copy.deepcopy(record))
+            print(result['data'])
 
             
             result['status'] = "0"
-            print("Text[0] : ", Text[0].reportText)
-            result['Text'] = Text[0].reportText
+            # print("Text[0] : ", Text[0].reportText)
+            # result['Text'] = Text[0].reportText
             
             result['MSG'] = "查詢成功"
+            print(result['status'])
             
             conn.commit()
         except Exception as e:
@@ -3938,8 +3949,8 @@ def getReportTextByMergeTokenExpression(request):
 
 
         
-        result['data'] = []
-        record = {}
+        # result['data'] = []
+        # record = {}
         # for i in Text:
         #     if words == "2":
         #         record['reportID'] = i[4]
