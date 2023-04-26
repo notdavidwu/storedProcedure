@@ -376,6 +376,8 @@ function printAllPData(searchWord){
         stickyHeader: true,
     })
     $('#view .fixed-table-toolbar').attr('id', 'table_p;');
+    var a = $("#table_p .fixed-table-pagination");
+    console.log("a : ", a);
 
 
     $('#view button[name="search"] i').removeClass('fa fa-search').addClass('bi bi-search');
@@ -402,7 +404,7 @@ function printAllDataBetween(){
     var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
     console.log(liHTMLArray);
     response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes);
-    //console.log("response.data : ", response.data);    
+    //console.log("response.data : ", response.data);
 }
 
 //取得所有已選Type

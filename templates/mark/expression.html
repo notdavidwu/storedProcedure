@@ -1,0 +1,204 @@
+
+
+{% load static%}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="zh-Hant" >
+    <head>
+        <meta name="viewport" maximum-scale=1.0, user-scalable=0 content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+        <script src="https://cdn.jsdelivr.net/npm/dual-listbox/dist/dual-listbox.min.js"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/dual-listbox/dist/dual-listbox.css"
+            rel="stylesheet"
+        />
+
+        <!-- for pinned version -->
+        <script src="https://cdn.jsdelivr.net/npm/dual-listbox@1.0.9/dist/dual-listbox.min.js"></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/dual-listbox@1.0.9/dist/dual-listbox.css"
+            rel="stylesheet"
+        />
+        <!-- CSS only -->
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+  
+    
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap.css' %}">
+    
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-grid.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-grid.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-grid.rtl.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-grid.rtl.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-reboot.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-reboot.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-reboot.rtl.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-reboot.rtl.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-utilities.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-utilities.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-utilities.rtl.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/bootstrap-5.1.3-dist/css/bootstrap-utilities.rtl.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css_js/loaders.css-master/loaders.css' %}">
+        <!-- JS, Popper.js, and jQuery -->
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="{% static 'css_js/jquery-3.6.0.min.js' %}"></script>
+        <script src="{% static 'css_js/popper.min.js' %}"></script>
+        <script src="{% static 'css_js/bootstrap-5.1.3-dist/js/bootstrap.min.js' %}"></script>
+
+        <script src="{% static 'css_js/key_forbidden.js' %}"></script>
+        <script src="{% static 'css_js/popper.min.js' %}"></script>
+        <script src="{% static 'css_js/loaders.css-master/loaders.css.js' %}"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/powerbi-client/2.15.1/powerbi.min.js" integrity="sha512-OWIl8Xrlo8yQjWN5LcMz5SIgNnzcJqeelChqPMIeQGnEFJ4m1fWWn668AEXBrKlsuVbvDebTUJGLRCtRCCiFkg==" crossorigin="anonymous"></script>
+        
+        <link href="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.css" rel="stylesheet">
+
+        <script src="https://unpkg.com/bootstrap-table@1.21.2/dist/bootstrap-table.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
+
+        
+        
+
+        <title>CSMU AIC</title>
+    </head>
+{% include 'mark/expression.js.html' %}
+{% include 'mark/expression.css' %}
+
+
+<body >
+    
+    <div class="overlay">
+        <iframe src="{% url 'mark:home' %}" id="iframe">
+        </iframe>
+    </div>
+    {% include 'navBar.html' %}
+    {{ user.username|json_script:"user_username" }}
+    {{ user.last_name|json_script:"hospital" }}
+    <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div id="frame">
+        <div id=pool class="row g-3">
+            <div class="col-md-12">
+                <label for="itemDefinition_itemID" class="form-label">itemID</label>
+                <input type="text" class="form-control" id="itemDefinition_itemID">
+            </div>
+            <div class="col-md-12">
+                <label for="itemDefinition_rootID" class="form-label">rootID</label>
+                <input type="text" class="form-control" id="itemDefinition_rootID">
+            </div>
+            <div class="col-md-12">
+                <label for="itemDefinition_itemName" class="form-label">itemName</label>
+                <input type="text" class="form-control" id="itemDefinition_itemName">
+            </div>
+            <div class="col-md-12">
+                <label for="itemDefinition_engName" class="form-label">engName</label>
+                <input type="text" class="form-control" id="itemDefinition_engName">
+            </div>
+            <div class="col-md-12">
+                <label for="itemDefinition_chtName" class="form-label">chtName</label>
+                <input type="text" class="form-control" id="itemDefinition_chtName">
+            </div>
+            <div id="search" class="col-12">
+                <button type="button" class="btn btn-primary form-control" id="insertDef">新增</button>
+                <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
+            </div>
+            <div class="col-md-12" id='itemDefinition_frame'>
+                <table class='table' id="itemDefinition">
+                    <thead style="position: sticky;top: 0" class="thead-dark">
+                        <tr>
+                            <th class="header" scope="col">itemID</th>
+                            <th class="header" scope="col">rootID</th>
+                            <th class="header" scope="col">itemName</th>
+                            <th class="header" scope="col">engName</th>
+                            <th class="header" scope="col">chtName</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+           
+        </div>
+
+        <div id="statisticsArea">
+            
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    
+                    <span class="close">&times;</span>
+                    <div>
+                    <div id="result_data" class="table table-bordered" ></div>
+                    </div>
+                </div>
+            </div>    
+            <div id="setting" class="row g-3">
+                <div class="col-md-9">
+                    <form class="rowg-3needs-validation" novalidate>
+                        <input type="text" class="form-control" placeholder="Name your Regex here" id="regexName" required></input>
+                        <div class="valid-feedback" id="validText" >
+                        </div>
+                        <div class="invalid-feedback" id="invalidText">
+                        </div>
+                        <div class="warning-feedback" id="warningText">
+                        </div>
+                    </form> 
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-info form-control" id="check">Check</button>
+                </div>
+                <div class="col-md-9" id="regexTextArea">
+                    <textarea class="form-control" placeholder="Type a Regex here" id="regexText" ></textarea>
+                </div>
+                <div class="col-md-3"  id="Mode" >
+                    <div class="form-check" >
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"checked>
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Highlight Mode
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" >
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Extract Mode
+                      </label>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <a class='btn btn-secondary form-control' id="executebtn"  >Execute</a>
+                </div>
+
+                
+            </div>
+            <div id="statistics" class="row g-3">
+                <div class="col-md-6" id="inputTextArea">
+                    <textarea class="form-control" placeholder="Paste your text here" id="inputText" ></textarea>
+                </div>
+                <div class="col-md-6" id="inputTextArea">
+                    <div class="col-md-12" id="ExtractOutputArea">
+                        <textarea class="form-control" placeholder="Extracted String(s)" id="ExtractOutput"  ></textarea>
+                    </div>
+                    <div class="col-md-12" id="resultArea">
+                        <p class="form-control" placeholder="Your output will show up here" id="result" >Your output will show up here</p>
+                    </div>
+                </div>
+                <div class="col-md-12" >
+                    <a class='btn btn-primary form-control' id="storebtn" >儲存</a>
+                </div>
+            </div>
+        </div>
+        <div id="view">
+        </div>
+    </div>
+    <div id="cover">
+    <div>
+
+
+</body >
+</html>
+{% endblock %}
+

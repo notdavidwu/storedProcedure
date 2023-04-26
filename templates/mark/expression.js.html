@@ -1,0 +1,666 @@
+
+
+{% load static%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+
+<link href="https://unpkg.com/perfect-scrollbar@1.4.0/css/perfect-scrollbar.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+
+<!-- Styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function (e) {
+
+
+    var response = getItemDefinition();
+    console.log("response : ", response);
+    
+    $('#itemDefinition tbody').empty()
+    let element = '';
+    for(let i=0;i<response.itemID.length;i++){
+        element += `<tr>
+            <td>${response.itemID[i]}</td>
+            <td>${response.rootID[i]}</td>
+            <td>${response.itemName[i]}</td>
+            <td>${response.engName[i]}</td>
+            <td>${response.chtName[i]}</td>
+            </tr>`;
+    }
+    $('#itemDefinition tbody').append(element);
+
+    
+    //搜尋按鈕
+
+    //根據select顯示token
+
+    $('#loader').css('display','none');
+    $('#frame').css('visibility','visible');
+
+    //執行按鈕
+    $("#executebtn").click(function(){
+        Highlight_Extract();
+    });
+
+    //確認名稱
+    $("#check").click(function(){
+        ////console.log("check clicked");
+        Name = [];
+        Name.push(document.getElementById("regexName").value);
+        ////console.log(name);
+        
+        //不為空檢查，否則顯示不可為空
+        if (Name[0] != ""){
+            tokenTYPE = checkName(Name);
+        }
+    }); 
+
+    //新增按鈕
+    $("#insertDef").click(function(){
+        var itemID = document.getElementById("itemDefinition_itemID").value;
+        var rootID = document.getElementById("itemDefinition_rootID").value;
+        var itemName = document.getElementById("itemDefinition_itemName").value;
+        var engName = document.getElementById("itemDefinition_engName").value;
+        var chtName = document.getElementById("itemDefinition_chtName").value;
+        var rootName = "";
+        console.log("itemID : ", itemID);
+        console.log("rootID : ", rootID);
+        console.log("itemName : ", itemName);
+        console.log("engName : ", engName);
+        console.log("chtName : ", chtName);
+        if (rootID === "0"){
+            rootName = "無";
+        }
+        else{
+            var response = searchItem(rootID);
+            console.log("response : ", response);
+            printResult(response);
+            rootName = response.chtName;
+        }
+        Swal.fire({
+            title: 'Create a new itemDefinition ?',
+            html: "rootName : " + rootName,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName);  
+                printResult(resInsert);
+                
+                var response = getItemDefinition();
+                console.log("response : ", response);
+                
+                $('#itemDefinition tbody').empty()
+                let element = '';
+                for(let i=0;i<response.itemID.length;i++){
+                    element += `<tr>
+                        <td>${response.itemID[i]}</td>
+                        <td>${response.rootID[i]}</td>
+                        <td>${response.itemName[i]}</td>
+                        <td>${response.engName[i]}</td>
+                        <td>${response.chtName[i]}</td>
+                        </tr>`;
+                }
+                $('#itemDefinition tbody').append(element);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    icon: 'info',
+                })
+            }
+        });
+        
+    }); 
+})
+
+//存itemDef
+function insertItemDefinition(itemID, rootID, itemName, engName, chtName){
+    var res;
+    $.ajax({
+        async: false, 
+        type: 'POST',
+        url: '{% url 'mark:insertintoItemDefinition' %}',
+        data:JSON.stringify({
+            'itemID': itemID,
+            'rootID': rootID,
+            'itemName': itemName,
+            'engName': engName,
+            'chtName': chtName,
+        }),
+        success:function (response){
+            res = response;
+        },
+    })
+    return res;
+}
+
+//找父節點
+function searchItem(itemID){
+    console.log("itemID : ", itemID);
+    var res;
+    $.ajax({
+        async: false, 
+        type: 'POST',
+        url: '{% url 'mark:getItemByRootID' %}',
+        data:JSON.stringify({
+            'itemID': itemID,
+        }),
+        success:function (response){
+            res = response;
+        },
+    })
+    return res;
+}
+
+//確認名稱合法與否
+function checkName(Name){
+    var res;
+    $.ajax({
+        async: false, 
+        type: 'GET',
+        url: '{% url 'mark:checkName' %}',
+        data:{
+            'Name[]': Name,
+        },
+        success:function (response){
+            res = response.tokenType;
+            const feedbackElement = document.querySelector('.warning-feedback');
+            if (response.status == '0'){                     
+                //有找到，報錯
+                feedbackElement.textContent = "Same Name detected, extract will append a new regex to it.";
+                $("#regexName").attr('class', 'form-control is-warning');
+            }
+            else{
+                feedbackElement.textContent = "";
+                //沒找到，正確
+                $("#validText").text("Name is valid!");
+                $("#regexName").attr('class', 'form-control is-valid');
+                $("#regexName").attr('class', 'form-control is-valid');
+            }
+        },
+    })
+    return res;
+}
+
+
+function dualBox(){
+    let dlb2 = new DualListbox('.selectVocabulary', {
+        availableTitle:'Available vocabularies',
+        selectedTitle: 'Selected vocabularies',
+        addButtonText: '>',
+        removeButtonText: '<',
+        addAllButtonText: '>>',
+        removeAllButtonText: '<<',
+        searchPlaceholder: 'search vocabulary',
+        draggable: true,
+        sortable: true,
+    });
+    dlb2.addEventListener('added', function(event){
+        console.log(event);
+    });
+    dlb2.addEventListener('removed', function(event){
+        console.log(event);
+    });
+}
+
+
+function getItemDefinition(){
+    var res;
+    $.ajax({
+        async:false,
+        type: 'GET',
+        url: '{% url "mark:getItemDefinition" %}',
+        success:function (response){
+            res = response;
+            console.log(response, res);
+        },
+    });
+    return res;
+}
+
+
+
+    //改變文字顏色
+    function Highlight_Extract() {
+        highLight = document.getElementById('flexRadioDefault1')
+        if (highLight.checked == true) {
+            //定義輸入的regex值存進變數
+            let textToSearch = document.getElementById("regexText").value; 
+
+            //定義輸入的文本存進變數
+            let text = document.getElementById("inputText");
+            if (textToSearch == ""){
+                diaplay_please_input_something();
+            }
+            else{
+                //放到結果欄內
+                document.getElementById("result").innerHTML = text.value
+
+                //取出輸出的文本
+                let paragraph = document.getElementById("result").innerHTML;
+                //將輸入文本丟到輸出欄位變數
+                paragraph = text.value
+                //處理輸入的regex文本
+                textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+                ////console.log(textToSearch)
+                ////console.log(paragraph)
+                //將處理好的regex文本定義為新的regex物件
+                try {                
+                    let pattern = new RegExp(`${textToSearch}`,"gi");                
+                
+                    //將輸出文本與regex物件有符合的地方加上<mark>標籤，然後丟到輸出欄位
+                    document.getElementById("result").innerHTML = paragraph.replace(pattern, match => `<mark>${match}</mark>`);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error,
+                            icon: 'error',
+                            confirmButtonText: 'Ok',
+                        })
+                        return;
+                    }
+                }
+                ////console.log(pattern)
+            }
+        }
+
+        //萃取模式
+        exTract = document.getElementById('flexRadioDefault2')
+        if (exTract.checked == true) {
+            //定義輸入的regex值存進變數
+            let textToSearch = document.getElementById("regexText").value; 
+            let table_regex = document.getElementById("regexText").value;
+
+            //定義輸入的文本存進變數
+            let text = document.getElementById("inputText");
+            //放到結果欄內
+            document.getElementById("result").innerHTML = text.value
+
+            //取出輸出的文本
+            let paragraph = document.getElementById("result").innerHTML;
+            //將輸入文本丟到輸出欄位變數
+            paragraph = text.value
+            //處理輸入的regex文本
+            textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+            ////console.log(textToSearch)
+            ////console.log(paragraph)
+            //將處理好的regex文本定義為新的regex物件
+            try {                
+                let pattern = new RegExp(`${textToSearch}`,"gi");
+                ////console.log(pattern)
+                
+                
+                //將輸出文本與regex物件有符合的地方取代為空白      
+                document.getElementById("result").innerHTML = paragraph.replace(pattern, " ");
+                ////console.log(text.value.match(pattern))
+                //抓出被取代的資料 + 排版
+                extractedArray = text.value.match(pattern);
+
+
+                var ex = "";
+                var count = 0;
+                for(var i=0 ; i<extractedArray.length ; i++){
+                    ex = ex.concat((i+1).toString(), ". ", extractedArray[i], "\n")
+                    count += 1;
+                }
+                console.log("ex:", ex);
+                if (textToSearch == ""){
+                    diaplay_please_input_something();
+                }
+                else{
+                    
+                    //排完丟到畫面顯示
+                    document.getElementById("ExtractOutput").innerHTML = ex;
+                    //開始建立表格
+                    //解析輸入的regex
+                    let dateFormat = new RegExp(`${textToSearch}`,"gi");
+                    ////console.log("dateFormat: "+ dateFormat);          
+                    result_array = []
+                    //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
+                    while(null != (g = dateFormat.exec(paragraph))) {
+                        //console.log("groups: " + g.groups);  // ouput: "a"
+                        console.log("pattern: " + g);
+                        result_array.push(g.groups);
+                    }
+                    console.log(result_array);
+                    var keyArray = [];
+                    var valueArray = [];
+                    for(var i=0 ; i<result_array.length ; i++){
+                        var  entries = Object.entries(result_array[i]);
+                        for (const [key, value] of entries) {
+                            console.log(`Key: ${key}, Value: ${value}`);
+                            keyArray.push(key);
+                            valueArray.push(value);
+                        }
+                    }
+                    console.log("keyArray : ", keyArray);
+                    console.log("valueArray : ", valueArray);
+                    var string = "";
+                    for(var i=0 ; i<keyArray.length ; i++){
+                        string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
+                    }
+                    // //如果有用named capture groups
+                    // if (result_array[0] != null){
+                    //     ////console.log(result_array);
+                    //     //創建表格元素
+                    //     let myTable = document.querySelector('#table');
+                    //     ////console.log(Object.keys(result_array[0]));
+                    //     let headers = Object.keys(result_array[0]);
+                    //     let table = document.createElement('table');
+                    //     let headerRow = document.createElement('tr');
+                    //     headers.forEach(headerText => {
+                    //         let header = document.createElement('th');
+                    //         let textNode = document.createTextNode(headerText);
+                    //         header.appendChild(textNode);
+                    //         headerRow.appendChild(header);
+                    //     });
+                    //     table.appendChild(headerRow);
+                    //     result_array.forEach(emp => {
+                    //         let row = document.createElement('tr');
+                    //         Object.values(emp).forEach(text => {
+                    //             let cell = document.createElement('td');
+                    //             let textNode = document.createTextNode(text);
+                    //             cell.appendChild(textNode);
+                    //             row.appendChild(cell);
+                    //         })
+                    //         table.appendChild(row);
+                    //     });
+                    //     myTable.appendChild(table);
+                    // }
+                    // var tokenType = document.getElementById('dropdownbutton').value;
+
+                    var tokenType = "E";
+                    //儲存按鈕
+                    $("#storebtn").click(function(){
+                        Swal.fire({
+                            title: 'Continue to define itemID of item?',
+                            html: string,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No'
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                showModal(keyArray, valueArray);
+                                //if (tokenType === "E"){
+                                //    console.log("result_array : " , result_array);
+                                //    //console.log("save pressed E");
+                                //    //資料到後端儲存
+                                //    BtnClicked_1(Object.keys(result_array[0]));
+                                //    document.getElementById("returnbtn").style.visibility = 'visible';
+                                //}
+                            } else{
+                                Swal.fire({
+                                    title: 'Request Canceled',
+                                    icon: 'info',
+                                })
+                            }
+                        });
+                        
+                    });
+                    
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: error,
+                        icon: 'error',
+                        confirmButtonText: 'Ok',
+                    })
+                    return;
+                }
+            }
+        }
+    }
+
+    //顯示結果
+    function printResult(response){
+        if(response.status == "0"){ 
+            if (response.MSG){                
+                Swal.fire({
+                    title: 'Success',
+                    text: response.MSG,
+                    icon: 'success',
+                })
+            }
+        }
+        else{
+            if (response.ERRMSG){
+                Swal.fire({
+                    title: 'Failed',
+                    text: response.ERRMSG,
+                    icon: 'error',
+                })
+            }
+            else{
+                Swal.fire({
+                    title: 'Failed',
+                    text: "Something went wrong",
+                    icon: 'error',
+                })
+            }
+        }        
+    }
+
+    
+
+    
+    function showModal(keyArray, valueArray) {
+		var modal = document.getElementById("modal");
+        modal.style.display = "block";
+        console.log("modal : ", modal);
+
+        var closeButton = document.querySelector('.close');
+
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        console.log("keyArray : ", keyArray);
+        console.log("valueArray : ", valueArray);
+
+        const container = document.getElementById('result_data'); // example container 
+        container.innerHTML = ''; // empty the container
+        
+        var response = getItemDefinition();
+        var nameArray = response.itemName;   
+        var chtArray = response.chtName;   
+        var itemIDArray = response.itemID;
+        for (let i = 0; i < keyArray.length; i++) {            
+            const dropdown = document.createElement('select'); // create a new dropdown element
+            dropdown.className = "form-select";
+            dropdown.id = `selectItem${i}`;
+            var element = "";
+            
+            for (let j = 0; j < nameArray.length; j++) {
+                //element += `<tr>
+                //<td>${response.itemID[i]}</td>
+                //<td>${response.rootID[i]}</td>
+                //<td>${response.itemName[i]}</td>
+                //<td>${response.engName[i]}</td>
+                //<td>${response.chtName[i]}</td>
+                //</tr>`;
+                const option = document.createElement('option'); // create a new option element
+                option.text = nameArray[j] + " " + chtArray[j]; // set the text of the option
+                option.value = nameArray[j]; // set the text of the option
+                option.itemID = itemIDArray[j]; // set the text of the option
+                dropdown.add(option); // add the option to the dropdown
+            }
+            var number = document.createElement('span');
+            number.innerHTML = (i+1).toString() + ". " + keyArray[i] ;
+            container.appendChild(number); // append the dropdown to the container element
+            container.appendChild(dropdown); // append the dropdown to the container element
+        }
+        
+        const button = document.createElement('button'); // create a new button element
+        button.textContent = '儲存'; // set the text of the button
+        button.classList.add('btn', 'btn-secondary'); // add classes to the button
+
+        // add a click event listener to the button
+        button.addEventListener('click', function() {
+                 
+            var html = "";
+            var itemName = [];
+            for (let i = 0; i<keyArray.length; i++) {      
+                var select = document.getElementById(`selectItem${i}`)
+                console.log("select : ", select);
+                var selectedValue = select.value.toString();
+                console.log("selectedValue : ", selectedValue);
+                html += (keyArray[i]).toString() + ": " + selectedValue + " " + chtArray[i].toString() + "<br>"
+                itemName.push(selectedValue);
+            }
+
+
+            Swal.fire({
+                title: 'Save the record?',
+                icon: 'question',
+                html: html,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Data Saved',
+                        icon: 'success',
+                        confirmButtonText: 'ok',
+                    })
+                    
+                    modal.style.display = "none";
+                    console.log("itemName : ", itemName);
+                    BtnClicked_1(itemName);
+
+                } 
+                else{
+                    // Swal.fire({
+                    //     title: 'Request Canceled',
+                    //     icon: 'info',
+                    // })
+                    
+                    // modal.style.display = "none";
+                }                
+            });
+        });
+
+        // append the button to the document body
+        container.appendChild(button);
+    }
+
+    
+
+    
+
+    //存檔到後端資料庫
+    function BtnClicked_1(itemName){
+        ////console.log("execute in")
+        ////console.log(itemName)
+
+        token = document.getElementById('regexName').value
+        // tokenType = document.getElementById('dropdownbutton').value
+        tokenType = "E";
+        //console.log("tokenType : " + tokenType)
+        //count = getLength(token);
+        ////console.log(input,regex)
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'mark:insertVocabulary' %}',
+            data:{
+                'token': token,
+                'nWord': token.length,
+                'tokenType': tokenType,                
+            },
+            success:function (response){
+                //console.log("result : " + response.status)
+                
+                if (tokenType == 'E'){
+                    BtnClicked_2(response,itemName);
+                }
+                printResult(response);
+            },
+        });
+    }
+
+    //存檔到後端資料庫
+    function BtnClicked_2(response,itemName){
+        //console.log("btnclicked_2 : " + response.data[0].tokenID)
+        tokenID = response.data[0].tokenID;        
+        regex = document.getElementById('regexText').value
+        //console.log("tokenID : " + tokenID);
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'mark:inserttokenRE' %}',
+            data:{
+                'tokenID': tokenID,
+                'RE': regex,               
+            },
+            success:function (response){  
+                //console.log("BtnClicked_2 : ", response)  
+                if (tokenType === 'E' && response.status === '0'){
+                    //console.log("btnclicked3")
+                    BtnClicked_3(response,itemName);
+                }
+                
+                printResult(response);
+            },
+            fail:function (){              
+            },
+        });
+    }
+
+    //存檔到後端資料庫
+    function BtnClicked_3(response,itemName){   
+        //console.log("btnclicked3_itemName " + itemName)  
+        tokenREID = response.data[0].tokenREID;        
+        //console.log("btnclicked")
+        for (var i=0 ; i< itemName.length ; i++){
+            //console.log("btnclicked :" + (i+1) + "times")
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'mark:inserttokenREItem' %}',
+                data:{
+                    'tokenREID': tokenREID,
+                    'serialNo': i+1,
+                    'itemName': itemName[i],               
+                },
+                success:function (response){
+                    printResult(response);
+                },
+                fail:function (){              
+                },
+            });
+        }
+        
+    }
+
+
+</script>
+

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from mark.views import *
 from django.urls import include
+
 app_name = "mark"
 
 from django.views.generic import TemplateView
@@ -72,6 +73,7 @@ urlpatterns = [
     
     path('Page2/', Page2,name="Page2"),
     path('Merge/', Merge,name="Merge"),
+    path('REmove/', REmove,name="REmove"),
     path('static/selectVocabulary/', selectVocabulary.as_view(), name='selectVocabulary'),
     
     path('reportForm/', reportForm,name="reportForm"),
@@ -86,5 +88,12 @@ urlpatterns = [
     path('getAllForms/', getAllForms, name='getAllForms'),
     path('getAllFormProcedures/', getAllFormProcedures, name='getAllFormProcedures'),
     path('getAllFormVocabularies/', getAllFormVocabularies, name='getAllFormVocabularies'),
+    path('getVocabularyE/', getVocabularyE, name='getVocabularyE'),
+    path('backupDB/', backupDB, name='backupDB'),
+    path('moveRE/', moveRE, name='moveRE'),
+    path('expression/', expression, name='expression'),
+    path('getItemDefinition/', getItemDefinition, name='getItemDefinition'),
+    path('getItemByRootID/', getItemByRootID, name='getItemByRootID'),
+    path('insertintoItemDefinition/', insertintoItemDefinition, name='insertintoItemDefinition'),
     
 ]
