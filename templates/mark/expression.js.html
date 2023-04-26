@@ -32,6 +32,8 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function (e) {
+    // var number = document.getElementById("inputReportNumber").value;
+    // console.log("number : ", number==="");
 
 
     var response = getItemDefinition();
@@ -84,10 +86,16 @@ $(document).ready(function (e) {
         ////console.log("check clicked");
         word = document.getElementById("inputkeywords").value;
         console.log("word : ", word);
+
+        var number = document.getElementById("inputReportNumber").value;
+        if (number === ""){
+            number = "10";
+        }
         
         console.log("lastSearch : ", lastSearch);
         if (lastSearch != word){        
-            var responseReport = searchReport(word);
+    
+            var responseReport = searchReport(word, number);
             printResult(responseReport);
             if (responseReport.status === "0"){
                 indexOfReports = 0;
@@ -105,7 +113,7 @@ $(document).ready(function (e) {
             indexOfReports +=1;
             if (indexOfReports > reportArray.length-1){
                 Swal.fire({
-                    title: 'Last report?',
+                    title: 'Last report',
                     html: "已經是最後一篇文章，從頭開始查看?",
                     icon: 'question',
                     showCancelButton: true,
@@ -196,7 +204,8 @@ $(document).ready(function (e) {
 })
 
 //找文章
-function searchReport(word){
+function searchReport(word, number){
+    console.log("number : ", number);
     var res;
     $.ajax({
         async: false, 
@@ -204,6 +213,7 @@ function searchReport(word){
         url: '{% url 'mark:getReportTextByMergeTokenExpression' %}',
         data:JSON.stringify({
             'tokens': word,
+            'number': number,
         }),
         success:function (response){
             res = response;

@@ -518,6 +518,9 @@
   #inputkeywordsArea{
     margin-bottom:10px;
   }
+  #testArea{
+    height:calc(100% - 38px);
+  }
 </style>
 {% endblock %}
 

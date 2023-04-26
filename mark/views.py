@@ -3879,6 +3879,7 @@ def getReportTextByMergeTokenExpression(request):
         try:
             body = json.loads(raw)
             tokens = body['tokens']
+            number = body['number']
             if tokens == "":
                 raise Exception("輸入不可為空")
 
@@ -3889,7 +3890,7 @@ def getReportTextByMergeTokenExpression(request):
             for i in tokenList:
                 mergetoken += i
             print("mergetoken : ", mergetoken)
-            query = 'select top (10) a.* from ( '
+            query = 'select top (' + number + ') a.* from ( '
             query += 'select '
             for i in range(len(tokenList)):
                 query += f'b{i}.token as token{i+1}, '
