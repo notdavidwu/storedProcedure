@@ -79,6 +79,7 @@ $(document).ready(function (e) {
     }); 
 
     var lastSearch = "";
+    var lastNum = "";
     var indexOfReports = 0;
     var reportArray = [];
     //查詢文章
@@ -93,7 +94,7 @@ $(document).ready(function (e) {
         }
         
         console.log("lastSearch : ", lastSearch);
-        if (lastSearch != word){        
+        if (lastSearch != word || lastNum != number){
     
             var responseReport = searchReport(word, number);
             printResult(responseReport);
@@ -106,6 +107,7 @@ $(document).ready(function (e) {
                 document.getElementById("inputText").value = reportArray[indexOfReports].Text;
                 document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
                 lastSearch = word;
+                lastNum = number;
                 document.getElementById("searchArticle").innerHTML = "查詢文章 " + (indexOfReports+1).toString() + "/" + reportArray.length.toString();
             }
         }
