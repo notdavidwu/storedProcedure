@@ -287,7 +287,7 @@ def insertVocabulary(request):
 
         elif tokenID_original != None:
             # # # # # print("tokenID_original : ", tokenID_original)
-            result['status'] = 'already_exist'
+            result['status'] = '0'
             record['tokenID'] = tokenID_original[2]
             record['token'] = tokenID_original[0]
             record['tokenType'] = tokenID_original[3]
@@ -3924,6 +3924,9 @@ def getReportTextByMergeTokenExpression(request):
             if Text == None:
                 raise Exception("無相對應文章")
             print("Text : ", len(Text))
+
+            if len(Text) == 0:
+                raise Exception("無相關文章")
 
             record = {}
             result['data'] = []
