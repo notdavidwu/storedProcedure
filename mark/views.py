@@ -104,12 +104,12 @@ def getVocabulary(request):
     if request.method == 'GET':
         #測試拉資料
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        result = cursor.execute("select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType != 'U' ")
+        result = cursor.execute("select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType != 'U' ")
         patient = cursor.fetchall()
         result = {}
         result['data'] = []
@@ -130,18 +130,18 @@ def getVocabularyByType(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
         if request.GET['tokenType'] == 'U':
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where (tokenType = ? and tokenID <= 152 and tokenID != 151) order by tokenID DESC;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where (tokenType = ? and tokenID <= 152 and tokenID != 151) order by tokenID DESC;'
         elif request.GET['tokenType'] == 'P':
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ? or tokenType != \'U\';'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ? or tokenType != \'U\';'
         else:
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ? ;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ? ;'
         args = [request.GET['tokenType']]
         # # # # # print(args)
         cursor.execute(query, args)
@@ -166,7 +166,7 @@ def getVocabularyByType_Ptable(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -248,7 +248,7 @@ def insertVocabulary(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -262,7 +262,7 @@ def insertVocabulary(request):
         record['tokenType'] = request.POST.get('tokenType')
 
 
-        query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ? and nWord = ?;'
+        query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ? and nWord = ?;'
         args = [request.POST.get('token'),int(request.POST.get('nWord'))]
         cursor.execute(query, args)
         tokenID_original = cursor.fetchone()
@@ -272,7 +272,7 @@ def insertVocabulary(request):
         if tokenID_original == None and request.POST.get('tokenType'):
 
         #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[Vocabulary] (token,nWord,tokenType) OUTPUT [INSERTED].tokenID,[INSERTED].token,[INSERTED].tokenType VALUES (?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[Vocabulary] (token,nWord,tokenType) OUTPUT [INSERTED].tokenID,[INSERTED].token,[INSERTED].tokenType VALUES (?, ?, ?);'
             args = [request.POST.get('token'),int(request.POST.get('nWord')),request.POST.get('tokenType')]
             # # # # # print(args)
             cursor.execute(query, args)
@@ -307,7 +307,7 @@ def insertVocabulary_U(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -344,7 +344,7 @@ def insertVocabulary_U(request):
             Token = token[i]
             # # # # # print("Token : ", Token)
             #先查詢
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ?;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?;'
             args = [Token]
             cursor.execute(query, args)
             old_tokenID = cursor.fetchone()
@@ -395,7 +395,7 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -459,7 +459,7 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -482,7 +482,7 @@ def getTextToken(request):
             # # # # # print(int(tokenID[i]))
             # # # # # print( reportID[i], posStart[i], posEnd[i], tokenID[i])
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
             args = [int(reportID[i]), posStart[i], posEnd[i], int(tokenID[i])]
             # # # # # # print("args : ", args)
             cursor.execute(query, args)
@@ -496,7 +496,7 @@ def getTextToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -599,7 +599,7 @@ def getTextToken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -669,7 +669,7 @@ def getTextToken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -765,7 +765,7 @@ def insertTexttoken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -802,7 +802,7 @@ def insertTexttoken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -836,7 +836,7 @@ def insertTexttoken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -874,7 +874,7 @@ def insertTexttoken_3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -912,12 +912,12 @@ def inserttokenRE(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
-        #result = cursor.execute("select * from [buildVocabulary  ].[dbo].[Vocabulary]")
+        #result = cursor.execute("select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary]")
         #取得post資料
         result['data'] = []
         record = {}
@@ -925,14 +925,14 @@ def inserttokenRE(request):
         record['RE'] = request.POST.get('RE')
 
 
-        query = 'select * from [buildVocabulary  ].[dbo].[vocabularyRE] where tokenID = ? and RE = ?;'
+        query = 'select * from [nlpVocabularyLatest  ].[dbo].[vocabularyRE] where tokenID = ? and RE = ?;'
         args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
         cursor.execute(query, args)
         tokenREID_original = cursor.fetchall()
         # # # # # print("tokenREID_original : ", tokenREID_original)
         if tokenREID_original == []:
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[vocabularyRE] (tokenID, RE) OUTPUT [INSERTED].REID VALUES (?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[vocabularyRE] (tokenID, RE) OUTPUT [INSERTED].REID VALUES (?, ?);'
             args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
             # # # # # print(args)
             cursor.execute(query, args)
@@ -958,7 +958,7 @@ def inserttokenREItem(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1019,7 +1019,7 @@ def checkName(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1030,7 +1030,7 @@ def checkName(request):
         # # # # print("Token : ", Token)
 
         for i in range(len(Token)):
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] WHERE token = ?;'
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] WHERE token = ?;'
             args = [Token[i]]
             cursor.execute(query, args)
             token = cursor.fetchone()
@@ -1068,7 +1068,7 @@ def checkRE(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1078,7 +1078,7 @@ def checkRE(request):
         TokenREID = []
 
         for i in range(len(TokenID)):
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[tokenRE] WHERE tokenID = ?;'
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[tokenRE] WHERE tokenID = ?;'
             args = [TokenID[i]]
             # # # # # # print(args)
             ## # # # # print(query)
@@ -1109,13 +1109,13 @@ def getAnalyseText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        query = 'SELECT * FROM [buildVocabulary  ].[dbo].[analyseText];'
+        query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[analyseText];'
         cursor.execute(query)
         reportText = cursor.fetchall()
 
@@ -1142,15 +1142,15 @@ def getReportID(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        # query = 'SELECT * FROM [buildVocabulary ].[dbo].[analyseText] where reportID = 10002;'
+        # query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[analyseText] where reportID = 10002;'
         # query = 'SELECT * FROM analyseText;'
-        query = 'SELECT * FROM [buildVocabulary ].[dbo].[analyseText] where reportID >= ? and reportID <= ?'
+        query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[analyseText] where reportID >= ? and reportID <= ?'
         args = [request.GET['reportID1'], request.GET['reportID2']]
         
         cursor.execute(query, args)
@@ -1184,13 +1184,13 @@ def getReportText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         #插入資料表
-        query = 'SELECT * FROM [buildVocabulary  ].[dbo].[analyseText] where reportID = ?;'
+        query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[analyseText] where reportID = ?;'
         args = [request.GET['reportID']]
         cursor.execute(query, args)
         reportID = cursor.fetchone()
@@ -1216,14 +1216,14 @@ def getReportText(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
         cursor = conn.cursor()
         # # # # # # print("patch in")
         #更新資料表
-        query = 'update [buildVocabulary  ].[dbo].[analyseText]  set analysed = ?, residualText = ? output INSERTED.reportID,INSERTED.reportText,INSERTED.residualText where reportID = ?;'
+        query = 'update [nlpVocabularyLatest  ].[dbo].[analyseText]  set analysed = ?, residualText = ? output INSERTED.reportID,INSERTED.reportText,INSERTED.residualText where reportID = ?;'
         raw = request.body.decode('utf-8')
         body = json.loads(raw)
         # # # # # # print('data : ' + data.getlist['residualText'])
@@ -1264,7 +1264,7 @@ def getReportText(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1278,7 +1278,7 @@ def getReportText(request):
         # # # # # # print(reportID, posStart, posEnd, tokenID)
         for i in range(len(reportID)):
             # # # # # # print(reportID[i], posStart[i], posEnd[i], tokenID[i])
-            query = "select * from [buildVocabulary  ].[dbo].[Vocabulary] where token = ?"
+            query = "select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?"
             args = [token[i]]
             cursor.execute(query, args)
             id = cursor.fetchone()
@@ -1287,7 +1287,7 @@ def getReportText(request):
             if id.tokenType == 'U':
                 result = {'status':'U'}
             #插入資料表
-            query = 'INSERT into [buildVocabulary  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[textToken] (reportID, posStart, posEnd, tokenID) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
             args = [reportID[i], posStart[i], posEnd[i], id.tokenID]
             # # # # # # print("args : ", args)
             cursor.execute(query, args)
@@ -1304,7 +1304,7 @@ def getTokenREItemID(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1333,7 +1333,7 @@ def getTokenREItemID(request):
             # # # # # # print("data[i] : ", data[i])
             if data[i]['tokenID']:
                 #查詢tokenType
-                query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+                query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
                 args = [data[i]['tokenID']]
                 cursor.execute(query, args)
                 tokenType = cursor.fetchone()
@@ -1345,7 +1345,7 @@ def getTokenREItemID(request):
                 if tokenType.tokenType != 'T' or tokenType.tokenType != 'U':
                     #查詢tokenREID
                     # # # # # print("tokentype is not T or U")
-                    query = 'SELECT * FROM [buildVocabulary  ].[dbo].[tokenRE] where tokenID = ?;'
+                    query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[tokenRE] where tokenID = ?;'
                     args = [data[i]['tokenID']]
                     cursor.execute(query, args)
                     tokenREID = cursor.fetchone()
@@ -1356,7 +1356,7 @@ def getTokenREItemID(request):
                         if tokenType.tokenType != 'T' or tokenType.tokenType != 'U':
                             # # # # # # print(j)
                             #查詢tokenREItemID
-                            query = 'SELECT * FROM [buildVocabulary ].[dbo].[tokenREItem] where tokenREID = ? and itemName = ?;'
+                            query = 'SELECT * FROM [nlpVocabularyLatest ].[dbo].[tokenREItem] where tokenREID = ? and itemName = ?;'
                             args = [tokenREID.tokenREID, list(data[i].keys())[j]]
                             cursor.execute(query, args)
                             tokenREItemID = cursor.fetchone()
@@ -1389,7 +1389,7 @@ def insertExtractedValueFromToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1432,7 +1432,7 @@ def insertExtractedValueFromToken(request):
                     # # # # # # print("j : ", j)
                     # # # # # # print(tokenType[i])
                     # # # # # # print(reportID[i], posStart[i], tokenREItemID[i][j], Value[i][j])
-                    query = 'INSERT into [buildVocabulary  ].[dbo].[extractedValueFromToken] (reportID, posStart, tokenREItemID, extractedValue) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
+                    query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[extractedValueFromToken] (reportID, posStart, tokenREItemID, extractedValue) OUTPUT [INSERTED].reportID, [INSERTED].posStart VALUES (?, ?, ?, ?);'
                     Value[tokenREItemIDIndex][j] = Value[tokenREItemIDIndex][j].replace("|", ",")
                     args = [reportID[i], posStart[i], tokenREItemID[tokenREItemIDIndex][j], Value[tokenREItemIDIndex][j]]
                     # # # # # print(args)
@@ -1453,7 +1453,7 @@ def getToken(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1469,7 +1469,7 @@ def getToken(request):
         token2 = []
         for i in tokenID1:
             # # # # # # print(i)
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
             args = [i]
             cursor.execute(query, args)
             token = cursor.fetchone()
@@ -1478,7 +1478,7 @@ def getToken(request):
 
         for i in tokenID2:
             # # # # # # print(i)
-            query = 'select * from [buildVocabulary  ].[dbo].[Vocabulary] where tokenID = ?;'
+            query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenID = ?;'
             args = [i]
             cursor.execute(query, args)
             token = cursor.fetchone()
@@ -1507,7 +1507,7 @@ def getTokenIDCheckTextToken(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1520,7 +1520,7 @@ def getTokenIDCheckTextToken(request):
         for i, t in enumerate(token):
             pn = 0
             # # # # # print("Index:", i, "Token:", t)
-            query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where token = ?;'
+            query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ?;'
             args = [t]
             # # # # # # print(i)
 
@@ -1532,7 +1532,7 @@ def getTokenIDCheckTextToken(request):
             if tokenID != None:
                 # # # # # # print(tokenID.tokenID)
                 
-                query = 'SELECT * FROM [buildVocabulary  ].[dbo].[textToken] where tokenID = ?;'
+                query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[textToken] where tokenID = ?;'
                 args = [tokenID.tokenID]
 
                 cursor.execute(query, args)
@@ -1571,7 +1571,7 @@ def getNextWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1593,19 +1593,19 @@ def getNextWord(request):
                 token += f', c{i+5}.token as token{i+5}'
                 mergetoken += f' + c{i+5}.token'
                 if i == 0:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
                 else:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
 
-                innerjointoken += f' inner join [buildVocabulary  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
+                innerjointoken += f' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
                 groupby += f' , c{i+5}.token'
                 text = innerjoinpos
         #如果<3就固定抓三個字
         else:
             token = f''' , a5.token as token3'''
             mergetoken = f''' + a5.token'''
-            innerjoinpos = f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
-            innerjointoken = f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
+            innerjoinpos = f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
+            innerjointoken = f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
             groupby = f''' , a5.token'''
             text = innerjoinpos
 
@@ -1624,21 +1624,21 @@ def getNextWord(request):
         query += mergetoken
 
         query +=f''' as mergeToken
-                from [buildVocabulary  ].[dbo].[textToken] as a0
-                inner join [buildVocabulary  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
+                from [nlpVocabularyLatest  ].[dbo].[textToken] as a0
+                inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
                 '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
         query += innerjoinpos
         # 找第一個字
         if firstToken != "":
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}'
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}'
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
         else:
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
         query += innerjointoken
         query +=f''' group by a2.token, a3.token
                 '''
@@ -1647,7 +1647,7 @@ def getNextWord(request):
         
         query +=f'''
                 ) as textTokenData
-                left join [buildVocabulary  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
+                left join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
                 where word.tokenID is null
                 order by times desc;
                 '''
@@ -1704,7 +1704,7 @@ def getNextWordReport(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -1726,19 +1726,19 @@ def getNextWordReport(request):
                 token += f', c{i+5}.token as token{i+5}'
                 mergetoken += f' + c{i+5}.token'
                 if i == 0:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (a1.posEnd + 1) = b{i+4}.posStart and a1.posStart > 0 and b{i+4}.posStart > 0'
                 else:
-                    innerjoinpos += f' inner join [buildVocabulary  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
+                    innerjoinpos += f' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as b{i+4} on a1.reportID = b{i+4}.reportID and (b{i+3}.posEnd + 1) = b{i+4}.posStart and b{i+3}.posStart > 0 and b{i+4}.posStart > 0'
 
-                innerjointoken += f' inner join [buildVocabulary  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
+                innerjointoken += f' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as c{i+5} on b{i+4}.tokenID = c{i+5}.tokenID'
                 groupby += f' , c{i+5}.token'
                 text = innerjoinpos
         #如果<3就固定抓三個字
         else:
             token = f''' , a5.token as token3'''
             mergetoken = f''' + a5.token'''
-            innerjoinpos = f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
-            innerjointoken = f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
+            innerjoinpos = f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a4.reportID and (a1.posEnd + 1) = a4.posStart and a1.posStart > 0 and a4.posStart > 0'''
+            innerjointoken = f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a5 on a4.tokenID = a5.tokenID'''
             groupby = f''' , a5.token'''
             text = innerjoinpos
 
@@ -1757,21 +1757,21 @@ def getNextWordReport(request):
         query += mergetoken
 
         query +=f''' as mergeToken
-                from [buildVocabulary  ].[dbo].[textToken] as a0
-                inner join [buildVocabulary  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
+                from [nlpVocabularyLatest  ].[dbo].[textToken] as a0
+                inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a1 on a0.reportID = a1.reportID and (a0.posEnd + 1) = a1.posStart and a0.posStart > 0 and a1.posStart > 0
                 '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[textToken] as a4 on a1.reportID = a{num+1}.reportID and (a1.posEnd + 1) = a{num+1}.posStart and a1.posStart > 0 and a{num+1}.posStart > 0'''
         query += innerjoinpos
         # 找第一個字
         if firstToken != "":
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}' and a2.tokenType != 'E'
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID and a2.token = '{firstToken}' and a2.tokenType != 'E'
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
         else:
-            query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
-                    inner join [buildVocabulary  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
+            query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a2 on a0.tokenID = a2.tokenID
+                    inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a3 on a1.tokenID = a3.tokenID
                     '''
-        # query +=f''' inner join [buildVocabulary  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
+        # query +=f''' inner join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as a{num+2} on a{num+1}.tokenID = a{num+2}.tokenID'''
         query += innerjointoken
         query +=f''' group by a2.token, a3.token
                 '''
@@ -1780,7 +1780,7 @@ def getNextWordReport(request):
         
         query +=f'''
                 ) as textTokenData
-                left join [buildVocabulary  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
+                left join [nlpVocabularyLatest  ].[dbo].[Vocabulary] as word on textTokenData.mergeToken = word.token
                 where word.tokenID is null
                 order by times desc;
                 '''
@@ -1837,16 +1837,16 @@ def getSynTypo(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
         cursor = conn.cursor()
         #插入資料表
-        # query = 'SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenType = ?;'
+        # query = 'SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType = ?;'
         # args = [request.GET['tokenType']]
         # cursor.execute(query, args)
-        query = "SELECT * FROM [buildVocabulary  ].[dbo].[Vocabulary] where tokenType != \'U\' and token != '[NUM]' ;"
+        query = "SELECT * FROM [nlpVocabularyLatest  ].[dbo].[Vocabulary] where tokenType != \'U\' and token != '[NUM]' ;"
         cursor.execute(query)
         Vocabulary = cursor.fetchall()
         # # # # # print("Vocabulary : ", Vocabulary)
@@ -1876,7 +1876,7 @@ def getReportTextByMergeToken(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -1921,7 +1921,7 @@ def getMergeLog(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -1982,7 +1982,7 @@ def chineseTwoWord(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2026,7 +2026,7 @@ def chineseThreeWord(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2078,7 +2078,7 @@ def getTokenBynWord(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2088,7 +2088,7 @@ def getTokenBynWord(request):
         start = process_time()  
         # ------------------------------------------------------- 抓token--------------------------------------------------------------------
         query = '''
-                SELECT * FROM [buildVocabulary ].[dbo].[Vocabulary]
+                SELECT * FROM [nlpVocabularyLatest ].[dbo].[Vocabulary]
                 where tokenType in ('C', 'G', 'S') and token not in ('Undefined_Chinese', 'Undefined_English', 'Undefined_Sign')
                 order by nWord desc
                 ''' 
@@ -2100,7 +2100,7 @@ def getTokenBynWord(request):
         
         # ------------------------------------------------------- 處理報告殘文--------------------------------------------------------------------
         query = '''
-                SELECT top(10000) * FROM [buildVocabulary ].[dbo].[analyseText]
+                SELECT top(10000) * FROM [nlpVocabularyLatest ].[dbo].[analyseText]
                 ''' 
         cursor.execute(query)
         text = cursor.fetchall()
@@ -2159,7 +2159,7 @@ def getReportBetween2Tokens6(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2253,7 +2253,7 @@ def getReportBetween2Tokens6All(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2324,7 +2324,7 @@ def getReportBetween2Tokens5(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2413,7 +2413,7 @@ def getReportBetween2Tokens5All(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2478,7 +2478,7 @@ def getReportBetween2Tokens4(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2562,7 +2562,7 @@ def getReportBetween2Tokens4All(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2622,7 +2622,7 @@ def getReportBetween2Tokens3(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2702,7 +2702,7 @@ def getReportBetween2Tokens3All(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -2756,7 +2756,7 @@ def fiveWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -2921,7 +2921,7 @@ def fourWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -3080,7 +3080,7 @@ def threeWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -3232,7 +3232,7 @@ def twoWord(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -3377,7 +3377,7 @@ def getAllWordExsisting(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -3392,8 +3392,8 @@ def getAllWordExsisting(request):
 
             reportFormID = body['reportFormID']
 
-            query = '''SELECT * FROM [buildVocabulary ].[dbo].[reportFormVocabulary] as a 
-            right join [buildVocabulary ].[dbo].[Vocabulary] as b 
+            query = '''SELECT * FROM [nlpVocabularyLatest ].[dbo].[reportFormVocabulary] as a 
+            right join [nlpVocabularyLatest ].[dbo].[Vocabulary] as b 
             on a.tokenID = b.tokenID and a.reportFormID = ?
             '''
             args = [reportFormID]
@@ -3446,7 +3446,7 @@ def testVocabularyGetReport(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3508,7 +3508,7 @@ def getREForTest(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3583,7 +3583,7 @@ def getAllForms(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3629,7 +3629,7 @@ def getAllFormProcedures(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3678,7 +3678,7 @@ def getAllFormVocabularies(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3723,7 +3723,7 @@ def getAllFormVocabularies(request):
 @csrf_exempt
 def getTag(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3741,7 +3741,7 @@ def getTag(request):
 @csrf_exempt
 def getVocabularyForDictionary(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3763,7 +3763,7 @@ def getItemByRootID(request):
     
     if request.method == 'POST':
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3807,7 +3807,7 @@ def getItemByRootID(request):
 def insertintoItemDefinition(request):    
     if request.method == 'POST':
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -3869,7 +3869,7 @@ def getReportTextByMergeTokenExpression(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
@@ -3976,7 +3976,7 @@ def getReportByReportID(request):
         
         #建立連線
         server = '172.31.6.22' 
-        database = 'buildVocabulary ' 
+        database = 'nlpVocabularyLatest ' 
         username = 'N824'
         password = 'test81218'
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
