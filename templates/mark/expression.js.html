@@ -32,28 +32,88 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function (e) {
+
+    var wordsOption = document.getElementById("wordsOption");
+    wordsOption.addEventListener("change", onWordsOptionChange);
+    
+    var inputText = document.getElementById("inputkeywords");
+    inputText.value = "( [Number] )";
+    inputText.innerHTML = "( [Number] )";
+
+
+
+    //collapse
+    $("#collapseButton").click(function(){
+        
+        
+        let textToSearch = document.getElementById("regexText").value;
+                    
+        textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+        let dateFormat = new RegExp(`${textToSearch}`,"g");
+        ////console.log("dateFormat: "+ dateFormat);          
+        result_array = []
+        var paragraph = $("#reportText").attr("originalReport");
+
+        
+        if (textToSearch === "" || paragraph === ""){
+            Swal.fire({
+                title: 'Error',
+                html: "請先搜尋, 並且點選自動產生RE後再執行此功能",
+                icon: 'question',
+                confirmButtonText: 'ok',
+            })
+            return;
+        }
+
+        document.getElementById("reportText").innerHTML = paragraph.replace(dateFormat, match => `<mark class="highlight">${match}</mark>`);
+
+		var modal = document.getElementById("modalReport");
+        modal.style.display = "block";
+
+        var closeButton = document.querySelector('#btnclosereport');
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }); 
+    
     // var number = document.getElementById("inputReportNumber").value;
     // console.log("number : ", number==="");
 
 
-    var response = getItemDefinition();
-    console.log("response : ", response);
+
+    responseItem = getItemDefinition();
+    console.log("responseItem : ", responseItem);
     
     $('#itemDefinition tbody').empty()
     let element = '';
-    for(let i=0;i<response.itemID.length;i++){
+    for(let i=0;i<responseItem.itemID.length;i++){
         element += `<tr>
-            <td>${response.itemID[i]}</td>
-            <td>${response.rootID[i]}</td>
-            <td>${response.itemName[i]}</td>
-            <td>${response.engName[i]}</td>
-            <td>${response.chtName[i]}</td>
+            <td>${responseItem.itemID[i]}</td>
+            <td>${responseItem.rootID[i]}</td>
+            <td>${responseItem.itemName[i]}</td>
+            <td>${responseItem.engName[i]}</td>
+            <td>${responseItem.chtName[i]}</td>
             </tr>`;
     }
     $('#itemDefinition tbody').append(element);
 
+
+    
+
     
     //搜尋按鈕
+    $("#searchbtn").click(function(){
+        console.log("clicked");
+        var string = document.getElementById("inputkeywords").value;
+        var word = document.getElementById("wordsOption").value;
+        if (word === "1"){
+            var response = getStasticTable(string);
+        }
+        else{
+            var response = getStasticTable2(string);
+        }
+        
+    });
 
     //根據select顯示token
 
@@ -64,6 +124,7 @@ $(document).ready(function (e) {
     $("#executebtn").click(function(){
         Highlight_Extract();
     });
+
 
     //確認名稱
     $("#check").click(function(){
@@ -180,6 +241,7 @@ $(document).ready(function (e) {
                 printResult(resInsert);
                 
                 var response = getItemDefinition();
+                responseformodal = response;
                 console.log("response : ", response);
                 
                 $('#itemDefinition tbody').empty()
@@ -203,7 +265,188 @@ $(document).ready(function (e) {
         });
         
     }); 
+
+    //儲存按鈕
+    $("#storebtn").click(function(){
+        var tokenName = document.getElementById("regexName").value;
+        console.log("tokenName : ", tokenName);
+        if (tokenName === ""){ 
+            Swal.fire({
+                title: '請輸入tokenName',
+                icon: 'error',
+                confirmButtonText: 'ok',
+            })
+            return;
+        }
+        
+        var regex = document.getElementById("regexText").value;
+        console.log("regex : ", regex);
+        if (regex === ""){ 
+            Swal.fire({
+                title: '請輸入RE',
+                icon: 'error',
+                confirmButtonText: 'ok',
+            })
+            return;
+        }
+
+        var extractedArray = [];
+        Swal.fire({
+            title: '進入下一步確認各項參數?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                try{
+                
+                    let textToSearch = document.getElementById("regexText").value; 
+                    
+                    textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+                    let dateFormat = new RegExp(`${textToSearch}`,"g");
+                    ////console.log("dateFormat: "+ dateFormat);          
+                    result_array = []
+                    var paragraph = document.getElementById("reportText").innerHTML;
+                    
+                    paragraph = $("#reportText").attr("originalReport");
+
+                    // document.getElementById("reportText").innerHTML = paragraph.replace(dateFormat, match => `<mark class="highlight">${match}</mark>`);
+
+                    //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
+                    while(null != (g = dateFormat.exec(paragraph))) {
+                        //console.log("groups: " + g.groups);  // ouput: "a"
+                        console.log("pattern: " + g);
+                        result_array.push(g.groups);
+                        extractedArray.push(g[0]);
+                    }
+                    console.log("result_array : ", result_array);
+                    var keyArray = [];
+                    var valueArray = [];
+                    
+                    var allkeyArray = [];
+                    var allvalueArray = [];
+                    for(var i=0 ; i<result_array.length ; i++){
+                        var  entries = Object.entries(result_array[i]);
+                        for (const [key, value] of entries) {
+                            console.log(`Key: ${key}, Value: ${value}`);
+                            if(!keyArray.includes(key)){
+                                keyArray.push(key);
+                                valueArray.push(value);
+                            }
+                            allkeyArray.push(key);
+                            allvalueArray.push(value);
+                        }
+                    }
+
+                    console.log("extractedArray : ", extractedArray);
+                    console.log("allvalueArray : ", allvalueArray);
+                    var ex = "";
+                    var count = 0;
+                    for(var i=0 ; i<allvalueArray.length ; i++){
+                        ex = ex.concat((i+1).toString(), ". ", " pattern : ", extractedArray[0], ", value : ", allvalueArray[i], "\n")
+                        count += 1;
+                    }
+
+                    console.log("keyArray : ", keyArray);
+                    console.log("valueArray : ", valueArray);
+                    var string = "";
+                    for(var i=0 ; i<keyArray.length ; i++){
+                        string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
+                    }
+                    showModal(keyArray, valueArray);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error,
+                            icon: 'error',
+                            confirmButtonText: 'Ok',
+                        })
+                        return;
+                    }
+                }
+                
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    icon: 'info',
+                })
+            }
+        });
+    });
 })
+
+
+function onWordsOptionChange() {
+    // Get the selected value from the wordsOption select element
+    var words = document.getElementById("wordsOption").value;
+    var inputText = document.getElementById("inputkeywords");
+
+    var threewordTable = document.getElementById("stasticsTable");
+    var fivewordTable = document.getElementById("stasticsTable2");
+    if (words === "1"){
+        threewordTable.style.display = "block";
+        fivewordTable.style.display = "none";
+        inputText.value = "( [Number] )";
+        inputText.innerHTML = "( [Number] )";
+    }
+    else{
+        threewordTable.style.display = "none";
+        fivewordTable.style.display = "block";
+        inputText.value = "( [Number] / [Number] )";
+        inputText.innerHTML = "( [Number] / [Number] )";
+
+    }
+}
+
+//根據reportID找文章
+function getReportBylastReportID(reportID){
+    var btn = document.getElementById("collapseButton");
+    var text = "查詢中";
+    var count = 0;
+    btn.disabled = true; // Disable the button during the search
+    var intervalId = setInterval(function() {
+        count++;
+        if (count > 3) {
+        count = 0;
+        }
+        switch (count) {
+        case 0:
+            btn.innerHTML = text;
+            break;
+        case 1:
+            btn.innerHTML = text + ".";
+            break;
+        case 2:
+            btn.innerHTML = text + "..";
+            break;
+        case 3:
+            btn.innerHTML = text + "...";
+            break;
+        }
+    }, 500); // Update the text every 500 milliseconds
+    console.log("reportID" + reportID);     
+    $.ajax({
+        type: 'POST',
+        url: '{% url 'mark:getReportByReportID' %}',
+        data:JSON.stringify({
+            'reportID': reportID,
+        }),
+        success:function (response){
+            // printResult(response);
+            document.getElementById("reportText").innerHTML = response.data;
+            document.getElementById("reportText").setAttribute("originalReport", response.data);
+            clearInterval(intervalId);
+            btn.disabled = false;
+            btn.innerHTML = "已找到報告!";
+            setTimeout(() => {
+                btn.innerHTML = "顯示報告";
+            }, 1000);
+        },
+    });
+}
 
 //找文章
 function searchReport(word, number){
@@ -330,6 +573,151 @@ function getItemDefinition(){
 }
 
 
+function getStasticTable(string){
+    var btn = document.getElementById("searchbtn");
+    var text = "查詢中";
+    var count = 0;
+    btn.disabled = true; // Disable the button during the search
+    var intervalId = setInterval(function() {
+        count++;
+        if (count > 3) {
+        count = 0;
+        }
+        switch (count) {
+        case 0:
+            btn.innerHTML = text;
+            break;
+        case 1:
+            btn.innerHTML = text + ".";
+            break;
+        case 2:
+            btn.innerHTML = text + "..";
+            break;
+        case 3:
+            btn.innerHTML = text + "...";
+            break;
+        }
+    }, 500); // Update the text every 500 milliseconds
+    var res;
+    $.ajax({
+        async:true,
+        type: 'POST',
+        data: JSON.stringify({
+            "string": string,
+        }),
+        url: '{% url "mark:getStasticTable" %}',
+        success:function (response){
+            res = response;
+            console.log(response, res);
+            printResult(response);
+            console.log("response : ", response);
+            
+            $('#stasticsTable tbody').empty()
+            element = '';
+            for(let i=0;i<response.numReports.length;i++){
+                element += `<tr reportID="${response.reportID[i]}">
+                    <td><button class="btn btn-secondary" onclick="getREofRecord()">${i+1}</button></td>
+                    <td>${response.numReports[i]}</td>
+                    <td>${response.times[i]}</td>
+                    <td class="show">${response.word1[i]}</td>
+                    <td class="show">${response.word2[i]}</td>
+                    <td class="show">${response.word3[i]}</td>
+                    <td>${response.count4[i]}</td>
+                    <td class="show">${response.word4[i]}</td>
+                    <td>${response.count5[i]}</td>
+                    <td class="show">${response.word5[i]}</td>
+                    <td>${response.count6[i]}</td>
+                    <td class="show">${response.word6[i]}</td>
+                    <td>${response.countTarget[i]}</td>
+                    <td class="show">${response.targetWord1[i]}</td>
+                    <td class="show">${response.targetWord2[i]}</td>
+                    <td class="show">${response.targetWord3[i]}</td>
+                    </tr>`;
+            }
+            $('#stasticsTable tbody').append(element);
+
+            clearInterval(intervalId);
+            btn.disabled = false;
+            btn.innerHTML = "搜尋";
+        },
+    });
+    return res;
+}
+
+
+function getStasticTable2(string){
+    var btn = document.getElementById("searchbtn");
+    var text = "查詢中";
+    var count = 0;
+    btn.disabled = true; // Disable the button during the search
+    var intervalId = setInterval(function() {
+        count++;
+        if (count > 3) {
+        count = 0;
+        }
+        switch (count) {
+        case 0:
+            btn.innerHTML = text;
+            break;
+        case 1:
+            btn.innerHTML = text + ".";
+            break;
+        case 2:
+            btn.innerHTML = text + "..";
+            break;
+        case 3:
+            btn.innerHTML = text + "...";
+            break;
+        }
+    }, 500); // Update the text every 500 milliseconds
+    var res;
+    $.ajax({
+        async:true,
+        type: 'POST',
+        data: JSON.stringify({
+            "string": string,
+        }),
+        url: '{% url "mark:getStasticTable2" %}',
+        success:function (response){
+            res = response;
+            console.log(response, res);
+            clearInterval(intervalId);
+            printResult(response);
+            console.log("response : ", response);
+            
+            $('#stasticsTable2 tbody').empty()
+            element = '';
+            for(let i=0;i<response.numReports.length;i++){
+                element += `<tr reportID="${response.reportID[i]}">
+                    <td><button class="btn btn-secondary" onclick="getREofRecord2()">${i+1}</button></td>
+                    <td>${response.numReports[i]}</td>
+                    <td>${response.times[i]}</td>
+                    <td class="show">${response.word1[i]}</td>
+                    <td class="show">${response.word2[i]}</td>
+                    <td class="show">${response.word3[i]}</td>
+                    <td>${response.count4[i]}</td>
+                    <td class="show">${response.word4[i]}</td>
+                    <td>${response.count5[i]}</td>
+                    <td class="show">${response.word5[i]}</td>
+                    <td>${response.count6[i]}</td>
+                    <td class="show">${response.word6[i]}</td>
+                    <td>${response.countTarget[i]}</td>
+                    <td class="show">${response.targetWord1[i]}</td>
+                    <td class="show">${response.targetWord2[i]}</td>
+                    <td class="show">${response.targetWord3[i]}</td>
+                    <td class="show">${response.targetWord4[i]}</td>
+                    <td class="show">${response.targetWord5[i]}</td>
+                    </tr>`;
+            }
+            $('#stasticsTable2 tbody').append(element);
+
+            
+            btn.disabled = false;
+            btn.innerHTML = "搜尋";
+        },
+    });
+    return res;
+}
 
     //改變文字顏色
     function Highlight_Extract() {
@@ -360,7 +748,25 @@ function getItemDefinition(){
                     let pattern = new RegExp(`${textToSearch}`,"g");                
                 
                     //將輸出文本與regex物件有符合的地方加上<mark>標籤，然後丟到輸出欄位
-                    document.getElementById("result").innerHTML = paragraph.replace(pattern, match => `<mark>${match}</mark>`);
+                    document.getElementById("result").innerHTML = paragraph.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
+                    // while(null != (g = pattern.exec(paragraph))) {
+                    //     console.log("groups: " , g.groups);  // ouput: "a"
+                    //     console.log("pattern: " , g);
+                    //     console.log("test: " , g[0], g[1], g[2]);
+
+                    //     var  entries = Object.entries(g.groups);
+                    //     var length = entries.length;
+                    //     console.log("length of groups : ", length);
+                    //     console.log("length of groups member : ", length);
+                    //     for (const [key, value] of entries) {
+                    //         console.log(`Key: ${key}, Value: ${value}`);
+                            
+                    //     }
+                    //     // for (var i=0 ; i<g.groups.length ; i++){
+                    //     //     console.log("i: ", g.groups[i]);
+                    //     // }
+                    //     //textToSearch.substring(0, g.index) + replacement + textToSearch.substring(g.index + replacement.length);
+                    // }
                 } catch (error) {
                     if (error instanceof Error) {
                         Swal.fire({
@@ -451,8 +857,6 @@ function getItemDefinition(){
                             }
                             allkeyArray.push(key);
                             allvalueArray.push(value);
-                            
-                            
                         }
                     }
                     console.log("extractedArray : ", extractedArray);
@@ -505,35 +909,35 @@ function getItemDefinition(){
                     // var tokenType = document.getElementById('dropdownbutton').value;
 
                     var tokenType = "E";
-                    //儲存按鈕
-                    $("#storebtn").click(function(){
-                        Swal.fire({
-                            title: 'Continue to define itemID of item?',
-                            html: string,
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Yes',
-                            cancelButtonText: 'No'
-                        })
-                        .then((result) => {
-                            if (result.isConfirmed) {
-                                showModal(keyArray, valueArray);
-                                //if (tokenType === "E"){
-                                //    console.log("result_array : " , result_array);
-                                //    //console.log("save pressed E");
-                                //    //資料到後端儲存
-                                //    BtnClicked_1(Object.keys(result_array[0]));
-                                //    document.getElementById("returnbtn").style.visibility = 'visible';
-                                //}
-                            } else{
-                                Swal.fire({
-                                    title: 'Request Canceled',
-                                    icon: 'info',
-                                })
-                            }
-                        });
+                    // //儲存按鈕
+                    // $("#storebtn").click(function(){
+                    //     Swal.fire({
+                    //         title: 'Continue to define itemID of item?',
+                    //         html: string,
+                    //         icon: 'question',
+                    //         showCancelButton: true,
+                    //         confirmButtonText: 'Yes',
+                    //         cancelButtonText: 'No'
+                    //     })
+                    //     .then((result) => {
+                    //         if (result.isConfirmed) {
+                    //             showModal(keyArray, valueArray);
+                    //             //if (tokenType === "E"){
+                    //             //    console.log("result_array : " , result_array);
+                    //             //    //console.log("save pressed E");
+                    //             //    //資料到後端儲存
+                    //             //    BtnClicked_1(Object.keys(result_array[0]));
+                    //             //    document.getElementById("returnbtn").style.visibility = 'visible';
+                    //             //}
+                    //         } else{
+                    //             Swal.fire({
+                    //                 title: 'Request Canceled',
+                    //                 icon: 'info',
+                    //             })
+                    //         }
+                    //     });
                         
-                    });
+                    // });
                     
                 }
             } catch (error) {
@@ -587,7 +991,7 @@ function getItemDefinition(){
         modal.style.display = "block";
         console.log("modal : ", modal);
 
-        var closeButton = document.querySelector('.close');
+        var closeButton = document.querySelector('#closeModal');
 
         closeButton.addEventListener('click', function() {
             modal.style.display = 'none';
@@ -603,6 +1007,11 @@ function getItemDefinition(){
         var nameArray = response.itemName;   
         var chtArray = response.chtName;   
         var itemIDArray = response.itemID;
+
+        
+        var Text = document.createElement('span');
+        Text.innerHTML = "請確認 REitem 對應<br>";
+        container.appendChild(Text); // append the dropdown to the container element
         for (let i = 0; i < keyArray.length; i++) {            
             const dropdown = document.createElement('select'); // create a new dropdown element
             dropdown.className = "form-select";
@@ -628,8 +1037,9 @@ function getItemDefinition(){
                     option.setAttribute('selected', true);
                 }
             }
+
             var number = document.createElement('span');
-            number.innerHTML = (i+1).toString() + ". " + keyArray[i] ;
+            number.innerHTML = "item" + (i+1).toString() + " : \"" + keyArray[i] + "\", 找到的值 : " + valueArray[i].toString();
             container.appendChild(number); // append the dropdown to the container element
             container.appendChild(dropdown); // append the dropdown to the container element
         }
@@ -662,7 +1072,6 @@ function getItemDefinition(){
             Swal.fire({
                 title: 'Save the record?',
                 icon: 'question',
-                html: html,
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
                 cancelButtonText: 'No'
@@ -693,6 +1102,19 @@ function getItemDefinition(){
 
         // append the button to the document body
         container.appendChild(button);
+    }
+
+    function emphasizeInput(element) {
+        // save the current background color of the input element
+        var currentColor = element.style.backgroundColor;
+
+        // set the background color of the input element to the emphasized color
+        element.style.backgroundColor = "#BAD6F0";
+
+        // after a short delay, restore the original background color
+        setTimeout(function() {
+            element.style.backgroundColor = currentColor;
+        }, 1000); // adjust the delay time to match the animation duration in your CSS
     }
 
     
@@ -778,9 +1200,689 @@ function getItemDefinition(){
                 fail:function (){              
                 },
             });
+        }        
+    }
+
+    function getREofRecord(){
+        //console.log(event.target);
+        //showModalReportText(event.target);
+        var token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        var token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        showModalStatics(event.target);
+    }
+    
+    function getREofRecord2(){
+        //console.log(event.target);
+        //showModalReportText(event.target);
+        var token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        var token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        showModalStatics2(event.target);
+    }
+
+    function showModalStatics(target) {
+		var modal = document.getElementById("modal");
+        modal.style.display = "block";
+        console.log("modal : ", modal);
+
+        var closeButton = document.querySelector('.btn-close');
+
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+
+        //console.log("keyArray : ", keyArray);
+        //console.log("valueArray : ", valueArray);
+
+        const container = document.getElementById('result_data'); // example container 
+        container.innerHTML = ''; // empty the container
+        var lengthOfRecord = $(event.target).parents('tr').children('td').length;
+        console.log("lengthOfRecord : ", lengthOfRecord);
+        var text = "";
+        var textArray = [];
+        for(var i=1 ; i<lengthOfRecord ; i++){
+            if ($(event.target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                text += "「" + $(event.target).parents('tr').children('td').eq(i).html() + "」 ";
+                textArray.push($(event.target).parents('tr').children('td').eq(i).html());
+            }
+        }
+        var number = document.createElement('span');
+        number.innerHTML = "Using : " + text;
+        container.appendChild(number); // append the dropdown to the container element
+
+        text = "<br><br>Select range for building RE : ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+
+        for (let i = 0; i<3 ; i++) {            
+            const dropdown = document.createElement('select'); // create a new dropdown element
+            dropdown.className = "form-select";
+            dropdown.id = `selectItem${i}`;
+            var element = "";
+            for (let j = 0; j < textArray.length; j++) {
+                //element += `<tr>
+                //<td>${response.itemID[i]}</td>
+                //<td>${response.rootID[i]}</td>
+                //<td>${response.itemName[i]}</td>
+                //<td>${response.engName[i]}</td>
+                //<td>${response.chtName[i]}</td>
+                //</tr>`;
+                const option = document.createElement('option'); // create a new option element
+                option.text = textArray[j];
+                option.value = textArray[j]; 
+                option.id = `option${i.toString()}${j.toString}`; // set the text of the option
+                dropdown.add(option); // add the option to the dropdown
+                // console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // if (nameArray[j] == keyArray[i]){
+                //     console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     option.setAttribute('selected', true);
+                // }
+                if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-2)){
+                    option.setAttribute('selected', true);
+                }
+            }
+            
+            if (i == 0){
+                text = "<br><br>From : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            else if (i == 1){
+                text = "<br>To : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            else if(i == 2){
+                text = "<br>Extract Value : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            
+            container.appendChild(dropdown);// append the dropdown to the container element
+        }
+
+        
+
+        
+        responseformodal = responseItem;
+        var nameArray = responseformodal.itemName;   
+        var chtArray = responseformodal.chtName;   
+        var itemIDArray = responseformodal.itemID;
+        
+        const dropdown1 = document.createElement('select'); // create a new dropdown element
+        dropdown1.className = "form-select";
+        dropdown1.id = `SelectitemName`;
+        text = "<br>itemName: ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        var element = "";
+        for (let j = 0; j < nameArray.length; j++) {            
+            const option = document.createElement('option');
+            option.text = nameArray[j] + " " + chtArray[j]; 
+            option.value = nameArray[j]; 
+            option.itemID = itemIDArray[j];
+            dropdown1.add(option); 
+            
+        }
+        container.appendChild(dropdown1); 
+
+        if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
+            option.setAttribute('selected', true);
+        }
+        text = "<br>";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        
+        const button = document.createElement('button'); // create a new button element
+        button.textContent = '自動建立RE'; // set the text of the button
+        button.id = 'generateREButton'; // set the text of the button
+        button.classList.add('btn', 'btn-secondary'); // add classes to the button
+        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID"));
+
+        
+        
+
+
+        // add a click event listener to the button
+        button.addEventListener('click', function() {
+
+            var ExtractValue = document.getElementById("selectItem2").value;
+            var extractPos = textArray.indexOf(ExtractValue);
+            var itemName = document.getElementById("SelectitemName").value;
+            var RE = "";
+
+            var startWord = document.getElementById("selectItem0").value;
+            var startPos = textArray.indexOf(startWord);
+            var endWord = document.getElementById("selectItem1").value;
+            var endPos = textArray.indexOf(endWord);
+
+            var poscheck = checkPos(startPos, endPos, extractPos);
+            if (poscheck == "1"){
+                return;
+            } 
+
+            for (var i=startPos ; i<textArray.length ; i++){
+                if ( textArray[i] == "\\."){
+                    textArray[i] = "."
+                }
+                if (ExtractValue == textArray[i]){
+                    RE += "(";
+                    RE += `?<${itemName}>`;
+                }
+
+                var pattern = /[\\^$.|?*+(){[}\]]/g;
+                var matches = textArray[i].match(pattern);
+                console.log("matches : ", matches);
+                if (textArray[i] == "[SPACE]" ){    
+                    RE += " ";
+                }
+                else if (textArray[i] == "[Number]"){        
+                    RE += "\\d+" ;
+                }
+                else if (matches && textArray[i] != "[Number]"){        
+                    RE += "\\" + textArray[i];    
+                }
+                else {
+                    RE += textArray[i];
+                }
+                
+                if (ExtractValue == textArray[i]){
+                    RE += ")";
+                }
+            }
+
+
+            var html = `<div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
+                        <label for="floatingInput">Auto generated RE</label>
+                        </div>`
+
+
+
+
+
+
+
+
+
+
+            console.log("textArray : ", textArray);
+            Swal.fire({
+                title: '自動填入此RE?',
+                icon: 'question',
+                html: html,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    // console.log("success");
+                    var regexFinished = document.getElementById("floatingInput").value;
+                    document.getElementById("regexText").innerHTML = regexFinished;
+                    document.getElementById("regexText").value = regexFinished;
+                    modal.style.display = "none";
+                    console.log("this : ", this.getAttribute("lastReportID"));
+                    var reportID = this.getAttribute("lastReportID");
+                    //找report
+                    var report = getReportBylastReportID(reportID.toString());
+                    console.log("report : ", report);
+
+                    var inputElement = document.querySelector('#regexName');
+                    emphasizeInput(inputElement);
+                    var regexText = document.querySelector('#regexText');
+                    emphasizeInput(regexText);
+                } 
+                else{
+                    console.log("fail");
+                }                
+            });
+        });
+
+        // append the button to the document body
+        container.appendChild(button);
+
+        // console.log("target : ", target.innerHTML);
+        // console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
+    } 
+
+    
+
+    function showModalStatics2(target) {
+		var modal = document.getElementById("modal");
+        modal.style.display = "block";
+        console.log("modal : ", modal);
+
+        var closeButton = document.querySelector('.btn-close');
+
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+
+        //console.log("keyArray : ", keyArray);
+        //console.log("valueArray : ", valueArray);
+
+        const container = document.getElementById('result_data'); // example container 
+        container.innerHTML = ''; // empty the container
+        var lengthOfRecord = $(event.target).parents('tr').children('td').length;
+        console.log("lengthOfRecord : ", lengthOfRecord);
+        var text = "";
+        var textArray = [];
+        for(var i=1 ; i<lengthOfRecord ; i++){
+            if ($(event.target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                text += "「" + $(event.target).parents('tr').children('td').eq(i).html() + "」 ";
+                textArray.push($(event.target).parents('tr').children('td').eq(i).html());
+            }
+        }
+        var number = document.createElement('span');
+        number.innerHTML = "Using : " + text;
+        container.appendChild(number); // append the dropdown to the container element
+
+        text = "<br><br>Select range for building RE : ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+
+        for (let i = 0; i<4 ; i++) {            
+            const dropdown = document.createElement('select'); // create a new dropdown element
+            dropdown.className = "form-select";
+            dropdown.id = `selectItem${i}`;
+            var element = "";
+            for (let j = 0; j < textArray.length; j++) {
+                //element += `<tr>
+                //<td>${response.itemID[i]}</td>
+                //<td>${response.rootID[i]}</td>
+                //<td>${response.itemName[i]}</td>
+                //<td>${response.engName[i]}</td>
+                //<td>${response.chtName[i]}</td>
+                //</tr>`;
+                const option = document.createElement('option'); // create a new option element
+                option.text = textArray[j];
+                option.value = textArray[j]; 
+                option.id = `option${i.toString()}${j.toString}`; // set the text of the option
+                dropdown.add(option); // add the option to the dropdown
+                // console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // if (nameArray[j] == keyArray[i]){
+                //     console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     option.setAttribute('selected', true);
+                // }
+                if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-4) || (i == 3 && j == textArray.length-2)){
+                    option.setAttribute('selected', true);
+                }
+            }
+            
+            if (i == 0){
+                text = "<br><br>From : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            else if (i == 1){
+                text = "<br>To : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            else if(i == 2){
+                text = "<br>Extract Value1 : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            else if(i == 3){
+                text = "<br>Extract Value2 : ";
+                number = document.createElement('span');
+                number.innerHTML = text;
+                container.appendChild(number); // append the dropdown to the container element
+            }
+            
+            container.appendChild(dropdown);// append the dropdown to the container element
         }
         
+            
+        text = "<br>※item1 必須不等於 item2 !!";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+
+        
+
+        
+        responseformodal = responseItem;
+        var nameArray = responseformodal.itemName;   
+        var chtArray = responseformodal.chtName;   
+        var itemIDArray = responseformodal.itemID;
+        
+        const dropdown1 = document.createElement('select'); // create a new dropdown element
+        dropdown1.className = "form-select";
+        dropdown1.id = `SelectitemName`;
+        text = "<br>itemName1: ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        var element = "";
+        for (let j = 0; j < nameArray.length; j++) {            
+            const option = document.createElement('option');
+            option.text = nameArray[j] + " " + chtArray[j]; 
+            option.value = nameArray[j]; 
+            option.itemID = itemIDArray[j];
+            dropdown1.add(option); 
+            
+        }
+        container.appendChild(dropdown1); 
+
+        const dropdown2 = document.createElement('select'); // create a new dropdown element
+        dropdown2.className = "form-select";
+        dropdown2.id = `SelectitemName1`;
+        text = "<br>itemName2: ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        var element = "";
+        for (let j = 0; j < nameArray.length; j++) {            
+            const option = document.createElement('option');
+            option.text = nameArray[j] + " " + chtArray[j]; 
+            option.value = nameArray[j]; 
+            option.itemID = itemIDArray[j];
+            dropdown2.add(option); 
+            
+        }
+        container.appendChild(dropdown2); 
+
+        if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
+            option.setAttribute('selected', true);
+        }
+        text = "<br>";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        
+        const button = document.createElement('button'); // create a new button element
+        button.textContent = '自動建立RE'; // set the text of the button
+        button.id = 'generateREButton'; // set the text of the button
+        button.classList.add('btn', 'btn-secondary'); // add classes to the button
+        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID"));
+
+        
+        
+
+
+        // add a click event listener to the button
+        button.addEventListener('click', function() {
+
+            var ExtractValue = document.getElementById("selectItem2").value;
+            var ExtractValue1 = document.getElementById("selectItem3").value;
+            var extractPos = textArray.indexOf(ExtractValue);
+            var extractPos1 = textArray.indexOf(ExtractValue1, extractPos+1);
+            var itemName = document.getElementById("SelectitemName").value;
+            var itemName1 = document.getElementById("SelectitemName1").value;
+            var RE = "";
+
+            var startWord = document.getElementById("selectItem0").value;
+            var startPos = textArray.indexOf(startWord);
+            var endWord = document.getElementById("selectItem1").value;
+            var endPos = textArray.indexOf(endWord);
+
+            var poscheck = checkPos1(startPos, endPos, extractPos, extractPos1);
+            if (poscheck == "1"){
+                return;
+            } 
+
+            var itemNum = 0;
+            for (var i=startPos ; i<textArray.length ; i++){
+                if ( textArray[i] == "\\."){
+                    textArray[i] = "."
+                }
+                if (ExtractValue == textArray[i] && itemNum === 0){
+                    RE += "(";
+                    RE += `?<${itemName}>`;
+                    itemNum = 1;
+                    var pattern = /[\\^$.|?*+(){[}\]]/g;
+                    var matches = textArray[i].match(pattern);
+                    console.log("matches : ", matches);
+                    if (textArray[i] == "[SPACE]" ){    
+                        RE += " ";
+                    }
+                    else if (textArray[i] == "[Number]"){        
+                        RE += "\\d+" ;
+                    }
+                    else if (matches && textArray[i] != "[Number]"){        
+                        RE += "\\" + textArray[i];    
+                    }
+                    else {
+                        RE += textArray[i];
+                    }
+                    if (ExtractValue == textArray[i]){
+                        RE += ")";
+                    }
+                    continue;
+                }
+                if (ExtractValue1 == textArray[i]){
+                    RE += "(";
+                    RE += `?<${itemName1}>`;
+                    itemNum = 2;
+                    var pattern = /[\\^$.|?*+(){[}\]]/g;
+                    var matches = textArray[i].match(pattern);
+                    console.log("matches : ", matches);
+                    if (textArray[i] == "[SPACE]" ){    
+                        RE += " ";
+                    }
+                    else if (textArray[i] == "[Number]"){        
+                        RE += "\\d+" ;
+                    }
+                    else if (matches && textArray[i] != "[Number]"){        
+                        RE += "\\" + textArray[i];    
+                    }
+                    else {
+                        RE += textArray[i];
+                    }
+                    if (ExtractValue == textArray[i]){
+                        RE += ")";
+                    }
+                    continue;
+                }
+                
+                var pattern = /[\\^$.|?*+(){[}\]]/g;
+                var matches = textArray[i].match(pattern);
+                console.log("matches : ", matches);
+                if (textArray[i] == "[SPACE]" ){    
+                    RE += " ";
+                }
+                else if (textArray[i] == "[Number]"){        
+                    RE += "\\d+" ;
+                }
+                else if (matches && textArray[i] != "[Number]"){        
+                    RE += "\\" + textArray[i];    
+                }
+                else {
+                    RE += textArray[i];
+                }
+                
+                // if (ExtractValue1 == textArray[i] && itemNum === 2){
+                //     RE += ")";
+                // }
+            }
+
+
+            var html = `<div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
+                        <label for="floatingInput">Auto generated RE</label>
+                        </div>`
+
+
+
+
+
+
+
+
+
+
+            console.log("textArray : ", textArray);
+            Swal.fire({
+                title: '自動填入此RE?',
+                icon: 'question',
+                html: html,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    var item1 = $("#SelectitemName").val();
+                    var item2 = $("#SelectitemName1").val();
+                    console.log("item1 : ", item1);
+                    console.log("item2 : ", item2);
+                    if (item1 === item2){
+                        Swal.fire({
+                            title: 'itemName不可相同',
+                            icon: 'error',
+                            confirmButtonText: 'ok',
+                        })
+                    }
+                    // console.log("success");
+                    var regexFinished = document.getElementById("floatingInput").value;
+                    document.getElementById("regexText").innerHTML = regexFinished;
+                    document.getElementById("regexText").value = regexFinished;
+                    modal.style.display = "none";
+                    console.log("this : ", this.getAttribute("lastReportID"));
+                    var reportID = this.getAttribute("lastReportID");
+                    //找report
+                    var report = getReportBylastReportID(reportID.toString());
+                    console.log("report : ", report);
+
+                    var inputElement = document.querySelector('#regexName');
+                    emphasizeInput(inputElement);
+                    var regexText = document.querySelector('#regexText');
+                    emphasizeInput(regexText);
+                } 
+                else{
+                    console.log("fail");
+                }                
+            });
+        });
+
+        // append the button to the document body
+        container.appendChild(button);
+
+        // console.log("target : ", target.innerHTML);
+        // console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
+    } 
+
+    function checkPos(startPos, endPos, extractPos){
+        var poscheck = "0";
+        if (startPos >= extractPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "起始字大於萃取字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        else if (startPos >= endPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "起始字大於尾字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+
+        if (endPos <= extractPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "尾字小於萃取字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        else if (endPos <= startPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "尾字小於起始字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        return poscheck;
+
     }
+
+    function checkPos1(startPos, endPos, extractPos, extractPos1){
+        var poscheck = "0";
+        if (startPos >= extractPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "起始字大於萃取字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        else if (startPos >= endPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "起始字大於尾字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+
+        if (endPos <= extractPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "尾字小於萃取字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        else if (endPos <= startPos){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "尾字小於起始字",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+
+        if (extractPos == extractPos1){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "兩個Extract Value不可相同",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";
+        }
+        else if (extractPos > extractPos1){
+            Swal.fire({
+                title: '錯誤',
+                icon: 'error',
+                text: "Extract Value2小於Extract Value1 或是 Extract Value1大於Extract Value2",
+                confirmButtonText: 'ok',
+            })
+            poscheck = "1";            
+        }
+        return poscheck;
+
+    }
+
 
 
 </script>

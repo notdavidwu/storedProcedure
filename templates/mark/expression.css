@@ -414,6 +414,10 @@
   #itemDefinition_frame{
     height:55%;
     overflow-y:auto;
+  }  
+  #stastics_frame{
+    height:100%;
+    overflow-y:auto;
   }
   .header {
     position: sticky;
@@ -456,6 +460,9 @@
         height: calc(70% - 20px);
     }
     #storebtn{
+        color:#FFF
+    }
+    #searchbtn{
         color:#FFF
     }
     #pool > div{
@@ -520,6 +527,11 @@
   }
   #testArea{
     height:calc(100% - 38px);
+  }
+  
+  .highlight {
+    background-color: #27B7DE;
+    color: white;
   }
 </style>
 {% endblock %}

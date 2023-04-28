@@ -58,6 +58,13 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+
+        <!-- JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.min.js"></script>
+        
+        
+
         
         
 
@@ -106,6 +113,7 @@
                     Loading...
                 </button>
             </div>
+
             <div class="col-md-12" id='itemDefinition_frame'>
                 <table class='table' id="itemDefinition">
                     <thead style="position: sticky;top: 0" class="thead-dark">
@@ -129,12 +137,15 @@
             <div id="modal" class="modal">
                 <div class="modal-content">
                     
-                    <span class="close">&times;</span>
+                    
                     <div>
-                    <div id="result_data" class="table table-bordered" ></div>
+                        <span class="btn-close" style="user-select: none;" id="closeModal">&times;</span>
+                        <div id="result_data"></div>
+                        </div>
                     </div>
-                </div>
             </div>    
+
+
             <div id="setting" class="row g-3">
                 <div class="col-md-9">
                     <form class="rowg-3needs-validation" novalidate>
@@ -150,10 +161,11 @@
                 <div class="col-md-3">
                     <button type="button" class="btn btn-outline-info form-control" id="check">Check</button>
                 </div>
-                <div class="col-md-9" id="regexTextArea">
+                <div class="col-md-12" id="regexTextArea">
                     <textarea class="form-control" placeholder="Type a Regex here" id="regexText" ></textarea>
                 </div>
-                <div class="col-md-3"  id="Mode" >
+
+                <!-- <div class="col-md-3"  id="Mode" >
                     <div class="form-check" >
                       <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"checked>
                       <label class="form-check-label" for="flexRadioDefault1">
@@ -166,21 +178,38 @@
                         Extract Mode
                       </label>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="col-md-12">
+                <!-- <div class="col-md-12">
                     <a class='btn btn-secondary form-control' id="executebtn"  >Execute</a>
-                </div>
+                </div> -->
 
                 
             </div>
+
+
+            <!-- 右下 -->
             <div id="statistics" class="row g-3">
                 <div class="col-md-6" >
+
                     <div class="row g-3" id="testArea">
                         <div class="col-md-6" id="inputkeywordsArea">
                             <input class="form-control" placeholder="Paste your keywords here" id="inputkeywords" type="text">
                         </div>
-                        <div class="col-md-6" id="inputReportNumberArea">
+                        
+                        <div class="col-md-3" >
+                            <select class="form-select" aria-label="Default select example" id="wordsOption">
+                                <option value="1" selected>3輸入抓1字</option>
+                                <option value="2" >5輸入抓2字</option>
+                              </select>
+                        </div>
+
+                        <div class="col-md-3" >
+                            <a class='btn btn-primary form-control' id="searchbtn" >搜尋</a>
+                        </div>
+                        
+                        
+                        <!-- <div class="col-md-6" id="inputReportNumberArea">
                             <input class="form-control" placeholder="報告數量 (Default = 10)" id="inputReportNumber" type="text">
                         </div>
                         <div class="col-md-12">
@@ -188,21 +217,104 @@
                         </div>
                         <div class="col-md-12" id="inputTextArea">
                             <textarea class="form-control" placeholder="Paste your text here" id="inputText" ></textarea>
-                        </div>
+                        </div> -->
+                    </div>
+
+
+
+                </div>
+                        
+                        
+                <div class="col-md-6" >
+                    <div class="row g-3" id="inputkeywordsArea">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="" aria-expanded="false" aria-controls="collapseExample" id="collapseButton">
+                            顯示報告
+                        </button>
+                        
+                        <div id="modalReport" class="modal">
+                            <div class="modal-content">                                
+                            <div>
+                                <span class="btn-close" style="user-select: none;" id="btnclosereport">&times;</span>
+                                <p id="reportText"></p>
+                                </div>
+                            </div>
+                        </div>    
                     </div>
                 </div>
-                <div class="col-md-6" id="finalArea">
+                
+                <!-- <div class="row g-3" > -->
+                    <div class="col-md-12" id='stastics_frame'>
+                        <table class='table' id="stasticsTable" style="display: block;">
+                            <!-- stasticsTable -->
+                            <thead style="position: sticky;top: 0" class="thead-dark">
+                                <tr>
+                                    <th class="header" scope="col">No</th>
+                                    <th class="header" scope="col">numReports</th>
+                                    <th class="header" scope="col">times</th>
+                                    <th class="header" scope="col">word1</th>
+                                    <th class="header" scope="col">word2</th>
+                                    <th class="header" scope="col">word3</th>
+                                    <th class="header" scope="col">count4</th>
+                                    <th class="header" scope="col">word4</th>
+                                    <th class="header" scope="col">count5</th>
+                                    <th class="header" scope="col">word5</th>
+                                    <th class="header" scope="col">count6</th>
+                                    <th class="header" scope="col">word6</th>
+                                    <th class="header" scope="col">countTarget</th>
+                                    <th class="header" scope="col">target1</th>
+                                    <th class="header" scope="col">target2</th>
+                                    <th class="header" scope="col">target3</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+                        <table class='table' id="stasticsTable2" style="display: none;">
+                            <!-- stasticsTable -->
+                            <thead style="position: sticky;top: 0" class="thead-dark">
+                                <tr>
+                                    <th class="header" scope="col">No</th>
+                                    <th class="header" scope="col">numReports</th>
+                                    <th class="header" scope="col">times</th>
+                                    <th class="header" scope="col">word1</th>
+                                    <th class="header" scope="col">word2</th>
+                                    <th class="header" scope="col">word3</th>
+                                    <th class="header" scope="col">count4</th>
+                                    <th class="header" scope="col">word4</th>
+                                    <th class="header" scope="col">count5</th>
+                                    <th class="header" scope="col">word5</th>
+                                    <th class="header" scope="col">count6</th>
+                                    <th class="header" scope="col">word6</th>
+                                    <th class="header" scope="col">countTarget</th>
+                                    <th class="header" scope="col">target1</th>
+                                    <th class="header" scope="col">target2</th>
+                                    <th class="header" scope="col">target3</th>
+                                    <th class="header" scope="col">target4</th>
+                                    <th class="header" scope="col">target5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                <!-- </div> -->
+
+                <!-- <div class="col-md-6" id="finalArea">
                     <div class="col-md-12" id="ExtractOutputArea">
                         <textarea class="form-control" placeholder="Extracted String(s)" id="ExtractOutput"  ></textarea>
                     </div>
                     <div class="col-md-12" id="resultArea">
                         <p class="form-control" placeholder="Your output will show up here" id="result" >Your output will show up here</p>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-12" >
                     <a class='btn btn-primary form-control' id="storebtn" >儲存</a>
                 </div>
-            </div>
+            </div>            
+            <!-- 右下 -->
+
+
         </div>
         <div id="view">
         </div>
