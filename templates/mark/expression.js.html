@@ -153,6 +153,8 @@ $(document).ready(function (e) {
         }
 
         var extractedArray = [];
+        var keyArray = [];
+        var valueArray = [];
         Swal.fire({
             title: '進入下一步確認各項參數?',
             icon: 'question',
@@ -163,7 +165,7 @@ $(document).ready(function (e) {
         .then((result) => {
             if (result.isConfirmed) {
                 try{
-                    storebtnClickCheck();
+                    storebtnClickCheck(extractedArray, keyArray, valueArray);
                     showModal(keyArray, valueArray);
                 } catch (error) {
                     if (error instanceof Error) {
@@ -187,7 +189,7 @@ $(document).ready(function (e) {
     }
 
     //儲存按鈕確認
-    function storebtnClickCheck(){            
+    function storebtnClickCheck(extractedArray, keyArray, valueArray){            
         let textToSearch = document.getElementById("regexText").value;                
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
@@ -207,8 +209,6 @@ $(document).ready(function (e) {
             extractedArray.push(g[0]);
         }
         console.log("result_array : ", result_array);
-        var keyArray = [];
-        var valueArray = [];
         
         var allkeyArray = [];
         var allvalueArray = [];
@@ -1538,8 +1538,6 @@ $(document).ready(function (e) {
         // console.log("reportID : ", $(target).parents('tr').attr("reportID"));
         // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
     } 
-
-    
 
     function showModalStatics2(target) {
 		var modal = document.getElementById("modal");
