@@ -1,0 +1,1919 @@
+
+
+{% load static%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/highlight-within-textarea@2.0.5/jquery.highlight-within-textarea.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css">
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+
+<link href="https://unpkg.com/perfect-scrollbar@1.4.0/css/perfect-scrollbar.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/perfect-scrollbar@1.4.0/dist/perfect-scrollbar.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.3/dist/bootstrap-table.min.js"></script>
+
+<!-- Styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<link href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css" rel="stylesheet">
+<link href="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
+<script>
+$(document).ready(function (e) {
+    responseItem = getTokenBynumReports();
+    console.log("responseItem : ", responseItem);
+
+    $('#itemDefinition tbody').empty()
+    var element = '';
+    for(let i=0;i<responseItem.token.length;i++){
+        element += `<tr>
+            <td class="double-clickable-token" style="user-select : none; cursor: pointer;" >${responseItem.token[i]}</td>
+            <td>${responseItem.numReports[i]}</td>
+            <td>${responseItem.times[i]}</td>
+            </tr>`;
+    }
+    $('#itemDefinition tbody').append(element);
+    $('.double-clickable-token').on('dblclick', function() {
+        getToken();
+    });
+    
+
+    responseForm = getFormInfo();
+    console.log("responseItem : ", responseForm);
+
+    $('#FormInfo tbody').empty()
+    element = '';
+    for(let i=0;i<responseForm.formName.length;i++){
+        element += `<tr>
+            <td class="double-clickable-Form" style="user-select : none; cursor: pointer;" >${responseForm.formName[i]}</td>
+            <td>${responseForm.itemName[i]}</td>
+            <td>${responseForm.token[i]}</td>
+            </tr>`;
+    }
+    $('#FormInfo tbody').append(element);
+    $('.double-clickable-Form').on('dblclick', function() {
+        getToken();
+    });
+
+    //取得T型態
+    getTag();
+    // //取得選擇器單字
+    // getVocaubulary();
+    
+    // $("#twoOrThree").on('change', function() {
+    //     value = document.getElementById('twoOrThree').value;
+    //     if (value === "2"){
+    //         printAllData();
+    //     }
+    //     else if (value === "3"){
+    //         printAllData_3();
+    //     }
+    // });
+
+    // //根據filter顯示token
+    // $("#filter").on('change', function() {
+    //     value = document.getElementById('twoOrThree').value;
+    //     if (value === "2"){                
+    //         printAllData();
+    //     }
+    //     else if (value === "3"){
+    //         printAllData_3();
+    //     }
+    // });
+
+    // //顯示資料
+    // //printAllData();
+
+    // //顯示P資料
+    // printAllPData();
+    
+    
+    //搜尋按鈕
+    $("#searchButton").click(function(){
+        printAllDataBetween();
+    });
+
+    // //根據select顯示token
+    // $("#showTimes").on('change', function() {
+    //     value = document.getElementById('twoOrThree').value;
+    //     if (value === "2"){
+    //         printAllData();
+    //     }
+    //     else if (value === "3"){
+    //         printAllData_3();
+    //     }
+    // });
+    //loader
+    $('#loader').css('display','none');
+    $('#frame').css('visibility','visible');
+
+    // $( '#multiple-select-field' ).select2( {
+    //     theme: "bootstrap-5",
+    //     width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    //     placeholder: $( this ).data( 'placeholder' ),
+    //     closeOnSelect: false,
+    // } );
+    
+    // $("#multiple-select-field").prop("disabled", true);
+    // // 監聽選tokenType的元素
+    // var targetNode = $('#select2-multiple-select-field-container')[0];
+    // // 建立一個 MutationObserver 實例
+    // var observer = new MutationObserver(function(mutations) {
+    //     //有變動執行以下程序
+    //     console.log($('#select2-multiple-select-field-container').children('li').length);
+    // });
+    // // 設定觀察選項
+    // var config = { childList: true };
+    // // 開始觀察目標節點
+    // observer.observe(targetNode, config);    
+
+    // $("#mergeTokenNumber").on("change", function() {
+    // //     $('#searchingButton').css('display','inline');
+    // //     $('#searchButton').css('display','none');
+    // //     $('#loader').css('display','inline');
+    // //     $('#loader').css('z-index','10');
+    // //     $('#cover').css('display','inline');
+    //     var selectedValue = $(this).val();
+        
+    // //     switch(selectedValue){
+    // //         case "5":
+    // //             console.log("5");
+    // //             print6words();
+    // //             break;
+    // //         case "4":
+    // //             console.log("4");
+    // //             print5words();
+    // //             break;
+    // //         case "3":
+    // //             console.log("3");
+    // //             print4words();
+    // //             break;
+    // //         case "2":
+    // //             console.log("2");
+    // //             print3words();
+    // //             break;
+    // //     }
+    //     var lastsearchedValue = $("#table_3word").attr("lastsearched");
+    //     // console.log("selectedValue : ", selectedValue);
+    //     // console.log("lastsearchedValue : ", lastsearchedValue);
+    //     if (parseInt(selectedValue)+1 != parseInt(lastsearchedValue)){
+    //         $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", true);
+    //     }
+    //     else{
+    //         $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", false);
+    //     }
+    // });
+
+    // $("#searchOption").on("change", function() {
+    //     var selectedValue = $(this).val();
+    //     if (selectedValue === "A"){            
+    //         $("#token1").prop("disabled", true);
+    //         $("#token2").prop("disabled", true);
+    //         $(".dual-listbox select").prop("disabled", true);
+    //     }
+    //     else{
+    //         $("#token1").prop("disabled", false);
+    //         $("#token2").prop("disabled", false);
+    //         $(".dual-listbox select").prop("disabled", false);
+    //     }
+    // });
+})
+
+//取得所有itemName
+function getToken(){
+    console.log("target : ", event.target);
+    document.getElementById("itemDefinition_itemName").value = event.target.innerHTML;
+    document.getElementById("itemDefinition_itemName").innerHTML = event.target.innerHTML;
+}
+
+//取得所有itemName
+function getTokenBynumReports(){
+    var res;
+    $.ajax({
+        async:false,
+        type: 'GET',
+        url: '{% url "mark:getTokenBynumReports" %}',
+        success:function (response){
+            res = response;
+            console.log(response, res);
+        },
+    });
+    return res;
+}
+
+//取得所有Forminfo
+function getFormInfo(){
+    var res;
+    $.ajax({
+        async:false,
+        type: 'GET',
+        url: '{% url "mark:getFormInfo" %}',
+        success:function (response){
+            res = response;
+            console.log(response, res);
+        },
+    });
+    return res;
+}
+
+function getTag(){
+    $.ajax({
+        type: 'POST',
+        url: '{% url "mark:getTag" %}',
+        success:function (response){
+            // var preElement = `<option value=-1 id=-1 selected>【文章開始】</option>`
+            // $('#firstTag .optionbox .form-select').append(preElement);
+            // preElement = `<option value=-1 id=-1 selected>【文章結束】</option>`
+            // $('#secondTag .optionbox .form-select').append(preElement);
+            for(let i=0;i<response.token.length;i++){
+                var element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "1" + `">${response.token[i]}</option>`;
+                $('#firstTag .optionbox .form-select').append(element);
+                element = `<option value=${response.tokenID[i]} id="` + response.tokenID[i] + "2" + `">${response.token[i]}</option>`;
+                $('#secondTag .optionbox .form-select').append(element);
+            }
+        },
+    });
+}
+
+function getVocaubulary(){
+    $.ajax({
+        type: 'GET',
+        url: '{% url "mark:getVocabularyForDictionary" %}',
+        success:function (response){
+            let element = '';
+            for(let i=0;i<response.token.length;i++){
+                element += `<option value=${response.tokenID[i]}>${response.token[i]}</option>`;
+            }
+            $('.selectVocabulary').append(element);
+            dualBox();
+        },
+    });
+}
+
+function dualBox(){
+    let dlb2 = new DualListbox('.selectVocabulary', {
+        availableTitle:'Available vocabularies',
+        selectedTitle: 'Selected vocabularies',
+        addButtonText: '>',
+        removeButtonText: '<',
+        addAllButtonText: '>>',
+        removeAllButtonText: '<<',
+        searchPlaceholder: 'search vocabulary',
+        draggable: true,
+        sortable: true,
+    });
+    dlb2.addEventListener('added', function(event){
+        console.log(event);
+    });
+    dlb2.addEventListener('removed', function(event){
+        console.log(event);
+    });
+}
+
+
+//顯示資料
+function printAllData(){
+    response = getTextTokenData();
+    ////console.log("response.data : ", response.data);
+    $('#statistics').empty();
+    $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch" data-reset-search="resetSearch" 
+    data-pagination="true"
+    data-pagination-h-align="left"
+    data-pagination-detail-h-align="right"
+    data-page-size="300"
+    data-height=""        
+    data-loading-template="loadingTemplate"
+    >
+    </table>`);
+    $('#sortTable').bootstrapTable({
+        columns: [{
+            field: 'No',
+            title: 'No',
+            align: 'center',
+            valign: 'middle',
+            sortable:true,
+        },{
+            field: 'First',
+            title: 'First',
+            sortable:true,
+
+        }, {
+            field: 'Second',
+            title: 'Second',
+            sortable:true,
+        }, {
+            field: 'Times',
+            title: 'Times',
+            sortable:true,
+        }, {
+            field: 'Mergecheck',
+            title: 'Mergecheck',
+            sortable:true,
+        }],
+        data:response.data,
+        paginationParts: ["pageSize", "pageList"],
+        stickyHeader: true,
+    })
+    $('#statistics .fixed-table-toolbar').attr('id', 'table_2word');
+    $('#table_2word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
+        <option selected value="1">Search First</option>
+        <option value="2">Search Second</option>
+        <option value="3">Search Times</option>
+      </select>`);
+    //$('#table_2word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+}
+
+//顯示資料
+function printAllData_3(){        
+    response = getTextTokenData_3();
+    ////console.log("response.data : ", response.data);
+    
+    $('#statistics').empty();
+    $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearch"
+    data-pagination="true"
+    data-pagination-h-align="left"
+    data-pagination-detail-h-align="right"
+    data-page-size="300"        
+    data-height="">
+    </table>`);
+    $('#sortTable').bootstrapTable({
+        columns: [{
+            field: 'No',
+            title: 'No',
+            align: 'center',
+            valign: 'middle',
+            sortable:true,
+        },
+        {
+            field: 'First',
+            title: 'First',
+            sortable:true,
+
+        }, 
+        {
+            field: 'Second',
+            title: 'Second',
+            sortable:true,
+        }, 
+        {
+            field: 'Third',
+            title: 'Third',
+            sortable:true,
+        }, 
+        {
+            field: 'Times',
+            title: 'Times',
+            sortable:true,
+        }, 
+        {
+            field: 'Mergecheck',
+            title: 'Mergecheck',
+        }],
+        data:response.data,
+        paginationParts: ["pageSize", "pageList"],
+        stickyHeader: true,
+    })
+    $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+    $('#table_3word').append(`<select class="form-select form-select-sm" aria-label=".form-select-sm example" id="tableSelect1">
+        <option selected value="1">Search First</option>
+        <option value="2">Search Second</option>
+        <option value="4">Search Third</option>
+        <option value="3">Search Times</option>
+      </select>`);
+    //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+}
+
+//顯示P資料
+function printAllPData(searchWord){
+    response = getVocabularyData();
+    var tokenP = response.data;
+    ////console.log("response.data : ", response.data);
+    $('#view').empty();
+    $('#view').append(`<table id='sortTableP' class="table table-striped" data-toggle="table"  data-search="true"
+    data-pagination="true"
+    data-pagination-h-align="left"
+    data-pagination-detail-h-align="right"
+    data-page-size="100"
+    data-height=""    
+    data-show-search-button="true">  
+    </table>`);
+    $('#sortTableP').bootstrapTable({
+        columns: [{
+            field: 'No',
+            title: 'No',
+            align: 'center',
+            valign: 'middle',
+            sortable:true,
+        },
+        {
+            field: 'ProperNoun',
+            title: 'ProperNoun',
+            sortable:true,
+
+        }, 
+        {
+            field: 'tokenType',
+            title: 'tokenType',
+            sortable:true,
+        }, 
+        {
+            field: 'NewRE',
+            title: 'NewRE',
+        }, 
+        {
+            field: 'UnMerge',
+            title: 'UnMerge',
+        }, 
+        ],
+        data:response.data,
+        paginationParts: ["pageSize", "pageList"],
+        stickyHeader: true,
+    })
+    $('#view .fixed-table-toolbar').attr('id', 'table_p;');
+    var a = $("#table_p .fixed-table-pagination");
+    console.log("a : ", a);
+
+
+    $('#view button[name="search"] i').removeClass('fa fa-search').addClass('bi bi-search');
+
+    if (searchWord){
+        var resultDataP = document.querySelector('#view');
+        var searchInput = resultDataP.querySelector('input.search-input');       
+        searchInput.value = searchWord;            
+        $('#view button[name="search"] i').trigger('click');
+    }
+}
+
+//顯示資料
+function printAllDataBetween(){
+    tokenTypes = getSelectedType();
+    console.log("tokenTypes : ", tokenTypes);
+
+    tokenID1 = document.getElementById("token1").value;
+    tokenID2 = document.getElementById("token2").value;
+    console.log("tokenID1 : ", tokenID1);
+    console.log("tokenID2 : ", tokenID2);
+    var ulElement = document.querySelector('.dual-listbox__selected');
+    var liElements = ulElement.querySelectorAll('li');
+    var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
+    console.log(liHTMLArray);
+    response = getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes);
+    //console.log("response.data : ", response.data);
+}
+
+//取得所有已選Type
+function getSelectedType(){
+    // Get the Select2 element by its ID
+    var selectElement = document.getElementById("select2-multiple-select-field-container");
+    console.log("selectElement : ", selectElement);
+
+    // Get all the <li> elements inside the <ul> element
+    var liElements = selectElement.querySelectorAll("li");
+
+    // Loop through the <li> elements and log their contents
+    var arr = [];
+    liElements.forEach(function(liElement) {
+        arr.push(liElement.title.split(':')[0]);
+        console.log(liElement.title.split(':')[0]);
+    });
+    return arr;
+}
+
+//取得所有資料
+function getTextTokenData(){
+    $.ajax({
+        async: false,
+        type: 'GET',
+        url: '{% url 'mark:chineseTwoWord' %}',
+        data:{
+            "filter_times" : 1,
+        },
+        success:function (response){
+            res = response;
+            //////console.log("res : ", res);
+        },
+    });
+    return res;
+}
+
+//取得所有資料
+function getTextTokenData_3(){
+    $.ajax({
+        async: false,
+        type: 'GET',
+        url: '{% url 'mark:chineseThreeWord' %}',
+        data:{
+            "English" : "Chinese",
+            "filter_times" : 1,
+        },
+        success:function (response){
+            res = response;
+            //////console.log("res : ", res);
+        },
+    });
+    return res;
+}
+
+//取得P資料
+function getVocabularyData(){
+    var res;
+    $.ajax({
+        async: false,
+        type: 'GET',
+        url: '{% url 'mark:getVocabularyByType_Ptable' %}',
+        data:{
+            "tokenType" : "P",
+        },
+        success:function (response){
+            res = response;
+            
+            //////console.log("res : ", res);
+        },
+    });
+    return res;
+}
+
+//取得被合併的兩個tokenID
+function getTokenIDByName(Name){
+        console.log("Name : ", Name);
+        var res = [];
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '{% url 'mark:checkName' %}',
+            data:{
+                "Name[]" : Name,
+            },
+            success:function (response){
+                res = response;
+                ////console.log("res : ", res);
+            },
+        });
+        return res;
+}
+
+//取得所有資料
+function getTextTokenData_Between(tokenID1, tokenID2, liHTMLArray, tokenTypes){
+    $('#searchingButton').css('display','inline');
+    $('#searchButton').css('display','none');
+    $('#loader').css('display','inline');
+    $('#loader').css('z-index','10');
+    $('#cover').css('display','inline');
+    tokenID = getTokenIDByName(liHTMLArray);
+    console.log("tokenID : ", tokenID.tokenID);
+    var word = document.getElementById("mergeTokenNumber").value;
+    var option = document.getElementById("searchOption").value;
+    if (tokenID.tokenID == undefined && option === "T"){
+        Swal.fire({
+            title: 'Error',
+            text: '如果要使用 between 搜尋，請至少選擇一個單字',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+        })
+        $('#sortTable tr').width(500);
+        $('#searchingButton').css('display','none');
+        $('#searchButton').css('display','inline');
+        $('#loader').css('display','none');
+        $('#cover').css('display','none');
+        return;
+    }
+    switch(word){
+        case "5":
+            console.log("5");
+            if (option === "A"){
+                console.log("print6wordsall");
+                print6wordsall();
+            }
+            else{
+                console.log("print6words");
+                print6words();
+            }
+            break;
+        case "4":
+            console.log("4");
+            if (option === "A"){
+                console.log("print5wordsall");
+                print5wordsall();
+            }
+            else{
+                console.log("print5words");
+                print5words();
+            }
+            break;
+        case "3":
+            console.log("3");
+            if (option === "A"){
+                console.log("print4wordsall");
+                print4wordsall();
+            }
+            else{
+                console.log("print4words");
+                print4words();
+            }
+            break;
+        case "2":
+            console.log("2");
+            if (option === "A"){
+                console.log("print3wordsall");
+                print3wordsall();
+            }
+            else{
+                console.log("print3words");
+                print3words();
+            }
+            break;
+    }
+}
+
+function print6words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens6' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"
+            data-height=""
+            style="overflow-y:auto;">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token6',
+                    title: 'Token6',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "6");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print6wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens6All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token6',
+                    title: 'Token6',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "6");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print5words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens5' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "5");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print5wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens5All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token5',
+                    title: 'Token5',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "5");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print4words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens4' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "4");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print4wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens4All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token4',
+                    title: 'Token4',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "4");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print3words(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens3' %}',
+        data:JSON.stringify({
+            "firstTokenID" : tokenID1,
+            "secondTokenID" : tokenID2,
+            "tokens[]" : tokenID.tokenID,
+            "tokenTypes[]" : tokenTypes,
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "3");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+function print3wordsall(){    
+    $.ajax({
+        async: true,
+        type: 'POST',
+        url: '{% url 'mark:getReportBetween2Tokens3All' %}',
+        data:JSON.stringify({
+        }),
+        success:function (response){
+            res = response;
+            $('#statistics').empty();
+            $('#statistics').append(`<table id='sortTable' class="table table-striped" data-toggle="table"  data-search="true" data-custom-search="customSearchForBetween"
+            data-pagination="true"
+            data-pagination-h-align="left"
+            data-pagination-detail-h-align="right"
+            data-page-size="100"        
+            data-height="">
+            </table>`);
+            $('#sortTable').bootstrapTable({
+                columns: [{
+                    field: 'No',
+                    title: 'No',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable:true,
+                },
+                {
+                    field: 'Type',
+                    title: 'Type',
+                    sortable:true,
+                },
+                {
+                    field: 'Token1',
+                    title: 'Token1',
+                    sortable:true,
+
+                }, 
+                {
+                    field: 'Token2',
+                    title: 'Token2',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Token3',
+                    title: 'Token3',
+                    sortable:true,
+                }, 
+                {
+                    field: 'NumReports',
+                    title: 'NumReports',
+                    sortable:true,
+                }, 
+                {
+                    field: 'Times',
+                    title: 'Times',
+                    sortable:true,
+                },
+                {
+                    field: 'Mergecheck',
+                    title: 'Mergecheck',
+                }],
+                data:response.data,
+                paginationParts: ["pageSize", "pageList"],
+                stickyHeader: true,
+            })
+            $('#statistics .fixed-table-toolbar').attr('id', 'table_3word');
+
+            //$('#table_3word').append(`<button onclick="resetSearch()" class="btn btn-secondary bg-secondary" id="resetSearch">reset</button>`);
+            $('#sortTable tr').width(500);
+            $('#searchingButton').css('display','none');
+            $('#searchButton').css('display','inline');
+            $('#loader').css('display','none');
+            $('#cover').css('display','none');
+            $('#table_3word').attr("lastSearched", "3");
+            
+            //$('#sortTable').bootstrapTable('hideColumn', 'Type');
+        },
+    });
+}
+
+
+function customSearch(data, text) {
+    var search = document.getElementsByClassName("form-control search-input");
+    //console.log("search : ", search[0]);
+    var selectValue = document.getElementById("tableSelect1").value;
+    //console.log("selectValue : ", selectValue);
+    //console.log("data : ", data);
+    //console.log("text : ", text);
+    if (text != ""){
+        switch (selectValue) {
+            case '1':
+                //console.log('select 1');
+                return data.filter(function (row) {
+                  return row.First == text;
+                })
+                break;
+            case '2':
+                //console.log('select 2');
+                return data.filter(function (row) {
+                  return row.Second == text;
+                })
+                break;
+            case '3':
+                //console.log('select 3');
+                return data.filter(function (row) {
+                  return row.Times >= text;
+                })
+                break;
+            case '4':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                  return row.Third == text;
+                })
+                break;
+            case '0':
+                //console.log('select 0');
+                return data;
+                break;
+        }
+    }
+    
+
+    return data.filter(function (row) {
+      return row.Times >= text;
+    })
+  }
+
+function customSearchForBetween(data, text) {
+    console.log("customSearchForBetween in ");
+    var search = document.getElementsByClassName("form-control search-input");
+    //console.log("search : ", search[0]);
+    var selectValue = document.getElementById("tableSelect1").value;
+    //console.log("selectValue : ", selectValue);
+    //console.log("data : ", data);
+    //console.log("text : ", text);  
+    var ulElement = document.querySelector('.dual-listbox__selected');
+    var liElements = ulElement.querySelectorAll('li');
+    var liHTMLArray = Array.from(liElements).map(li => li.innerHTML);
+    console.log(liHTMLArray);
+    if (text != ""){
+        switch (selectValue) {
+            case '1':
+                //console.log('select 1');
+                return data.filter(function (row) {
+                    return row.Token1 == text;
+                })
+                break;
+            case '2':
+                //console.log('select 2');
+                return data.filter(function (row) {
+                    return row.Token2 == text;
+                })
+                break;
+            case '3':
+                //console.log('select 3');
+                return data.filter(function (row) {
+                    return row.Token3 == text;
+                })
+                break;
+            case '4':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Token4 == text;
+                })
+                break;
+            case '5':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Token5 == text;
+                })
+                break;
+            case '6':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.NumReports >= text;
+                })
+                break;
+            case '7':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Times >= text;
+                })
+                break;
+            
+            case '0':
+                //console.log('select 0');
+                return data;
+                break;
+        }
+    }
+    switch (selectValue) {
+        case 'C':
+            //console.log('select 4');
+            return data.filter(function (row) {
+                return row.Type == 'C';
+            })
+            break;
+        case 'G':
+            //console.log('select 4');
+            return data.filter(function (row) {
+                return row.Type == 'G';
+            })
+            break;
+    }
+    return data.filter(function (row) {
+        return row.Times >= text;
+    })
+}
+
+  function customFilter(data, text) {
+    console.log("customFilter in 123");
+    var search = document.getElementsByClassName("form-control search-input");
+    //console.log("search : ", search[0]);
+    var selectValue = document.getElementById("tableSelect1").value;
+    //console.log("selectValue : ", selectValue);
+    //console.log("data : ", data);
+    //console.log("text : ", text);
+    if (text != ""){
+        switch (selectValue) {
+            case '1':
+                //console.log('select 1');
+                return data.filter(function (row) {
+                  return row.Token1 == text;
+                })
+                break;
+            case '2':
+                //console.log('select 2');
+                return data.filter(function (row) {
+                  return row.Token2 == text;
+                })
+                break;
+            case '3':
+                //console.log('select 3');
+                return data.filter(function (row) {
+                  return row.Token3 == text;
+                })
+                break;
+            case '4':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                  return row.Token4 == text;
+                })
+                break;
+            case '5':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Token5 == text;
+                })
+                break;
+            case '6':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.NumReports >= text;
+                })
+                break;
+            case '7':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Times >= text;
+                })
+                break;
+            case 'C':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Type == text;
+                })
+                break;
+            case 'G':
+                //console.log('select 4');
+                return data.filter(function (row) {
+                    return row.Times == text;
+                })
+                break;
+            
+            case '0':
+                //console.log('select 0');
+                return data;
+                break;
+        }
+    }
+    return data.filter(function (row) {
+      return row.Times >= text;
+    })
+  }
+
+    //測試一次做完
+    function allInOneTwoThreeFiveWord(){
+        // $('#table_3word').attr("data-custom-search", 'customFilter');
+        // $('#sortTable').bootstrapTable('filterBy', {
+        //     Type: 'C'
+        // });
+        var start = Date.now();
+        
+        //插新字
+        let token1 = $(event.target).parents('tr').children('td').eq(2).html();
+        console.log("token1 = ", token1);
+        let token2 = $(event.target).parents('tr').children('td').eq(3).html();
+        console.log("token2 = ", token2);
+        let token3 = $(event.target).parents('tr').children('td').eq(4).html();
+        console.log("token3 = ", token3);
+        let token4 = $(event.target).parents('tr').children('td').eq(5).html();
+        console.log("token4 = ", token4);
+        let token5 = $(event.target).parents('tr').children('td').eq(6).html();
+
+        // get the select element by ID
+        var selectElement = document.getElementById("mergeTokenNumber");
+
+        // get the selected option value
+        var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+        console.log("selectedOption : ", selectedOption);
+
+        // log the selected option value to the console
+        //console.log("selectedOption : ", selectedOption);
+        //先設成英文 之後要加選擇Type 可能是存在mergeButton裡面
+        var tokenType = document.getElementById("mergeType").value;
+        switch (selectedOption){
+           case "2":
+               var target = $(event.target).parents('tr').children('td').eq(7).children('button');
+               console.log("2");
+               selectTwo(token1, token2, tokenType, start, target);
+               break;
+           case "3":
+               var target = $(event.target).parents('tr').children('td').eq(8).children('button');
+               console.log("3");
+               selectThree(token1, token2, token3, tokenType, start, target);
+               break;
+           case "4":
+               var target = $(event.target).parents('tr').children('td').eq(9).children('button');
+               console.log("4");
+               selectFour(token1, token2, token3, token4, tokenType, start, target);
+               break;
+           case "5":
+               var target = $(event.target).parents('tr').children('td').eq(10).children('button');
+               console.log("5");
+               selectFive(token1, token2, token3, token4, token5, tokenType, start, target);
+               break;
+        }
+    }
+
+    //選二字
+    function selectTwo(token1, token2, tokenType, start, target){
+        var Token = target.attr('mergeToken2');
+        var nWord = target.attr('mergeNword2');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併二字
+                responseTwoWord = mergeTwoWord(token1, token2, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseTwoWord : ", responseTwoWord);
+                printResultMerge(responseTwoWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+    
+
+    //選三字
+    function selectThree(token1, token2, token3, tokenType, start, target){
+        var Token = target.attr('mergeToken3');
+        var nWord = target.attr('mergeNword3');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併三字
+                responseThreeWord = mergeThreeWord(token1, token2, token3, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseThreeWord : ", responseThreeWord);
+                printResultMerge(responseThreeWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+
+    //選四字
+    function selectFour(token1, token2, token3, token4, tokenType, start, target){
+        var Token = target.attr('mergeToken4');
+        var nWord = target.attr('mergeNword4');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併三字
+                responseFourWord = mergeFourWord(token1, token2, token3, token4, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseFourWord : ", responseFourWord);
+                printResultMerge(responseFourWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });
+    }
+
+    //選五字
+    function selectFive(token1, token2, token3, token4, token5, tokenType, start, target){
+        var Token = target.attr('mergeToken5');
+        var nWord = target.attr('mergeNword5');
+        Swal.fire({
+            title: 'Do you want to continue?',
+            text: 'The merged Token will be : "' + Token + '" , Type : "' + tokenType + '"',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //合併五字
+                responseFiveWord = mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType);
+                printAllDataBetween();
+                printAllPData(Token);
+                var end = Date.now();
+                console.log("responseFiveWord : ", responseFiveWord);
+                printResultMerge(responseFiveWord, start, end, Token);
+                console.log("merged : ", Token, nWord);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    text: 'Tokens remain unchanged',
+                    icon: 'info',
+                })
+            }
+        });        
+    }
+
+    //顯示結果
+    function printResultMerge(response, start, end, Token){
+        if(response.status == "0"){
+            swal("Merged!", Token + " has been merged! " + ((end-start)/1000).toString() + "sec", "success");
+        }
+        else{
+            if (response.ERRMSG){
+                swal("Failed!", response.ERRMSG + ",\nblock : " + response.block, "error");
+            }
+            else{
+                swal("Failed!", "block : " + response.block, "error");
+            }
+        }        
+    }
+
+
+    //合併二字
+    function mergeTwoWord(token1, token2, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:twoWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    //合併三字
+    function mergeThreeWord(token1, token2, token3, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:threeWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }    
+
+    //合併四字
+    function mergeFourWord(token1, token2, token3, token4, Token, nWord, tokenType){
+        console.log("Token : ", Token);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:fourWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "token4" : token4,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    //合併五字
+    function mergeFiveWord(token1, token2, token3, token4, token5, Token, nWord, tokenType){
+        console.log("Token : ", token1, token2, token3, token4, token5, Token, nWord, tokenType);
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url 'mark:fiveWord' %}',
+            data:{
+                "token1" : token1,
+                "token2" : token2,
+                "token3" : token3,
+                "token4" : token4,
+                "token5" : token5,
+                "TokenType" : tokenType,
+                "mergeToken" : Token,
+                "nWord" : nWord,
+            },
+            success:function (response){
+                res = response;
+                //////console.log("res : ", res);
+            },
+        });
+        return res;
+    }
+
+    //開啟網頁傳值
+    function changeSrc() {
+        // Get the iframe element
+        var iframe = document.getElementById("iframe");
+        console.log("iframe : ", iframe);
+        var overlay = document.querySelector('.overlay');
+        var iframeDoc = iframe.contentWindow.document;
+        var feedbackElement = iframeDoc.querySelector('.warning-feedback');
+        feedbackElement.textContent = "";
+        ////console.log(" regexName : ", $("#regexName"));
+        var drop = iframeDoc.getElementById("regexName");
+        drop.classList.remove("is-warning");
+
+        if(iframe.style.display == "block"){            
+            iframe.style.display = "none";
+            overlay.style.display = "none";
+        }
+        else{
+            document.addEventListener("click", function(event) {
+                // Check if the clicked element is inside the iframe or the button that opened the iframe
+                if (event.target !== iframe && !event.target.classList.contains("btn")) {
+                    // If it is not, hide the iframe
+                    iframe.style.display = "none";                  
+                    overlay.style.display = "none";
+                }
+            });
+            
+            overlay.style.display = "block";
+
+            iframe.style.display = "block";
+            
+            console.log("iframe : ", iframe);
+            
+        
+            var navbar = iframeDoc.getElementById("navbar");
+            navbar.style.display = "none";
+            
+            var box = iframeDoc.getElementById("regexName");
+            var drop = iframeDoc.getElementById("dropdownbutton");
+            iframeDoc.getElementById("E").selected = true;
+
+            let Token = $(event.target).parents('tr').children('td').eq(1).html();
+
+            box.value = Token;
+            var firstWord = iframeDoc.getElementById("firstWordValue");
+            firstWord.value = Token;
+            box.readOnly = true;
+            var firstWordValue = iframeDoc.getElementById("firstWordValue");
+            firstWordValue.readOnly = true;
+            firstWordValue.style.userSelect = "none";
+            var regexName = iframeDoc.getElementById("regexName");
+            firstWordValue.readOnly = true;
+            regexName.style.userSelect = "none";
+            
+            iframeDoc.getElementById("search").style.display = "";
+            iframeDoc.getElementById("wordNumber").style.display = "";
+            iframeDoc.getElementById("firstWord").style.display = "";
+        }
+    }
+
+
+</script>
+

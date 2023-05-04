@@ -147,19 +147,18 @@
 
 
             <div id="setting" class="row g-3">
-                <div class="col-md-9">
-                    <form class="rowg-3needs-validation" novalidate>
-                        <input type="text" class="form-control" placeholder="Name your Regex here" id="regexName" required></input>
+                <div class="col-md-12">
+                    <form class="rowg-3needs-validation" novalidate>                        
+                        <select class="form-select" id="regexName">
+                        </select>
+                        <!-- <input type="text" class="form-control" placeholder="Name your Regex here" id="regexName" required></input>
                         <div class="valid-feedback" id="validText" >
                         </div>
                         <div class="invalid-feedback" id="invalidText">
                         </div>
                         <div class="warning-feedback" id="warningText">
-                        </div>
+                        </div> -->
                     </form> 
-                </div>
-                <div class="col-md-3">
-                    <button type="button" class="btn btn-outline-info form-control" id="check">Check</button>
                 </div>
                 <div class="col-md-12" id="regexTextArea">
                     <textarea class="form-control" placeholder="Type a Regex here" id="regexText" ></textarea>

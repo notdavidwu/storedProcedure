@@ -4018,6 +4018,83 @@ def getReportByReportID(request):
     return JsonResponse(result)
 
 
+@csrf_exempt
+def getTokenBynumReports(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+    query = '''	
+		select c.tokenID, c.token, count(distinct a.reportID) as 'numReports', count(*) as 'times'
+		from (
+						select distinct a.reportID, a.posEnd+1 as 'LB', b.posStart-1 as 'UB'
+						from textToken as a inner join textToken as b on a.reportID=b.reportID and a.tokenID=35 and b.tokenID=36
+										inner join textToken as c on a.reportID=c.reportID and c.posStart between a.posEnd+1 and b.posStart-1
+										inner join Vocabulary as d on c.tokenID=d.tokenID
+						where d.token like '[Ll][Uu][Nn][Gg]%'
+				) as a inner join textToken as b on a.reportID=b.reportID and b.posStart between a.LB and a.UB
+							inner join Vocabulary as c on b.tokenID=c.tokenID
+		group by c.token, c.tokenID
+		order by numReports desc
+        '''
+    cursor.execute(query,[])
+    res = cursor.fetchall()
+    tokenID = [row[0] for row in res]
+    token = [row[1] for row in res]
+    numReports = [row[2] for row in res]
+    times = [row[3] for row in res]
+    return JsonResponse({'tokenID':tokenID,
+                         'token':token,
+                         'numReports':numReports,
+                         'times':times,
+                         })
+
+
+@csrf_exempt
+def getFormInfo(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218'
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+    query = '''	
+		select * from reportForm as a inner join reportItem as b on a.formID=b.formID
+				inner join reportItemToken as c on b.formID=c.formID and b.serialNo=c.serialNo
+				inner join Vocabulary as d on c.tokenID=d.tokenID
+        '''
+    cursor.execute(query,[])
+    res = cursor.fetchall()
+    formName = [row.formName for row in res]
+    itemName = [row.itemName for row in res]
+    token = [row.token for row in res]
+    return JsonResponse({'formName':formName,
+                         'itemName':itemName,
+                         'token':token,
+                         })
+
+
+
+@csrf_exempt
+def getEToken(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824' 
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    query = "SELECT * FROM [Vocabulary] where tokenType='E' order by tokenID"
+    cursor.execute(query)
+    res = cursor.fetchall()
+    token = [row.token for row in res]
+    tokenID = [row.tokenID for row in res]
+    
+    conn.commit()
+    conn.close()
+    return JsonResponse({'token':token,'tokenID':tokenID})
+
 
 
 
@@ -4062,7 +4139,7 @@ def dictionary(request):
 
 
 def reportForm(request):
-    return render(request, 'mark/reportForm.html')
+    return render(request, 'mark/newReportForm.html')
     
 def expression(request):
     return render(request, 'mark/expression.html')

@@ -99,5 +99,8 @@ urlpatterns = [
     path('getStasticTable/', getStasticTable, name='getStasticTable'),
     path('getReportByReportID/', getReportByReportID, name='getReportByReportID'),
     path('getStasticTable2/', getStasticTable2, name='getStasticTable2'),
+    path('getTokenBynumReports/', getTokenBynumReports, name='getTokenBynumReports'),
+    path('getFormInfo/', getFormInfo, name='getFormInfo'),
+    path('getEToken/', getEToken, name='getEToken'),
     
 ]

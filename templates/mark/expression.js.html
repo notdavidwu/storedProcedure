@@ -126,6 +126,21 @@ $(document).ready(function (e) {
                 </tr>`;
         }
         $('#itemDefinition tbody').append(element);
+        getEToken();
+    }
+
+    
+    function getEToken(){
+        $.ajax({
+            type: 'POST',
+            url: '{% url "mark:getEToken" %}',
+            success:function (response){
+                for(let i=0;i<response.token.length;i++){
+                    element = `<option value=${response.token[i]} id="` + response.tokenID[i] + `">${response.token[i]}</option>`;
+                    $('#regexName').append(element);
+                }
+            },
+        });
     }
     
     //儲存按鈕
@@ -1212,8 +1227,8 @@ $(document).ready(function (e) {
         ////console.log("execute in")
         ////console.log(itemName)
 
-        token = document.getElementById('regexName').value
-        // tokenType = document.getElementById('dropdownbutton').value
+        token = document.getElementById('regexName').value;
+        console.log("token : ", token);
         tokenType = "E";
         //console.log("tokenType : " + tokenType)
         //count = getLength(token);
@@ -1228,7 +1243,6 @@ $(document).ready(function (e) {
             },
             success:function (response){
                 //console.log("result : " + response.status)
-                
                 if (tokenType == 'E'){
                     BtnClicked_2(response,itemName);
                 }

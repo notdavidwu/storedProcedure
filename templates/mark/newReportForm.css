@@ -7,7 +7,7 @@
     @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
     /* Set the width of the #pool element to 100% for screens 768px and below */
 
-    @media (max-width: 800px ){
+    @media (max-width: 1793px ){
         #frame {
             position: absolute;
             top: 65px;
@@ -54,7 +54,7 @@
     .table{
         background-color:#FFF
     }
-    @media(min-width: 800px){
+    @media(min-width: 1793px){
         
         #cover {
             position: absolute;
@@ -81,25 +81,25 @@
         #pool {
             background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
-            width: 30%;
+            width: 20%;
             height: calc(100% - 100px);
             min-width:350px;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
-            height:calc(100vh - 370px)
+            height:calc(100vh - 430px)
         }
         #statisticsArea{
             background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
             height:100%;
 
-            width:70%;
+            width:62%;
         }
         #view{
             background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
             height:100%;
-            width:0%;
+            width:38%;
 
         }
         #view > div > .fixed-table-container{
@@ -179,9 +179,14 @@
     .dual-listbox .dual-listbox__button{
         background-color:#111
     }
+    #statisticsArea > #statistics > div{
+        height:100%;
+        padding-left:10px;
+        padding-right:10px;
 
+    }
     #statisticsArea > #statistics {
-        height:calc(100% - 300px);
+        height:calc(100% - 97px);
         
     }
     #view > div{
@@ -411,144 +416,15 @@
   .pagination {    
     z-index:0;
   }
+
+  
   #itemDefinition_frame{
-    height:55%;
+    height:60%;
     overflow-y:auto;
   }
-  #stastics_frame{
-    height:100%;
+  #selectArea{
+    height:85%;
     overflow-y:auto;
-  }
-  .header {
-    position: sticky;
-    top:0;
-}
-    #regexText{
-        resize:none;
-        height:100%;
-    }
-    #regexTextArea{
-        height:100%;
-    }
-    #executebtn{
-        color:#FFF
-    }
-    #inputText{
-        resize:none;
-        height:100%;
-    }
-    #inputTextArea{
-        margin-top:20px;
-        height:calc(100% - 100px);
-    }
-    #ExtractOutputArea{
-        height:30%
-    }
-    #ExtractOutput{
-        resize:none;
-        height:100%;
-    }
-    #result{
-        height: 100%;
-        width: 100%;
-        user-select: none;
-        white-space: pre-wrap;
-        overflow-y: scroll;
-    }
-    #resultArea{
-        margin-top:20px;
-        height: calc(70% - 20px);
-    }
-    #storebtn{
-        color:#FFF
-    }
-    #searchbtn{
-        color:#FFF
-    }
-    #pool > div{
-        margin:3px;
-    }
-    #Mode{
-        background-color:#FFF;
-        border:1px solid #ced4da;
-        border-radius:0.25rem;
-        margin-right:10px;
-        width:calc(25% - 10px)
-    }
-    
-  
-  .modal {
-    display: none; /* Hide the modal by default */
-    position: fixed; /* Position the modal */
-    z-index: 1; /* Set the z-index to ensure the modal is on top of other elements */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Enable scrolling if needed */
-    background-color: rgba(0,0,0,0.4); /* Create a semi-transparent background */
-  }
-
-  .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* Center the modal content */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    animation-name: modal-anim;
-    animation-duration: 0.5s;
-    animation-fill-mode: both;
-    overflow:auto;
-  }
-
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  #finalArea{
-    height:100%;
-  }
-  #searchArticle{
-    color:#FFF;
-    width:100%;
-  }
-  #inputkeywordsArea{
-    margin-bottom:10px;
-  }
-  #testArea{
-    height:calc(100% - 38px);
-  }
-  
-  .highlight {
-    background-color: #27B7DE;
-    color: white;
-  }
-  
-  #stasticsTable > tbody > tr > td{
-    font-size: 14pt;
-  }
-  
-  #stasticsTable > thead > tr > td{
-    font-size: 14pt;
-  }
-  #itemDefinition > tbody > tr > td{
-    font-size: 14pt;
-  }
-  #itemDefinition > thead > tr > td{
-    font-size: 14pt;
-  }
-  #pool > .col-md-12 > label{
-    font-size: 14pt;
   }
 </style>
 {% endblock %}
