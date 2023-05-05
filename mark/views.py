@@ -2782,6 +2782,8 @@ def fiveWord(request):
                 query = "select tokenID from Vocabulary where token = ?;"
                 args = [i]
                 tokenID = cursor.execute(query, args).fetchone()
+                if tokenID == None:
+                    raise Exception("組合單字內有不存在的字")
                 # # print("tokenID : ", tokenID)
                 tokenIDArray.append(tokenID.tokenID)
             # # print("tokenIDArray : ", tokenIDArray)
@@ -2945,6 +2947,8 @@ def fourWord(request):
                 query = "select tokenID from Vocabulary where token = ?;"
                 args = [i]
                 tokenID = cursor.execute(query, args).fetchone()
+                if tokenID == None:
+                    raise Exception("組合單字內有不存在的字")
                 # # print("tokenID : ", tokenID)
                 tokenIDArray.append(tokenID.tokenID)
             # # print("tokenIDArray : ", tokenIDArray)
@@ -3102,6 +3106,8 @@ def threeWord(request):
                 query = "select tokenID from Vocabulary where token = ?;"
                 args = [i]
                 tokenID = cursor.execute(query, args).fetchone()
+                if tokenID == None:
+                    raise Exception("組合單字內有不存在的字")
                 tokenIDArray.append(tokenID.tokenID)
             # # print("tokenID : ", tokenIDArray)
             # tokenIDArray.append(tokenID.tokenID)
@@ -3255,6 +3261,8 @@ def twoWord(request):
                 query = "select tokenID from Vocabulary where token = ?;"
                 args = [i]
                 tokenID = cursor.execute(query, args).fetchone()
+                if tokenID == None:
+                    raise Exception("組合單字內有不存在的字")
                 tokenIDArray.append(tokenID.tokenID)
             tokenID1 = tokenIDArray[0]
             tokenID2 = tokenIDArray[1]
