@@ -972,24 +972,24 @@ def inserttokenREItem(request):
         record['itemName'] = request.POST.get('itemName')
 
         try:
-            query = 'select * from [itemDefinition] where itemName = ?;'
+            query = 'select * from [itemDefinition2] where itemName = ?;'
             args = [request.POST.get('itemName')]
             cursor.execute(query, args)
-            itemDefinition = cursor.fetchone()
-            if itemDefinition == None:
+            itemDefinition2 = cursor.fetchone()
+            if itemDefinition2 == None:
                 raise Exception("Item not found")
-            # # print("itemID : ", itemDefinition)
-            # if itemDefinition == None:
-            #     query = 'insert into [itemDefinition] (itemName) output [INSERTED].itemID values(?);'
+            # # print("itemID : ", itemDefinition2)
+            # if itemDefinition2 == None:
+            #     query = 'insert into [itemDefinition2] (itemName) output [INSERTED].itemID values(?);'
             #     args = [request.POST.get('itemName')]
             #     cursor.execute(query, args)
-            #     itemDefinition = cursor.fetchone()
-                # # print("inserted itemID : ", itemDefinition.itemID)#itemID[0]
+            #     itemDefinition2 = cursor.fetchone()
+                # # print("inserted itemID : ", itemDefinition2.itemID)#itemID[0]
             # else:
-                # print("original itemID : ", itemDefinition.itemID)
+                # print("original itemID : ", itemDefinition2.itemID)
             #插入資料表
             query = 'INSERT into [REItem] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
-            args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition.itemID ]
+            args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
             # # # # # print(args)
             cursor.execute(query, args)
             tokenREItemID = cursor.fetchone()
@@ -3158,17 +3158,21 @@ def threeWord(request):
             # ------------------------------------------------------- *(-1)-----------------------------------------------------------------------
             query = "EXEC [getTextToken_3_PATCH] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
             args = [tokenID1, tokenID2, tokenID3, 'A']
-            timesMinusOneA = cursor.execute(query, args)
-            # # # print("timesMinusOneA : ", len(timesMinusOneA))
+            timesMinusOneA = cursor.execute(query, args).fetchall()
+            print("timesMinusOneA : ", len(timesMinusOneA), timesMinusOneA[0])
 
             
             
             query = "EXEC [getTextToken_3_PATCH] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
             args = [tokenID1, tokenID2, tokenID3, 'B']
-            timesMinusOneB = cursor.execute(query, args)
+            timesMinusOneB = cursor.execute(query, args).fetchall()
+            print("timesMinusOneB : ", len(timesMinusOneB), timesMinusOneB[0])
             query = "EXEC [getTextToken_3_PATCH] @tokenID1 = ?, @tokenID2 = ?, @tokenID3 = ?, @block = ?;"
             args = [tokenID1, tokenID2, tokenID3, 'C']
-            timesMinusOneB = cursor.execute(query, args)
+            timesMinusOneC = cursor.execute(query, args).fetchall()
+            print("timesMinusOneC : ", len(timesMinusOneC), timesMinusOneC[0])
+            if len(timesMinusOneA) == 0 or len(timesMinusOneB) == 0 or len(timesMinusOneC) == 0:
+                raise Exception("*(-1) error")
             # # # print("timesMinusOneB : ", len(timesMinusOneB))
             # ------------------------------------------------------------------------------------------------------------------------------------
 
@@ -3786,7 +3790,7 @@ def getItemByRootID(request):
             body = json.loads(raw)
             itemID = body['itemID']
             print("itemID : ", itemID)
-            query = "SELECT * from itemDefinition where itemID = ?"
+            query = "SELECT * from itemDefinition2 where itemID = ?"
             args = [itemID]
             cursor.execute(query, args)
             data = cursor.fetchone()
@@ -3833,13 +3837,14 @@ def insertintoItemDefinition(request):
             itemName = body['itemName']
             engName = body['engName']
             chtName = body['chtName']
-            print("data : ", itemID, rootID, itemName, engName, chtName)
-            print("data : ", type(itemID), type(rootID), type(itemName), type(engName), type(chtName))
-            if itemID == "" or rootID == "" or itemName == "" or engName == "" or chtName == "" :
+            itemType = body['itemType']
+            print("data : ", itemID, rootID, itemName, engName, chtName, itemType)
+            print("data : ", type(itemID), type(rootID), type(itemName), type(engName), type(chtName), type(itemType))
+            if itemID == "" or rootID == "" or itemName == "" or engName == "" or chtName == "" or itemType == "":
                 raise Exception("輸入值不可為空")
             
             
-            query = "select * from itemDefinition where itemID = ?"
+            query = "select * from itemDefinition2 where itemID = ?"
             args = [itemID]
             cursor.execute(query, args)
             olddata = cursor.fetchone()
@@ -3847,8 +3852,8 @@ def insertintoItemDefinition(request):
                 raise Exception("資料庫已存在相同itemID")
             
 
-            query = "insert into itemDefinition (itemID, rootID, itemName, engName, chtName) output inserted.chtName values(?,?,?,?,?)"
-            args = [itemID, rootID, itemName, engName, chtName]
+            query = "insert into itemDefinition2 (itemID, rootID, itemName, engName, chtName, itemType) output inserted.chtName values(?, ?, ?, ?, ?, ?)"
+            args = [itemID, rootID, itemName, engName, chtName, itemType]
             cursor.execute(query, args)
             data = cursor.fetchone()
             if data == None:
@@ -4258,6 +4263,92 @@ def checkFormName(request):
         
         result['status'] = "0"
         result['MSG'] = "新增成功"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
+
+@csrf_exempt
+def selectRoot(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+
+    raw = request.body.decode('utf-8')
+
+    try:
+        query = f'''
+            select * from itemDefinition2 where itemType = 0
+            '''
+        cursor.execute(query)        
+        itemDefRes = cursor.fetchall()
+        if itemDefRes == None or itemDefRes == []:
+            raise Exception("無Root節點")
+        else:
+            chtName = []
+            for i in itemDefRes:
+                record = {"itemID":i.itemID, "chtName" : i.chtName}
+                chtName.append(record)
+            result['chtName'] = chtName
+
+  
+        result['status'] = "0"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
+
+@csrf_exempt
+def selectInteralNodeofRoot(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+
+    raw = request.body.decode('utf-8')
+
+    try:        
+        body = json.loads(raw)
+        rootID = body['rootID']
+        itemType = body['itemType']
+        if rootID == "" or rootID == "":
+            raise Exception("RootID 錯誤")
+        if itemType == "" or itemType == "":
+            raise Exception("itemType 錯誤")
+        query = f'''
+            select * from itemDefinition2 where itemType = ? and rootID = ?;
+            '''
+        args = [itemType, rootID]
+        cursor.execute(query, args)        
+        itemDefRes = cursor.fetchall()
+        if itemDefRes == None or itemDefRes == []:
+            raise Exception("此Root無Internal Node節點")
+        else:
+            chtName = []
+            for i in itemDefRes:
+                record = {"itemID":i.itemID, "chtName" : i.chtName, "itemName" : i.itemName}
+                chtName.append(record)
+            result['chtName'] = chtName
+
+  
+        result['status'] = "0"
         conn.commit()
     
     except Exception as e:

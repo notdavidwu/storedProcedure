@@ -123,6 +123,7 @@ $(document).ready(function (e) {
                 <td>${responseItem.itemName[i]}</td>
                 <td>${responseItem.engName[i]}</td>
                 <td>${responseItem.chtName[i]}</td>
+                <td>${responseItem.itemType[i]}</td>
                 </tr>`;
         }
         $('#itemDefinition tbody').append(element);
@@ -330,12 +331,14 @@ $(document).ready(function (e) {
             var itemName = document.getElementById("itemDefinition_itemName").value;
             var engName = document.getElementById("itemDefinition_engName").value;
             var chtName = document.getElementById("itemDefinition_chtName").value;
+            var itemType = document.getElementById("itemDefinition_itemType").value;
             var rootName = "";
             console.log("itemID : ", itemID);
             console.log("rootID : ", rootID);
             console.log("itemName : ", itemName);
             console.log("engName : ", engName);
             console.log("chtName : ", chtName);
+            console.log("itemType : ", itemType);
             if (rootID === "0"){
                 rootName = "無";
             }
@@ -355,7 +358,7 @@ $(document).ready(function (e) {
             })
             .then((result) => {
                 if (result.isConfirmed) {
-                    var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName);  
+                    var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType);  
                     printResult(resInsert);
                     
                     var response = getItemDefinition();
@@ -371,6 +374,7 @@ $(document).ready(function (e) {
                             <td>${response.itemName[i]}</td>
                             <td>${response.engName[i]}</td>
                             <td>${response.chtName[i]}</td>
+                            <td>${responseItem.itemType[i]}</td>
                             </tr>`;
                     }
                     $('#itemDefinition tbody').append(element);
@@ -537,7 +541,7 @@ $(document).ready(function (e) {
     }
 
     //存itemDef
-    function insertItemDefinition(itemID, rootID, itemName, engName, chtName){
+    function insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType){
         var res;
         $.ajax({
             async: false, 
@@ -549,6 +553,7 @@ $(document).ready(function (e) {
                 'itemName': itemName,
                 'engName': engName,
                 'chtName': chtName,
+                'itemType': itemType,
             }),
             success:function (response){
                 res = response;
@@ -1308,9 +1313,218 @@ $(document).ready(function (e) {
         //showModalReportText(event.target);
         var token1 = $(event.target).parents('tr').children('td').eq(1).html();
         var token2 = $(event.target).parents('tr').children('td').eq(2).html();
-        showModalStatics(event.target);
+
+        
+        //1. 選root
+        var resRoot = selectRoot();
+        console.log("resRoot : ", resRoot);
+        var rootArray = resRoot.chtName;
+        var element = `<select class="form-select" id="rootSelect">`
+        for(var i=0 ; i<rootArray.length ; i++){
+            element += `<option value="${rootArray[i].itemID}" id="root${rootArray[i].itemID}">${rootArray[i].chtName}</option>`
+        }
+        element += `</select>`
+        Swal.fire({
+            title: '請選擇root',
+            html: element,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                var rootID = document.getElementById("rootSelect").value;
+                var chtNameRoot = document.getElementById(`root${rootID}`).innerHTML;
+                
+                // Swal.fire({
+                //     title: `rootID = ${rootID}, chtName = ${chtNameRoot}`,
+                //     html: "123",
+                //     icon: 'info',
+                //     showCancelButton: true,
+                //     confirmButtonText: 'Yes',
+                //     cancelButtonText: 'No'
+                // })
+                // 2. 選該root的leading
+                
+                var resInternalNode = selectInteralNodeofRoot(rootID, "1");
+                console.log("resInternalNode : ", resInternalNode);
+                var internalNodeArray = resInternalNode.chtName;
+                element = `<select class="form-select" id="internalNodeSelect">`
+                for(var i=0 ; i<internalNodeArray.length ; i++){
+                    element += `<option value="${internalNodeArray[i].itemID}" id="internal${internalNodeArray[i].itemID}">${internalNodeArray[i].chtName}</option>`
+                }
+                element += `</select>`
+
+
+
+
+                Swal.fire({
+                    title: '請選擇internal Node',
+                    html: element,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        var internalNodeID = document.getElementById("internalNodeSelect").value;
+                        var chtNameInternal = document.getElementById(`internal${internalNodeID}`).innerHTML;
+
+                        var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
+                        console.log("resLeadingNode : ", resLeadingNode);
+
+                        var leadingNodeArray = resInternalNode.chtName;
+                        element = `<select class="form-select" id="leadingNodeSelect">`
+                        for(var i=0 ; i<leadingNodeArray.length ; i++){
+                            element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                        }
+                        element += `</select>`
+                        
+                        Swal.fire({
+                            title: '請選擇leading Node',
+                            html: element,
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No'
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                var leadingID = document.getElementById("leadingNodeSelect").value;
+                                var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
+
+                                // var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
+                                // console.log("resLeadingNode : ", resLeadingNode);
+
+                                // var leadingNodeArray = resInternalNode.chtName;
+                                // element = `<select class="form-select" id="internalNodeSelect">`
+                                // for(var i=0 ; i<leadingNodeArray.length ; i++){
+                                //     element += `<option value="${leadingNodeArray[i].itemID}" id="internal${leadingNodeArray[i].itemID}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                                // }
+                                // element += `</select>`
+                                
+                                // Swal.fire({
+                                //     title: '請選擇leading Node',
+                                //     html: element,
+                                //     icon: 'info',
+                                //     showCancelButton: true,
+                                //     confirmButtonText: 'Yes',
+                                //     cancelButtonText: 'No'
+                                // })
+                                
+
+                            } else{
+                                Swal.fire({
+                                    title: 'Request Canceled',
+                                    icon: 'info',
+                                })
+                            }
+                        });
+                        
+
+                    } else{
+                        Swal.fire({
+                            title: 'Request Canceled',
+                            icon: 'info',
+                        })
+                    }
+                });
+
+
+
+
+
+
+
+
+
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    icon: 'info',
+                })
+            }
+        });
+
+        
+        //2. 讀上下對應關係
+        
+        //如果沒有跳新增
+        
+        // Swal.fire({
+        //         title: '請確認上下關係的對應',
+        //         html: "rootName : " + rootName,
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Yes',
+        //         cancelButtonText: 'No'
+        //     })
+        //     .then((result) => {
+        //         if (result.isConfirmed) {
+        //             var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType);  
+        //             printResult(resInsert);
+                    
+        //             var response = getItemDefinition();
+        //             responseformodal = response;
+        //             console.log("response : ", response);
+                    
+        //             $('#itemDefinition tbody').empty()
+        //             let element = '';
+        //             for(let i=0;i<response.itemID.length;i++){
+        //                 element += `<tr>
+        //                     <td>${response.itemID[i]}</td>
+        //                     <td>${response.rootID[i]}</td>
+        //                     <td>${response.itemName[i]}</td>
+        //                     <td>${response.engName[i]}</td>
+        //                     <td>${response.chtName[i]}</td>
+        //                     <td>${responseItem.itemType[i]}</td>
+        //                     </tr>`;
+        //             }
+        //             $('#itemDefinition tbody').append(element);
+        //         } else{
+        //             Swal.fire({
+        //                 title: 'Request Canceled',
+        //                 icon: 'info',
+        //             })
+        //         }
+        //     });
+
+        //showModalStatics(event.target);
     }
+
     
+    function selectRoot(){
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '{% url "mark:selectRoot" %}',
+            success:function (response){
+                res = response;
+                console.log("selectRoot : ", response)
+            },
+        });
+        return res;
+    }
+    function selectInteralNodeofRoot(rootID, itemType){
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',            
+            data:JSON.stringify({
+                'rootID': rootID,
+                'itemType': itemType,
+            }),
+            url: '{% url "mark:selectInteralNodeofRoot" %}',
+            success:function (response){
+                res = response;
+                console.log("selectRoot : ", response)
+            },
+        });
+        return res;
+    }
     function getREofRecord2(){
         //console.log(event.target);
         //showModalReportText(event.target);

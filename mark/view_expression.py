@@ -21,20 +21,27 @@ def getTag(request):
 
 @csrf_exempt
 def getItemDefinition(request):
-    cursor = connections[DATABASE_NAME].cursor()
-    query = "SELECT * FROM [itemDefinition] order by itemID"
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824' 
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    query = "SELECT * FROM [itemDefinition2] order by itemID"
     cursor.execute(query,[])
     res = cursor.fetchall()
-    itemID = [row[0] for row in res]
-    rootID = [row[1] for row in res]
-    itemName = [row[2] for row in res]
-    engName = [row[3] for row in res]
-    chtName = [row[4] for row in res]
+    itemID = [row.itemID for row in res]
+    rootID = [row.rootID for row in res]
+    itemName = [row.itemName for row in res]
+    engName = [row.engName for row in res]
+    chtName = [row.chtName for row in res]
+    itemType = [row.itemType for row in res]
     return JsonResponse({'itemID':itemID,
                          'rootID':rootID,
                          'itemName':itemName,
                          'engName':engName,
                          'chtName':chtName,
+                         'itemType':itemType,
                          })
 
 @csrf_exempt

@@ -103,5 +103,7 @@ urlpatterns = [
     path('getFormInfo/', getFormInfo, name='getFormInfo'),
     path('getEToken/', getEToken, name='getEToken'),
     path('checkFormName/', checkFormName, name='checkFormName'),
+    path('selectRoot/', selectRoot, name='selectRoot'),
+    path('selectInteralNodeofRoot/', selectInteralNodeofRoot, name='selectInteralNodeofRoot'),
     
 ]
