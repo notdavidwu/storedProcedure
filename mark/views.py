@@ -4026,11 +4026,17 @@ def getTokenBynumReports(request):
     password = 'test81218'
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
     cursor = conn.cursor()
-    query = '''	
+    
+    raw = request.body.decode('utf-8')
+    
+    body = json.loads(raw)
+    tokenID1 = body['tokenID1']
+    tokenID2 = body['tokenID2']
+    query = f'''	
 		select c.tokenID, c.token, count(distinct a.reportID) as 'numReports', count(*) as 'times'
 		from (
 						select distinct a.reportID, a.posEnd+1 as 'LB', b.posStart-1 as 'UB'
-						from textToken as a inner join textToken as b on a.reportID=b.reportID and a.tokenID=35 and b.tokenID=36
+						from textToken as a inner join textToken as b on a.reportID=b.reportID and a.tokenID={int(tokenID1)} and b.tokenID={int(tokenID2)}
 										inner join textToken as c on a.reportID=c.reportID and c.posStart between a.posEnd+1 and b.posStart-1
 										inner join Vocabulary as d on c.tokenID=d.tokenID
 						where d.token like '[Ll][Uu][Nn][Gg]%'
@@ -4070,9 +4076,11 @@ def getFormInfo(request):
     formName = [row.formName for row in res]
     itemName = [row.itemName for row in res]
     token = [row.token for row in res]
+    tokenID = [row.tokenID for row in res]
     return JsonResponse({'formName':formName,
                          'itemName':itemName,
                          'token':token,
+                         'tokenID':tokenID,
                          })
 
 
@@ -4094,6 +4102,164 @@ def getEToken(request):
     conn.commit()
     conn.close()
     return JsonResponse({'token':token,'tokenID':tokenID})
+
+@csrf_exempt
+def checkFormName(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+
+    raw = request.body.decode('utf-8')
+
+    try:
+        body = json.loads(raw)
+        formName = body['formName']
+        if formName == "":
+            raise Exception("formName 為空")
+        
+
+
+        #-------------------------------------------------------------reportForm--------------------------------------------------------------------------
+        query = f'''	
+            select * from reportForm where formName = ?
+            '''
+        args = [formName]
+        cursor.execute(query, args)
+        formNameres = cursor.fetchone()
+        if (formNameres != None):
+            formID = formNameres.formID
+        else:
+            query = f'''
+            select * from reportForm order by formID desc;
+            '''
+            cursor.execute(query)
+            oldMAXFormID = cursor.fetchall()
+
+            print("oldMAXFormID : ", oldMAXFormID[0].formID)
+            newMAXFormID = int(oldMAXFormID[0].formID) + 1
+            print("newMAXFormID : ", newMAXFormID)
+
+
+            query = f'''	
+            insert into [reportForm] (formID, formName) output inserted.formID values (?, ?)
+            '''
+            args = [newMAXFormID, formName]
+            cursor.execute(query, args)
+            formNameres = cursor.fetchone()
+            formID = formNameres.formID
+
+        if formID == None:
+            raise Exception("formName 錯誤")
+        print("formID : ", formID)
+        #-------------------------------------------------------------reportForm--------------------------------------------------------------------------
+
+
+
+
+        itemName = body['itemName']
+        if itemName == "":
+            raise Exception("itemName 為空")
+        #-------------------------------------------------------------reportItem--------------------------------------------------------------------------
+        query = f'''	
+            select * from reportItem where formID = ? and itemName = ?;
+            '''
+        args = [formID, itemName]
+        cursor.execute(query, args)
+        oldSerialNumber = cursor.fetchone()
+        # 1. 有找到舊的item, 拿現成
+        if oldSerialNumber != None:
+            serialNumber = oldSerialNumber.serialNo
+        # 2. 沒找到舊的item, 找到最大的serialNo
+        else:
+            query = f'''	
+            select * from reportItem where formID = ? order by serialNo desc;
+            '''
+            args = [formID]
+            cursor.execute(query, args)
+            oldMaXserialNumres = cursor.fetchall()
+            print("in")
+            # 2.1 沒找到代表要新增itemName(第一筆)
+            if oldMaXserialNumres == []:
+                query = f'''	
+                insert into [reportItem] (formID, serialNo, itemName) output inserted.serialNo values (?, ?, ?)
+                '''
+                args = [formID, 1, itemName]
+                cursor.execute(query, args)
+                serialNumres = cursor.fetchone()
+                serialNumber = serialNumres.serialNo
+            # 2.2 之前有新增過只是沒有此itemName
+            else:
+                print("else in")
+                newSerialNo = int(oldMaXserialNumres[0].serialNo) + 1
+                query = f'''	
+                insert into [reportItem] (formID, serialNo, itemName) output inserted.serialNo values (?, ?, ?)
+                '''
+                args = [formID, newSerialNo, itemName]
+                cursor.execute(query, args)
+                serialNumres = cursor.fetchone()
+                serialNumber = serialNumres.serialNo
+
+        print("serialNumber : ", serialNumber)
+
+            
+
+
+        #-------------------------------------------------------------reportItem--------------------------------------------------------------------------
+        
+
+
+
+
+
+        
+        token = body['token']
+        if token == "":
+            raise Exception("token 為空")
+        #-------------------------------------------------------------reportItemToken--------------------------------------------------------------------------
+
+        query = f'''	
+            select * from Vocabulary where token = ?;
+            '''
+        args = [token]
+        cursor.execute(query, args)
+        tokenres = cursor.fetchone()
+        if tokenres == None:
+            raise Exception("token不存在")
+        tokenID = tokenres.tokenID
+
+        print("tokenID : ", tokenID)
+        
+
+        query = f'''	
+                insert into [reportItemToken] (formID, serialNo, tokenID) values (?, ?, ?);
+                '''
+        args = [formID, serialNumber, tokenID]
+        cursor.execute(query, args)
+
+
+
+
+
+
+        #-------------------------------------------------------------reportItemToken--------------------------------------------------------------------------
+        
+        result['status'] = "0"
+        result['MSG'] = "新增成功"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
+
+
 
 
 

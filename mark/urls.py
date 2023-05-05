@@ -102,5 +102,6 @@ urlpatterns = [
     path('getTokenBynumReports/', getTokenBynumReports, name='getTokenBynumReports'),
     path('getFormInfo/', getFormInfo, name='getFormInfo'),
     path('getEToken/', getEToken, name='getEToken'),
+    path('checkFormName/', checkFormName, name='checkFormName'),
     
 ]

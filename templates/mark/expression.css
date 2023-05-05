@@ -546,6 +546,12 @@
   }
   #itemDefinition > thead > tr > td{
     font-size: 14pt;
+  }  
+  #stasticsTable2 > tbody > tr > td{
+    font-size: 14pt;
+  }
+  #stasticsTable2 > thead > tr > td{
+    font-size: 14pt;
   }
   #pool > .col-md-12 > label{
     font-size: 14pt;

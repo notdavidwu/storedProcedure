@@ -81,8 +81,15 @@
         #pool {
             background:url("{% static 'image/texture.png' %}");
             background-color:#FFF;
-            width: 20%;
-            height: calc(100% - 100px);
+            width: 50%;
+            height: calc(100% - 30px);
+            min-width:350px;
+        }        
+        #right {
+            background:url("{% static 'image/texture.png' %}");
+            background-color:#FFF;
+            width: 50%;
+            height: calc(100% - 30px);
             min-width:350px;
         }
         .dual-listbox .dual-listbox__available, .dual-listbox .dual-listbox__selected{
@@ -425,6 +432,21 @@
   #selectArea{
     height:85%;
     overflow-y:auto;
+  }
+
+  
+  #FormInfo > tbody > tr > td{
+    font-size: 14pt;
+  }
+  
+  #FormInfo > thead > tr > td{
+    font-size: 14pt;
+  }
+  #itemDefinition > tbody > tr > td{
+    font-size: 14pt;
+  }
+  #itemDefinition > thead > tr > td{
+    font-size: 14pt;
   }
 </style>
 {% endblock %}

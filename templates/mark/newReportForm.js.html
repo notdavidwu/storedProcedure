@@ -38,22 +38,10 @@
 <script src="https://unpkg.com/bootstrap-table@1.21.4/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js"></script>
 <script>
 $(document).ready(function (e) {
-    responseItem = getTokenBynumReports();
-    console.log("responseItem : ", responseItem);
+    // responseItem = getTokenBynumReports();
+    // console.log("responseItem : ", responseItem);
 
-    $('#itemDefinition tbody').empty()
-    var element = '';
-    for(let i=0;i<responseItem.token.length;i++){
-        element += `<tr>
-            <td class="double-clickable-token" style="user-select : none; cursor: pointer;" >${responseItem.token[i]}</td>
-            <td>${responseItem.numReports[i]}</td>
-            <td>${responseItem.times[i]}</td>
-            </tr>`;
-    }
-    $('#itemDefinition tbody').append(element);
-    $('.double-clickable-token').on('dblclick', function() {
-        getToken();
-    });
+    
     
 
     responseForm = getFormInfo();
@@ -64,160 +52,267 @@ $(document).ready(function (e) {
     for(let i=0;i<responseForm.formName.length;i++){
         element += `<tr>
             <td class="double-clickable-Form" style="user-select : none; cursor: pointer;" >${responseForm.formName[i]}</td>
-            <td>${responseForm.itemName[i]}</td>
-            <td>${responseForm.token[i]}</td>
+            <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${responseForm.itemName[i]}</td>
+            <td class="double-clickable-token" style="user-select : none; cursor: pointer;" tokenID = "${responseForm.tokenID[i]}">${responseForm.token[i]}</td>
             </tr>`;
     }
     $('#FormInfo tbody').append(element);
     $('.double-clickable-Form').on('dblclick', function() {
+        getFormName();
+    });
+    $('.double-clickable-itemName').on('dblclick', function() {
+        getFormitemName();
+    });    
+    $('.double-clickable-token').on('dblclick', function() {
         getToken();
     });
 
     //取得T型態
     getTag();
-    // //取得選擇器單字
-    // getVocaubulary();
-    
-    // $("#twoOrThree").on('change', function() {
-    //     value = document.getElementById('twoOrThree').value;
-    //     if (value === "2"){
-    //         printAllData();
-    //     }
-    //     else if (value === "3"){
-    //         printAllData_3();
-    //     }
-    // });
-
-    // //根據filter顯示token
-    // $("#filter").on('change', function() {
-    //     value = document.getElementById('twoOrThree').value;
-    //     if (value === "2"){                
-    //         printAllData();
-    //     }
-    //     else if (value === "3"){
-    //         printAllData_3();
-    //     }
-    // });
-
-    // //顯示資料
-    // //printAllData();
-
-    // //顯示P資料
-    // printAllPData();
     
     
     //搜尋按鈕
     $("#searchButton").click(function(){
-        printAllDataBetween();
+        console.log("clicked");
+        var tokenID1 = document.getElementById("token1").value;
+        var tokenID2 = document.getElementById("token2").value;
+        var response = getTable(tokenID1, tokenID2);
     });
 
-    // //根據select顯示token
-    // $("#showTimes").on('change', function() {
-    //     value = document.getElementById('twoOrThree').value;
-    //     if (value === "2"){
-    //         printAllData();
-    //     }
-    //     else if (value === "3"){
-    //         printAllData_3();
-    //     }
-    // });
     //loader
     $('#loader').css('display','none');
     $('#frame').css('visibility','visible');
 
-    // $( '#multiple-select-field' ).select2( {
-    //     theme: "bootstrap-5",
-    //     width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-    //     placeholder: $( this ).data( 'placeholder' ),
-    //     closeOnSelect: false,
-    // } );
-    
-    // $("#multiple-select-field").prop("disabled", true);
-    // // 監聽選tokenType的元素
-    // var targetNode = $('#select2-multiple-select-field-container')[0];
-    // // 建立一個 MutationObserver 實例
-    // var observer = new MutationObserver(function(mutations) {
-    //     //有變動執行以下程序
-    //     console.log($('#select2-multiple-select-field-container').children('li').length);
-    // });
-    // // 設定觀察選項
-    // var config = { childList: true };
-    // // 開始觀察目標節點
-    // observer.observe(targetNode, config);    
-
-    // $("#mergeTokenNumber").on("change", function() {
-    // //     $('#searchingButton').css('display','inline');
-    // //     $('#searchButton').css('display','none');
-    // //     $('#loader').css('display','inline');
-    // //     $('#loader').css('z-index','10');
-    // //     $('#cover').css('display','inline');
-    //     var selectedValue = $(this).val();
+    //新增按鈕
+    $("#insertDef").click(function(){
+        insertDefButton();
         
-    // //     switch(selectedValue){
-    // //         case "5":
-    // //             console.log("5");
-    // //             print6words();
-    // //             break;
-    // //         case "4":
-    // //             console.log("4");
-    // //             print5words();
-    // //             break;
-    // //         case "3":
-    // //             console.log("3");
-    // //             print4words();
-    // //             break;
-    // //         case "2":
-    // //             console.log("2");
-    // //             print3words();
-    // //             break;
-    // //     }
-    //     var lastsearchedValue = $("#table_3word").attr("lastsearched");
-    //     // console.log("selectedValue : ", selectedValue);
-    //     // console.log("lastsearchedValue : ", lastsearchedValue);
-    //     if (parseInt(selectedValue)+1 != parseInt(lastsearchedValue)){
-    //         $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", true);
-    //     }
-    //     else{
-    //         $("button[onclick='allInOneTwoThreeFiveWord()']").prop("disabled", false);
-    //     }
-    // });
+    }); 
 
-    // $("#searchOption").on("change", function() {
-    //     var selectedValue = $(this).val();
-    //     if (selectedValue === "A"){            
-    //         $("#token1").prop("disabled", true);
-    //         $("#token2").prop("disabled", true);
-    //         $(".dual-listbox select").prop("disabled", true);
-    //     }
-    //     else{
-    //         $("#token1").prop("disabled", false);
-    //         $("#token2").prop("disabled", false);
-    //         $(".dual-listbox select").prop("disabled", false);
-    //     }
-    // });
 })
 
-//取得所有itemName
-function getToken(){
-    console.log("target : ", event.target);
-    document.getElementById("itemDefinition_itemName").value = event.target.innerHTML;
-    document.getElementById("itemDefinition_itemName").innerHTML = event.target.innerHTML;
+//新增itemName按鈕
+function insertDefButton(){
+    Swal.fire({
+        title: '確定要新增此筆資料?',
+        html: "",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+    })
+    .then((result) => {
+        if (result.isConfirmed) {
+        var FormName = document.getElementById("FormName").value;
+        var itemName = document.getElementById("itemName").value;
+        var token = document.getElementById("token").value;
+
+        //新增
+        var resFormName =  checkFormName();
+
+        printResult(resFormName);
+        } else {
+            Swal.fire({
+                title: 'Request Canceled',
+                icon: 'info',
+            })
+        }
+    });
 }
 
-//取得所有itemName
-function getTokenBynumReports(){
+
+//確認有無相同formName
+function checkFormName(){
+    var formName = document.getElementById("FormName").value;
+    console.log("formName : ", formName);
+    var itemName = document.getElementById("itemName").value;
+    console.log("itemName : ", itemName);
+    var token = document.getElementById("token").value;
+    console.log("token : ", token);
     var res;
     $.ajax({
         async:false,
-        type: 'GET',
-        url: '{% url "mark:getTokenBynumReports" %}',
+        data: JSON.stringify({
+            "formName": formName,
+            "itemName": itemName,
+            "token": token,
+        }),
+        type: 'POST',
+        url: '{% url "mark:checkFormName" %}',
         success:function (response){
             res = response;
             console.log(response, res);
+            responseForm = getFormInfo();
+            console.log("responseItem : ", responseForm);
+
+            $('#FormInfo tbody').empty()
+            element = '';
+            for(let i=0;i<responseForm.formName.length;i++){
+                element += `<tr>
+                    <td class="double-clickable-Form" style="user-select : none; cursor: pointer;" >${responseForm.formName[i]}</td>
+                    <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${responseForm.itemName[i]}</td>
+                    <td class="double-clickable-token" style="user-select : none; cursor: pointer;" tokenID = "${responseForm.tokenID[i]}">${responseForm.token[i]}</td>
+                    </tr>`;
+            }
+            $('#FormInfo tbody').append(element);
+            $('.double-clickable-Form').on('dblclick', function() {
+                getFormName();
+            });
+            $('.double-clickable-itemName').on('dblclick', function() {
+                getFormitemName();
+            });    
+            $('.double-clickable-token').on('dblclick', function() {
+                getToken();
+            });
         },
     });
     return res;
 }
+
+
+//三字表格
+function getTable(tokenID1, tokenID2){
+        if (tokenID1 === tokenID2){
+            Swal.fire({
+                title: 'Error',
+                text: "前後token不可相同!",
+                icon: 'error',
+                confirmButtonText: 'Ok',
+            })
+            return;
+        }
+        var btn = document.getElementById("searchButton");
+        var text = "查詢中";
+        var count = 0;
+        // btn.disabled = true; // Disable the button during the search
+        $("#searchButton").prop("disabled", true);
+        var intervalId = setInterval(function() {
+            count++;
+            if (count > 3) {
+            count = 0;
+            }
+            switch (count) {
+            case 0:
+                btn.innerHTML = text;
+                break;
+            case 1:
+                btn.innerHTML = text + ".";
+                break;
+            case 2:
+                btn.innerHTML = text + "..";
+                break;
+            case 3:
+                btn.innerHTML = text + "...";
+                break;
+            }
+        }, 500); // Update the text every 500 milliseconds
+
+
+        var res;
+        $.ajax({
+            async:true,
+            type: 'POST',
+            data: JSON.stringify({
+                "tokenID1": tokenID1,
+                "tokenID2": tokenID2,
+            }),
+            url: '{% url "mark:getTokenBynumReports" %}',
+            success:function (response){
+                res = response;
+                $('#itemDefinition tbody').empty()
+                var element = '';
+                for(let i=0;i<response.token.length;i++){
+                    element += `<tr>
+                        <td>${response.numReports[i]}</td>
+                        <td>${response.times[i]}</td>
+                        <td class="double-clickable-token" style="user-select : none; cursor: pointer;" >${response.token[i]}</td>
+                        </tr>`;
+                }
+                $('#itemDefinition tbody').append(element);
+                clearInterval(intervalId);
+                btn.disabled = false;
+                btn.innerHTML = "搜尋";
+                
+                $('.double-clickable-token').on('dblclick', function() {
+                    getToken();
+                });
+            },
+        });
+        return res;
+    }
+
+    //顯示結果
+    function printResult(response){
+        if(response.status == "0"){ 
+            if (response.MSG){                
+                Swal.fire({
+                    title: 'Success',
+                    text: response.MSG,
+                    icon: 'success',
+                })
+            }
+        }
+        else{
+            if (response.ERRMSG){
+                Swal.fire({
+                    title: 'Failed',
+                    text: response.ERRMSG,
+                    icon: 'error',
+                })
+            }
+            else{
+                Swal.fire({
+                    title: 'Failed',
+                    text: "Something went wrong",
+                    icon: 'error',
+                })
+            }
+        }        
+    }
+
+
+//取得雙擊元素token
+function getToken(){
+    console.log("target : ", event.target);
+    var element = document.getElementById("token");
+    element.value = event.target.innerHTML;
+    element.innerHTML = event.target.innerHTML;
+    emphasizeInput(element);
+}
+
+
+//取得雙擊元素FormName
+function getFormName(){
+    console.log("target : ", event.target);
+    var element = document.getElementById("FormName");
+    element.value = event.target.innerHTML;
+    element.innerHTML = event.target.innerHTML;
+    emphasizeInput(element);
+}
+
+//取得雙擊元素itemName
+function getFormitemName(){
+    console.log("target : ", event.target);
+    var element = document.getElementById("itemName");
+    element.value = event.target.innerHTML;
+    element.innerHTML = event.target.innerHTML;
+    emphasizeInput(element);
+}
+
+//輸入元素強調
+function emphasizeInput(element) {
+    // save the current background color of the input element
+    var currentColor = element.style.backgroundColor;
+
+    // set the background color of the input element to the emphasized color
+    element.style.backgroundColor = "#BAD6F0";
+
+    // after a short delay, restore the original background color
+    setTimeout(function() {
+        element.style.backgroundColor = currentColor;
+    }, 300); // adjust the delay time to match the animation duration in your CSS
+}
+
 
 //取得所有Forminfo
 function getFormInfo(){

@@ -79,12 +79,6 @@
     <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="frame">
         <div id=pool class="row g-3"> 
-            <div id='reportProcedureName' class="col-12">
-                <select class="form-select" id="searchOption">                 
-                    <option value="T" selected>Search between 2 Tokens</option>
-                    <option value="A">Search All</option>
-                </select>
-            </div>
             <div id='firstTag' class="col">
                 <div class="optionbox">
                     <select class="form-select" id="token1">       
@@ -113,9 +107,9 @@
                 <table class='table' id="itemDefinition">
                     <thead style="position: sticky;top: 0" class="thead-dark">
                         <tr>
-                            <th class="header" scope="col">token</th>
                             <th class="header" scope="col">numReport</th>
                             <th class="header" scope="col">times</th>
+                            <th class="header" scope="col">token</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -126,24 +120,18 @@
         </div>
 
 
-        <div id=pool class="row g-3">
+        <div id=right class="row g-3">
             <div class="col-md-12">
-                <select class="form-select" id="searchOption">                 
-                    <option value="T" selected>Search between 2 Tokens</option>
-                    <option value="A">Search All</option>
-                </select>
+                <label for="FormNme" class="form-label">formName</label>
+                <input type="text" class="form-control" id="FormName">
             </div>
             <div class="col-md-12">
-                <label for="itemDefinition_itemID" class="form-label">formName</label>
-                <input type="text" class="form-control" id="itemDefinition_itemID">
+                <label for="itemName" class="form-label">itemName</label>
+                <input type="text" class="form-control" id="itemName">
             </div>
             <div class="col-md-12">
-                <label for="itemDefinition_rootID" class="form-label">itemName</label>
-                <input type="text" class="form-control" id="itemDefinition_rootID">
-            </div>
-            <div class="col-md-12">
-                <label for="itemDefinition_itemName" class="form-label">token</label>
-                <input type="text" class="form-control" id="itemDefinition_itemName">
+                <label for="token" class="form-label">token</label>
+                <input type="text" class="form-control" id="token">
             </div>
             <div id="search" class="col-12">
                 <button type="button" class="btn btn-primary form-control" id="insertDef">新增</button>
@@ -157,9 +145,9 @@
                 <table class='table' id="FormInfo">
                     <thead style="position: sticky;top: 0" class="thead-dark">
                         <tr>
-                            <th class="header" scope="col">itemID</th>
-                            <th class="header" scope="col">rootID</th>
+                            <th class="header" scope="col">formName</th>
                             <th class="header" scope="col">itemName</th>
+                            <th class="header" scope="col">token</th>
                         </tr>
                     </thead>
                     <tbody>
