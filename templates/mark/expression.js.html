@@ -30,6 +30,8 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 $(document).ready(function (e) {
 
@@ -37,7 +39,7 @@ $(document).ready(function (e) {
     init();
     //搜尋按鈕
     $("#searchbtn").click(function(){
-        console.log("clicked");
+        //console.log("clicked");
         var string = document.getElementById("inputkeywords").value;
         var word = document.getElementById("wordsOption").value;
         if (word === "1"){
@@ -63,10 +65,10 @@ $(document).ready(function (e) {
 
     //確認名稱
     $("#check").click(function(){
-        ////console.log("check clicked");
+        //////console.log("check clicked");
         Name = [];
         Name.push(document.getElementById("regexName").value);
-        ////console.log(name);
+        //////console.log(name);
         
         //不為空檢查，否則顯示不可為空
         if (Name[0] != ""){
@@ -111,22 +113,22 @@ $(document).ready(function (e) {
         $('#loader').css('display','none');
         $('#frame').css('visibility','visible');
 
-        responseItem = getItemDefinition();
-        console.log("responseItem : ", responseItem);
+        //console.log("responseItem : ", responseItem);
         
-        $('#itemDefinition tbody').empty()
-        let element = '';
-        for(let i=0;i<responseItem.itemID.length;i++){
-            element += `<tr>
-                <td>${responseItem.itemID[i]}</td>
-                <td>${responseItem.rootID[i]}</td>
-                <td>${responseItem.itemName[i]}</td>
-                <td>${responseItem.engName[i]}</td>
-                <td>${responseItem.chtName[i]}</td>
-                <td>${responseItem.itemType[i]}</td>
-                </tr>`;
-        }
-        $('#itemDefinition tbody').append(element);
+        getitemTable();
+        // $('#itemDefinition tbody').empty()
+        // let element = '';
+        // for(let i=0;i<responseItem.itemID.length;i++){
+        //     element += `<tr>
+        //         <td>${responseItem.itemID[i]}</td>
+        //         <td>${responseItem.rootID[i]}</td>
+        //         <td>${responseItem.itemName[i]}</td>
+        //         <td>${responseItem.engName[i]}</td>
+        //         <td>${responseItem.chtName[i]}</td>
+        //         <td>${responseItem.itemType[i]}</td>
+        //         </tr>`;
+        // }
+        // $('#itemDefinition tbody').append(element);
         getEToken();
     }
 
@@ -146,8 +148,9 @@ $(document).ready(function (e) {
     
     //儲存按鈕
     function storebtnClick(){
+        var autoSelect = document.getElementById("storebtn").autoSelect;
         var tokenName = document.getElementById("regexName").value;
-        console.log("tokenName : ", tokenName);
+        //console.log("tokenName : ", tokenName);
         if (tokenName === ""){ 
             Swal.fire({
                 title: '請輸入tokenName',
@@ -158,7 +161,7 @@ $(document).ready(function (e) {
         }
         
         var regex = document.getElementById("regexText").value;
-        console.log("regex : ", regex);
+        //console.log("regex : ", regex);
         if (regex === ""){ 
             Swal.fire({
                 title: '請輸入RE',
@@ -209,7 +212,7 @@ $(document).ready(function (e) {
         let textToSearch = document.getElementById("regexText").value;                
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
-        ////console.log("dateFormat: "+ dateFormat);          
+        //////console.log("dateFormat: "+ dateFormat);          
         result_array = []
         var paragraph = document.getElementById("reportText").innerHTML;
         
@@ -219,19 +222,19 @@ $(document).ready(function (e) {
 
         //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
         while(null != (g = dateFormat.exec(paragraph))) {
-            //console.log("groups: " + g.groups);  // ouput: "a"
-            console.log("pattern: " + g);
+            ////console.log("groups: " + g.groups);  // ouput: "a"
+            //console.log("pattern: " + g);
             result_array.push(g.groups);
             extractedArray.push(g[0]);
         }
-        console.log("result_array : ", result_array);
+        //console.log("result_array : ", result_array);
         
         var allkeyArray = [];
         var allvalueArray = [];
         for(var i=0 ; i<result_array.length ; i++){
             var  entries = Object.entries(result_array[i]);
             for (const [key, value] of entries) {
-                console.log(`Key: ${key}, Value: ${value}`);
+                //console.log(`Key: ${key}, Value: ${value}`);
                 if(!keyArray.includes(key)){
                     keyArray.push(key);
                     valueArray.push(value);
@@ -241,8 +244,8 @@ $(document).ready(function (e) {
             }
         }
 
-        console.log("extractedArray : ", extractedArray);
-        console.log("allvalueArray : ", allvalueArray);
+        //console.log("extractedArray : ", extractedArray);
+        //console.log("allvalueArray : ", allvalueArray);
         var ex = "";
         var count = 0;
         for(var i=0 ; i<allvalueArray.length ; i++){
@@ -250,8 +253,8 @@ $(document).ready(function (e) {
             count += 1;
         }
 
-        console.log("keyArray : ", keyArray);
-        console.log("valueArray : ", valueArray);
+        //console.log("keyArray : ", keyArray);
+        //console.log("valueArray : ", valueArray);
         var string = "";
         for(var i=0 ; i<keyArray.length ; i++){
             string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
@@ -264,16 +267,16 @@ $(document).ready(function (e) {
         var lastNum = "";
         var indexOfReports = 0;
         var reportArray = [];
-        ////console.log("check clicked");
+        //////console.log("check clicked");
         word = document.getElementById("inputkeywords").value;
-        console.log("word : ", word);
+        //console.log("word : ", word);
 
         var number = document.getElementById("inputReportNumber").value;
         if (number === ""){
             number = "10";
         }
         
-        console.log("lastSearch : ", lastSearch);
+        //console.log("lastSearch : ", lastSearch);
         if (lastSearch != word || lastNum != number){
 
             var responseReport = searchReport(word, number);
@@ -282,8 +285,8 @@ $(document).ready(function (e) {
                 indexOfReports = 0;
                 reportArray = responseReport.data;
 
-                console.log("report: ", responseReport);
-                console.log("reportArray: ", reportArray);
+                //console.log("report: ", responseReport);
+                //console.log("reportArray: ", reportArray);
                 document.getElementById("inputText").value = reportArray[indexOfReports].Text;
                 document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
                 lastSearch = word;
@@ -327,64 +330,178 @@ $(document).ready(function (e) {
     //新增itemName按鈕
     function insertDefButton(){
         var itemID = document.getElementById("itemDefinition_itemID").value;
-            var rootID = document.getElementById("itemDefinition_rootID").value;
-            var itemName = document.getElementById("itemDefinition_itemName").value;
-            var engName = document.getElementById("itemDefinition_engName").value;
-            var chtName = document.getElementById("itemDefinition_chtName").value;
-            var itemType = document.getElementById("itemDefinition_itemType").value;
-            var rootName = "";
-            console.log("itemID : ", itemID);
-            console.log("rootID : ", rootID);
-            console.log("itemName : ", itemName);
-            console.log("engName : ", engName);
-            console.log("chtName : ", chtName);
-            console.log("itemType : ", itemType);
-            if (rootID === "0"){
-                rootName = "無";
+        var rootID = document.getElementById("itemDefinition_rootID").value;
+        var itemName = document.getElementById("itemDefinition_itemName").value;
+        var engName = document.getElementById("itemDefinition_engName").value;
+        var chtName = document.getElementById("itemDefinition_chtName").value;
+        var itemType = document.getElementById("itemDefinition_itemType").value;
+        var rootName = "";
+        //console.log("itemID : ", itemID);
+        //console.log("rootID : ", rootID);
+        //console.log("itemName : ", itemName);
+        //console.log("engName : ", engName);
+        //console.log("chtName : ", chtName);
+        //console.log("itemType : ", itemType);
+        if (rootID === "0"){
+            rootName = "無";
+        }
+        else{
+            var response = searchItem(rootID);
+            //console.log("response : ", response);
+            printResult(response);
+            rootName = response.chtName;
+        }
+        Swal.fire({
+            title: 'Create a new itemDefinition ?',
+            html: "rootName : " + rootName,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                var resInsert = insertItemDefinition1(itemID, rootID, itemName, engName, chtName, itemType);  
+                printResult(resInsert);
+                
+                getitemTable();
+                // var response = getItemDefinition();
+                // responseformodal = response;
+                // //console.log("response : ", response);
+                
+                // $('#itemDefinition tbody').empty()
+                // let element = '';
+                // for(let i=0;i<response.itemID.length;i++){
+                //     element += `<tr>
+                //         <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.itemID[i]}</td>
+                //         <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.rootID[i]}</td>
+                //         <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${response.itemName[i]}</td>
+                //         <td class="double-clickable-engName" style="user-select : none; cursor: pointer;" >${response.engName[i]}</td>
+                //         <td class="double-clickable-chtName" style="user-select : none; cursor: pointer;" >${response.chtName[i]}</td>
+                //         <td class="double-clickable-itemType" style="user-select : none; cursor: pointer;" >${responseItem.itemType[i]}</td>
+                //         </tr>`;
+                // }
+                // $('.double-clickable-itemID').on('dblclick', function() {
+                //     getitemID();
+                // });
+                // $('.double-clickable-itemName').on('dblclick', function() {
+                //     getitemName();
+                // });
+                // $('.double-clickable-engName').on('dblclick', function() {
+                //     getengName();
+                // });
+                // $('.double-clickable-chtName').on('dblclick', function() {
+                //     getchtName();
+                // });
+                // $('.double-clickable-itemType').on('dblclick', function() {
+                //     getitemType();
+                // });
+                // $('#itemDefinition tbody').append(element);
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    icon: 'info',
+                })
             }
-            else{
-                var response = searchItem(rootID);
-                console.log("response : ", response);
-                printResult(response);
-                rootName = response.chtName;
+        });
+    }
+
+    function getitemTable(){
+        console.log("getitemTable in ");
+        
+        responseItem = getItemDefinition();
+        responseformodal = responseItem;
+        response = responseItem;
+        //console.log("response : ", response);
+        
+        $('#itemDefinition tbody').empty();
+        let element = '';
+        for(let i=0;i<response.itemID.length;i++){
+            element += `<tr>
+                <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.itemID[i]}</td>
+                <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.rootID[i]}</td>
+                <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${response.itemName[i]}</td>
+                <td class="double-clickable-engName" style="user-select : none; cursor: pointer;" >${response.engName[i]}</td>
+                <td class="double-clickable-chtName" style="user-select : none; cursor: pointer;" >${response.chtName[i]}</td>
+                <td class="double-clickable-itemType" style="user-select : none; cursor: pointer;" >${responseItem.itemType[i]}</td>
+                </tr>`;
+        }
+        
+        $('#itemDefinition tbody').append(element);
+        $('.double-clickable-itemID').on('dblclick', function() {
+            getitemID();
+        });
+        $('.double-clickable-itemName').on('dblclick', function() {
+            getitemName();
+        });
+        $('.double-clickable-engName').on('dblclick', function() {
+            getengName();
+        });
+        $('.double-clickable-chtName').on('dblclick', function() {
+            getchtName();
+        });
+        $('.double-clickable-itemType').on('dblclick', function() {
+            getitemType();
+        });
+        
+    }
+
+    //取得雙擊元素itemID
+    function getitemID(){
+        console.log("target : ", event.target);
+        var element = document.getElementById("itemDefinition_itemID");
+        element.value = event.target.innerHTML;
+        element.innerHTML = event.target.innerHTML;
+        emphasizeInput(element);
+    }
+
+    //取得雙擊元素itemName
+    function getitemName(){
+        console.log("target : ", event.target);
+        var element = document.getElementById("itemDefinition_itemName");
+        element.value = event.target.innerHTML;
+        element.innerHTML = event.target.innerHTML;
+        emphasizeInput(element);
+    }
+
+    //取得雙擊元素engName
+    function getengName(){
+        console.log("target : ", event.target);
+        var element = document.getElementById("itemDefinition_engName");
+        element.value = event.target.innerHTML;
+        element.innerHTML = event.target.innerHTML;
+        emphasizeInput(element);
+    }
+
+    //取得雙擊元素chtName
+    function getchtName(){
+        console.log("target : ", event.target);
+        var element = document.getElementById("itemDefinition_chtName");
+        element.value = event.target.innerHTML;
+        element.innerHTML = event.target.innerHTML;
+        emphasizeInput(element);
+    }
+
+    //取得雙擊元素itemType
+    function getitemType(){
+        // console.log("target : ", event.target);
+        // var element = document.getElementById("itemDefinition_itemType");
+        // element.value = event.target.innerHTML;
+        // element.innerHTML = event.target.innerHTML;
+        // emphasizeInput(element);
+        console.log("target : ", event.target);
+        var selectedItemType = event.target.innerHTML.trim();
+        var itemTypeOptions = document.querySelectorAll('#itemDefinition_itemType option');
+        for (var i = 0; i < itemTypeOptions.length; i++) {
+            var optionValue = itemTypeOptions[i].getAttribute('value').trim();
+            if (optionValue === selectedItemType) {
+                itemTypeOptions[i].selected = true;
+                break;
             }
-            Swal.fire({
-                title: 'Create a new itemDefinition ?',
-                html: "rootName : " + rootName,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            })
-            .then((result) => {
-                if (result.isConfirmed) {
-                    var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType);  
-                    printResult(resInsert);
-                    
-                    var response = getItemDefinition();
-                    responseformodal = response;
-                    console.log("response : ", response);
-                    
-                    $('#itemDefinition tbody').empty()
-                    let element = '';
-                    for(let i=0;i<response.itemID.length;i++){
-                        element += `<tr>
-                            <td>${response.itemID[i]}</td>
-                            <td>${response.rootID[i]}</td>
-                            <td>${response.itemName[i]}</td>
-                            <td>${response.engName[i]}</td>
-                            <td>${response.chtName[i]}</td>
-                            <td>${responseItem.itemType[i]}</td>
-                            </tr>`;
-                    }
-                    $('#itemDefinition tbody').append(element);
-                } else{
-                    Swal.fire({
-                        title: 'Request Canceled',
-                        icon: 'info',
-                    })
-                }
-            });
+        }
+        var element = document.getElementById("itemDefinition_itemType");
+        // element.innerHTML = element.options[element.selectedIndex].innerHTML;
+        emphasizeInput(element);
     }
 
     //查看報告
@@ -393,7 +510,7 @@ $(document).ready(function (e) {
                         
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
-        ////console.log("dateFormat: "+ dateFormat);          
+        //////console.log("dateFormat: "+ dateFormat);          
         result_array = []
         var paragraph = $("#reportText").attr("originalReport");
 
@@ -500,7 +617,7 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        console.log("reportID" + reportID);     
+        //console.log("reportID" + reportID);     
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:getReportByReportID' %}',
@@ -523,7 +640,7 @@ $(document).ready(function (e) {
 
     //找文章
     function searchReport(word, number){
-        console.log("number : ", number);
+        //console.log("number : ", number);
         var res;
         $.ajax({
             async: false, 
@@ -541,7 +658,7 @@ $(document).ready(function (e) {
     }
 
     //存itemDef
-    function insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType){
+    function insertItemDefinition1(itemID, rootID, itemName, engName, chtName, itemType, leadingID, groupingID){
         var res;
         $.ajax({
             async: false, 
@@ -554,6 +671,54 @@ $(document).ready(function (e) {
                 'engName': engName,
                 'chtName': chtName,
                 'itemType': itemType,
+                'leadingID': leadingID,
+                'groupingID': groupingID,
+                'control': "0",
+            }),
+            success:function (response){
+                res = response;
+            },
+        })
+        return res;
+    }
+
+    //存itemDef
+    function insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType, leadingID, groupingID){
+        var res;
+        $.ajax({
+            async: false, 
+            type: 'POST',
+            url: '{% url 'mark:insertintoItemDefinition' %}',
+            data:JSON.stringify({
+                'itemID': itemID,
+                'rootID': rootID,
+                'itemName': itemName,
+                'engName': engName,
+                'chtName': chtName,
+                'itemType': itemType,
+                'leadingID': leadingID,
+                'groupingID': groupingID,
+                'control': "1",
+            }),
+            success:function (response){
+                res = response;
+            },
+        })
+        return res;
+    }
+
+    
+
+    //存leadingGroup對應
+    function insertLeadingGroup(leadingID, groupingID){
+        var res;
+        $.ajax({
+            async: false, 
+            type: 'POST',
+            url: '{% url 'mark:insertintoItemTrans' %}',
+            data:JSON.stringify({
+                'leadingID': leadingID,
+                'groupingID': groupingID,
             }),
             success:function (response){
                 res = response;
@@ -564,7 +729,7 @@ $(document).ready(function (e) {
 
     //找父節點
     function searchItem(itemID){
-        console.log("itemID : ", itemID);
+        //console.log("itemID : ", itemID);
         var res;
         $.ajax({
             async: false, 
@@ -630,10 +795,10 @@ $(document).ready(function (e) {
             sortable: true,
         });
         dlb2.addEventListener('added', function(event){
-            console.log(event);
+            //console.log(event);
         });
         dlb2.addEventListener('removed', function(event){
-            console.log(event);
+            //console.log(event);
         });
     }
 
@@ -646,7 +811,7 @@ $(document).ready(function (e) {
             url: '{% url "mark:getItemDefinition" %}',
             success:function (response){
                 res = response;
-                console.log(response, res);
+                //console.log(response, res);
             },
         });
         return res;
@@ -689,9 +854,9 @@ $(document).ready(function (e) {
             url: '{% url "mark:getStasticTable" %}',
             success:function (response){
                 res = response;
-                console.log(response, res);
+                //console.log(response, res);
                 printResult(response);
-                console.log("response : ", response);
+                //console.log("response : ", response);
                 
                 $('#stasticsTable tbody').empty()
                 element = '';
@@ -775,10 +940,10 @@ $(document).ready(function (e) {
         url: '{% url "mark:getStasticTable2" %}',
         success:function (response){
             res = response;
-            console.log(response, res);
+            //console.log(response, res);
             clearInterval(intervalId);
             printResult(response);
-            console.log("response : ", response);
+            //console.log("response : ", response);
             
             $('#stasticsTable2 tbody').empty()
             element = '';
@@ -852,8 +1017,8 @@ $(document).ready(function (e) {
                 paragraph = text.value
                 //處理輸入的regex文本
                 textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
-                ////console.log(textToSearch)
-                ////console.log(paragraph)
+                //////console.log(textToSearch)
+                //////console.log(paragraph)
                 //將處理好的regex文本定義為新的regex物件
                 try {                
                     let pattern = new RegExp(`${textToSearch}`,"g");                
@@ -861,20 +1026,20 @@ $(document).ready(function (e) {
                     //將輸出文本與regex物件有符合的地方加上<mark>標籤，然後丟到輸出欄位
                     document.getElementById("result").innerHTML = paragraph.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
                     // while(null != (g = pattern.exec(paragraph))) {
-                    //     console.log("groups: " , g.groups);  // ouput: "a"
-                    //     console.log("pattern: " , g);
-                    //     console.log("test: " , g[0], g[1], g[2]);
+                    //     //console.log("groups: " , g.groups);  // ouput: "a"
+                    //     //console.log("pattern: " , g);
+                    //     //console.log("test: " , g[0], g[1], g[2]);
 
                     //     var  entries = Object.entries(g.groups);
                     //     var length = entries.length;
-                    //     console.log("length of groups : ", length);
-                    //     console.log("length of groups member : ", length);
+                    //     //console.log("length of groups : ", length);
+                    //     //console.log("length of groups member : ", length);
                     //     for (const [key, value] of entries) {
-                    //         console.log(`Key: ${key}, Value: ${value}`);
+                    //         //console.log(`Key: ${key}, Value: ${value}`);
                             
                     //     }
                     //     // for (var i=0 ; i<g.groups.length ; i++){
-                    //     //     console.log("i: ", g.groups[i]);
+                    //     //     //console.log("i: ", g.groups[i]);
                     //     // }
                     //     //textToSearch.substring(0, g.index) + replacement + textToSearch.substring(g.index + replacement.length);
                     // }
@@ -889,7 +1054,7 @@ $(document).ready(function (e) {
                         return;
                     }
                 }
-                ////console.log(pattern)
+                //////console.log(pattern)
             }
         }
 
@@ -911,17 +1076,17 @@ $(document).ready(function (e) {
             paragraph = text.value
             //處理輸入的regex文本
             textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
-            ////console.log(textToSearch)
-            ////console.log(paragraph)
+            //////console.log(textToSearch)
+            //////console.log(paragraph)
             //將處理好的regex文本定義為新的regex物件
             try {                
                 let pattern = new RegExp(`${textToSearch}`,"g");
-                ////console.log(pattern)
+                //////console.log(pattern)
                 
                 
                 //將輸出文本與regex物件有符合的地方取代為空白      
                 document.getElementById("result").innerHTML = paragraph.replace(pattern, " ");
-                ////console.log(text.value.match(pattern))
+                //////console.log(text.value.match(pattern))
                 //抓出被取代的資料 + 排版
                 //extractedArray = text.value.match(pattern);
 
@@ -932,7 +1097,7 @@ $(document).ready(function (e) {
                 //     ex = ex.concat((i+1).toString(), ". ", extractedArray[i], "\n")
                 //     count += 1;
                 // }
-                console.log("ex:", ex);
+                //console.log("ex:", ex);
                 if (textToSearch == ""){
                     diaplay_please_input_something();
                 }
@@ -943,16 +1108,16 @@ $(document).ready(function (e) {
                     //開始建立表格
                     //解析輸入的regex
                     let dateFormat = new RegExp(`${textToSearch}`,"g");
-                    ////console.log("dateFormat: "+ dateFormat);          
+                    //////console.log("dateFormat: "+ dateFormat);          
                     result_array = []
                     //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
                     while(null != (g = dateFormat.exec(paragraph))) {
-                        //console.log("groups: " + g.groups);  // ouput: "a"
-                        console.log("pattern: " + g);
+                        ////console.log("groups: " + g.groups);  // ouput: "a"
+                        //console.log("pattern: " + g);
                         result_array.push(g.groups);
                         extractedArray.push(g[0]);
                     }
-                    console.log(result_array);
+                    //console.log(result_array);
                     var keyArray = [];
                     var valueArray = [];
                     
@@ -961,7 +1126,7 @@ $(document).ready(function (e) {
                     for(var i=0 ; i<result_array.length ; i++){
                         var  entries = Object.entries(result_array[i]);
                         for (const [key, value] of entries) {
-                            console.log(`Key: ${key}, Value: ${value}`);
+                            //console.log(`Key: ${key}, Value: ${value}`);
                             if(!keyArray.includes(key)){
                                 keyArray.push(key);
                                 valueArray.push(value);
@@ -970,8 +1135,8 @@ $(document).ready(function (e) {
                             allvalueArray.push(value);
                         }
                     }
-                    console.log("extractedArray : ", extractedArray);
-                    console.log("allvalueArray : ", allvalueArray);
+                    //console.log("extractedArray : ", extractedArray);
+                    //console.log("allvalueArray : ", allvalueArray);
                     var ex = "";
                     var count = 0;
                     for(var i=0 ; i<allvalueArray.length ; i++){
@@ -983,18 +1148,18 @@ $(document).ready(function (e) {
                     document.getElementById("ExtractOutput").innerHTML = ex;
                     document.getElementById("ExtractOutput").value = ex;
 
-                    console.log("keyArray : ", keyArray);
-                    console.log("valueArray : ", valueArray);
+                    //console.log("keyArray : ", keyArray);
+                    //console.log("valueArray : ", valueArray);
                     var string = "";
                     for(var i=0 ; i<keyArray.length ; i++){
                         string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
                     }
                     // //如果有用named capture groups
                     // if (result_array[0] != null){
-                    //     ////console.log(result_array);
+                    //     //////console.log(result_array);
                     //     //創建表格元素
                     //     let myTable = document.querySelector('#table');
-                    //     ////console.log(Object.keys(result_array[0]));
+                    //     //////console.log(Object.keys(result_array[0]));
                     //     let headers = Object.keys(result_array[0]);
                     //     let table = document.createElement('table');
                     //     let headerRow = document.createElement('tr');
@@ -1034,8 +1199,8 @@ $(document).ready(function (e) {
                     //         if (result.isConfirmed) {
                     //             showModal(keyArray, valueArray);
                     //             //if (tokenType === "E"){
-                    //             //    console.log("result_array : " , result_array);
-                    //             //    //console.log("save pressed E");
+                    //             //    //console.log("result_array : " , result_array);
+                    //             //    ////console.log("save pressed E");
                     //             //    //資料到後端儲存
                     //             //    BtnClicked_1(Object.keys(result_array[0]));
                     //             //    document.getElementById("returnbtn").style.visibility = 'visible';
@@ -1098,7 +1263,7 @@ $(document).ready(function (e) {
     function showModal(keyArray, valueArray) {
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        console.log("modal : ", modal);
+        //console.log("modal : ", modal);
 
         var closeButton = document.querySelector('#closeModal');
 
@@ -1106,8 +1271,8 @@ $(document).ready(function (e) {
             modal.style.display = 'none';
         });
 
-        //console.log("keyArray : ", keyArray);
-        //console.log("valueArray : ", valueArray);
+        ////console.log("keyArray : ", keyArray);
+        ////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
@@ -1120,6 +1285,12 @@ $(document).ready(function (e) {
         
         var Text = document.createElement('span');
         Text.innerHTML = "請確認 REitem 對應<br>";
+        
+        var LeadingID = $("#storebtn").attr("leadingID");
+        console.log("LeadingID : ", LeadingID);
+        if (LeadingID){
+            Text.innerHTML = `已自動選取"${selectLeading}"的相關item<br>`;
+        }
         container.appendChild(Text); // append the dropdown to the container element
         for (let i = 0; i < keyArray.length; i++) {            
             const dropdown = document.createElement('select'); // create a new dropdown element
@@ -1140,9 +1311,9 @@ $(document).ready(function (e) {
                 option.value = nameArray[j]; // set the text of the option
                 option.itemID = itemIDArray[j]; // set the text of the option
                 dropdown.add(option); // add the option to the dropdown
-                console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 if (nameArray[j] == keyArray[i]){
-                    console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                    //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                     option.setAttribute('selected', true);
                 }
             }
@@ -1150,6 +1321,9 @@ $(document).ready(function (e) {
             var number = document.createElement('span');
             number.innerHTML = "item" + (i+1).toString() + " : \"" + keyArray[i] + "\", 找到的值 : " + valueArray[i].toString();
             container.appendChild(number); // append the dropdown to the container element
+            if (LeadingID){
+                dropdown.disabled = true;
+            }
             container.appendChild(dropdown); // append the dropdown to the container element
         }
         
@@ -1164,7 +1338,7 @@ $(document).ready(function (e) {
             var itemName = [];
             for (let i = 0; i<keyArray.length; i++) {      
                 var select = document.getElementById(`selectItem${i}`)
-                console.log("select : ", select);
+                //console.log("select : ", select);
                 var selectedValue = select.value.toString();
                 var text = select.innerHTML;
                 var selectedOption = select.options[select.selectedIndex];
@@ -1172,7 +1346,7 @@ $(document).ready(function (e) {
                 // Get the innerHTML value of the selected option element
                 var selectedOptionInnerHTML = selectedOption.innerHTML;
 
-                console.log("selectedValue : ", selectedValue);
+                //console.log("selectedValue : ", selectedValue);
                 html += (keyArray[i]).toString() + ": " + selectedOptionInnerHTML + "<br>"
                 itemName.push(selectedValue);
             }
@@ -1194,9 +1368,11 @@ $(document).ready(function (e) {
                     })
                     
                     modal.style.display = "none";
-                    console.log("itemName : ", itemName);
+                    var itemName1 = $("#storebtn").attr("itemName");
+                    console.log("itemName1 : ", itemName1);
+                    itemName = [];
+                    itemName.push(itemName1);
                     BtnClicked_1(itemName);
-
                 } 
                 else{
                     // Swal.fire({
@@ -1224,20 +1400,21 @@ $(document).ready(function (e) {
         // after a short delay, restore the original background color
         setTimeout(function() {
             element.style.backgroundColor = currentColor;
-        }, 1000); // adjust the delay time to match the animation duration in your CSS
+        }, 300); // adjust the delay time to match the animation duration in your CSS
     }
 
     //存檔到後端資料庫
     function BtnClicked_1(itemName){
-        ////console.log("execute in")
-        ////console.log(itemName)
+        //////console.log("execute in")
+        console.log("itemName : ", itemName);
+
 
         token = document.getElementById('regexName').value;
-        console.log("token : ", token);
+        //console.log("token : ", token);
         tokenType = "E";
-        //console.log("tokenType : " + tokenType)
+        ////console.log("tokenType : " + tokenType)
         //count = getLength(token);
-        ////console.log(input,regex)
+        //////console.log(input,regex)
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:insertVocabulary' %}',
@@ -1247,7 +1424,7 @@ $(document).ready(function (e) {
                 'tokenType': tokenType,                
             },
             success:function (response){
-                //console.log("result : " + response.status)
+                ////console.log("result : " + response.status)
                 if (tokenType == 'E'){
                     BtnClicked_2(response,itemName);
                 }
@@ -1258,10 +1435,10 @@ $(document).ready(function (e) {
 
     //存檔到後端資料庫
     function BtnClicked_2(response,itemName){
-        //console.log("btnclicked_2 : " + response.data[0].tokenID)
+        ////console.log("btnclicked_2 : " + response.data[0].tokenID)
         tokenID = response.data[0].tokenID;        
         regex = document.getElementById('regexText').value
-        //console.log("tokenID : " + tokenID);
+        ////console.log("tokenID : " + tokenID);
 
         $.ajax({
             type: 'POST',
@@ -1271,9 +1448,9 @@ $(document).ready(function (e) {
                 'RE': regex,               
             },
             success:function (response){  
-                //console.log("BtnClicked_2 : ", response)  
+                ////console.log("BtnClicked_2 : ", response)  
                 if (tokenType === 'E' && response.status === '0'){
-                    //console.log("btnclicked3")
+                    ////console.log("btnclicked3")
                     BtnClicked_3(response,itemName);
                 }
                 
@@ -1286,11 +1463,11 @@ $(document).ready(function (e) {
 
     //存檔到後端資料庫
     function BtnClicked_3(response,itemName){   
-        //console.log("btnclicked3_itemName " + itemName)  
+        ////console.log("btnclicked3_itemName " + itemName)  
         tokenREID = response.data[0].tokenREID;        
-        //console.log("btnclicked")
+        ////console.log("btnclicked")
         for (var i=0 ; i< itemName.length ; i++){
-            //console.log("btnclicked :" + (i+1) + "times")
+            ////console.log("btnclicked :" + (i+1) + "times")
             $.ajax({
                 type: 'POST',
                 url: '{% url 'mark:inserttokenREItem' %}',
@@ -1309,15 +1486,16 @@ $(document).ready(function (e) {
     }
 
     function getREofRecord(){
-        //console.log(event.target);
+        ////console.log(event.target);
         //showModalReportText(event.target);
         var token1 = $(event.target).parents('tr').children('td').eq(1).html();
         var token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        var target = event.target;
 
         
         //1. 選root
         var resRoot = selectRoot();
-        console.log("resRoot : ", resRoot);
+        //console.log("resRoot : ", resRoot);
         var rootArray = resRoot.chtName;
         var element = `<select class="form-select" id="rootSelect">`
         for(var i=0 ; i<rootArray.length ; i++){
@@ -1348,11 +1526,19 @@ $(document).ready(function (e) {
                 // 2. 選該root的leading
                 
                 var resInternalNode = selectInteralNodeofRoot(rootID, "1");
-                console.log("resInternalNode : ", resInternalNode);
+                //console.log("resInternalNode : ", resInternalNode);
                 var internalNodeArray = resInternalNode.chtName;
                 element = `<select class="form-select" id="internalNodeSelect">`
+                if (internalNodeArray == undefined ){
+                    Swal.fire({
+                        title: '此root無相關子節點, 請重新選擇',
+                        icon: 'error',
+                        confirmButtonText: 'ok',
+                    })
+                    return;
+                }
                 for(var i=0 ; i<internalNodeArray.length ; i++){
-                    element += `<option value="${internalNodeArray[i].itemID}" id="internal${internalNodeArray[i].itemID}">${internalNodeArray[i].chtName}</option>`
+                    element += `<option value="${internalNodeArray[i].itemID}" id="internal${internalNodeArray[i].itemID}">${internalNodeArray[i].chtName} ${internalNodeArray[i].itemName}</option>`
                 }
                 element += `</select>`
 
@@ -1370,15 +1556,19 @@ $(document).ready(function (e) {
                 .then((result) => {
                     if (result.isConfirmed) {
                         var internalNodeID = document.getElementById("internalNodeSelect").value;
+                        //console.log("internalNodeID : ", internalNodeID);
                         var chtNameInternal = document.getElementById(`internal${internalNodeID}`).innerHTML;
+                        //console.log("chtNameInternal : ", chtNameInternal);
 
                         var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
-                        console.log("resLeadingNode : ", resLeadingNode);
-
-                        var leadingNodeArray = resInternalNode.chtName;
+                        //console.log("resLeadingNode : ", resLeadingNode);
+                        
                         element = `<select class="form-select" id="leadingNodeSelect">`
-                        for(var i=0 ; i<leadingNodeArray.length ; i++){
-                            element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                        if (resLeadingNode.status === "0"){                            
+                            var leadingNodeArray = resLeadingNode.chtName;
+                            for(var i=0 ; i<leadingNodeArray.length ; i++){
+                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${leadingNodeArray[i].itemName}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                            }
                         }
                         element += `</select>`
                         
@@ -1387,35 +1577,92 @@ $(document).ready(function (e) {
                             html: element,
                             icon: 'info',
                             showCancelButton: true,
+                            showDenyButton: true,
                             confirmButtonText: 'Yes',
-                            cancelButtonText: 'No'
+                            cancelButtonText: 'No',
+                            denyButtonText: `新增`,
                         })
                         .then((result) => {
                             if (result.isConfirmed) {
                                 var leadingID = document.getElementById("leadingNodeSelect").value;
+                                var selectedItemName = $("#leadingNodeSelect option:selected").attr("itemName");
+                                console.log("selectedItemName : ", selectedItemName);
+                                $("#storebtn").attr("leadingID", leadingID);
+                                $("#storebtn").attr("itemName", selectedItemName);
                                 var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
 
-                                // var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
-                                // console.log("resLeadingNode : ", resLeadingNode);
+                                //console.log("leadingID : ", leadingID);
 
-                                // var leadingNodeArray = resInternalNode.chtName;
-                                // element = `<select class="form-select" id="internalNodeSelect">`
-                                // for(var i=0 ; i<leadingNodeArray.length ; i++){
-                                //     element += `<option value="${leadingNodeArray[i].itemID}" id="internal${leadingNodeArray[i].itemID}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
-                                // }
-                                // element += `</select>`
-                                
-                                // Swal.fire({
-                                //     title: '請選擇leading Node',
-                                //     html: element,
-                                //     icon: 'info',
-                                //     showCancelButton: true,
-                                //     confirmButtonText: 'Yes',
-                                //     cancelButtonText: 'No'
-                                // })
-                                
+                                var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
+                                //console.log("resgroupNode : ", resgroupNode);
+                                printResult(resgroupNode);
+                                var groupNodeArray = resgroupNode.chtName;
+                                element = `<select class="form-select" id="groupNodeSelect">`
+                                for(var i=0 ; i<groupNodeArray.length ; i++){
+                                    element += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}">${groupNodeArray[i].chtName}   ${groupNodeArray[i].itemName}</option>`
+                                }
+                                element += `</select>`
+                                if (groupNodeArray.length > 0){
+                                    Swal.fire({
+                                        title: '已找到如下groupingID',
+                                        html: element,
+                                        icon: 'info',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No'
+                                    })
+                                    .then((result) => {
+                                        if (result.isConfirmed) {
+                                            //console.log("target : ", target);
+                                            //console.log("groupNodeSelect : ", groupNodeSelect.value);
+                                            var selectedGroup = groupNodeSelect.value;
+                                            selectLeading = chtNameleading;
+                                            //console.log("selectLeading : ", selectLeading);
+                                            showModalStatics(target, resgroupNode, selectedGroup, selectLeading, leadingID);
+                                        }else{
+                                            Swal.fire({
+                                                title: 'Request Canceled',
+                                                icon: 'info',
+                                            })
+                                        }
+                                    });
+                                }else{
+                                    Swal.fire({
+                                        title: '未發現相關groupingNode, 請設定',
+                                        // html: element,
+                                        icon: 'info',
+                                        confirmButtonText: 'ok',
+                                    })
+                                    // .then((result) => {
+                                    //     if (result.isConfirmed) {
+                                    //         appendNewgroupingNode(target);
+                                    //     }else{
+                                    //         Swal.fire({
+                                    //             title: 'Request Canceled',
+                                    //             icon: 'info',
+                                    //         })
+                                    //     }
+                                    // });
+                                }
 
-                            } else{
+                            }else if (result.isDenied){
+                                //Swal.fire('Denied', '', 'info');
+                                
+                                
+                                var lengthOfRecord = $(target).parents('tr').children('td').length;
+                                //console.log("lengthOfRecord : ", lengthOfRecord);
+                                var text = "";
+                                var textArray = [];
+                                for(var i=1 ; i<lengthOfRecord ; i++){
+                                    if ($(target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                                        text += "「" + $(target).parents('tr').children('td').eq(i).html() + "」 ";
+                                        textArray.push($(target).parents('tr').children('td').eq(i).html());
+                                    }
+                                }
+                                console.log("textArray : ", textArray);
+                                appendNewleadingNode(target, "3", textArray, internalNodeID, rootID);
+                            }
+                            else{
                                 Swal.fire({
                                     title: 'Request Canceled',
                                     icon: 'info',
@@ -1468,7 +1715,7 @@ $(document).ready(function (e) {
                     
         //             var response = getItemDefinition();
         //             responseformodal = response;
-        //             console.log("response : ", response);
+        //             //console.log("response : ", response);
                     
         //             $('#itemDefinition tbody').empty()
         //             let element = '';
@@ -1494,6 +1741,368 @@ $(document).ready(function (e) {
         //showModalStatics(event.target);
     }
 
+    //新增leadingNode
+    function appendNewleadingNode(target, tableType, textArray, internalNodeID, rootID){
+        responseformodal = responseItem;
+        var nameArray = responseformodal.itemName;   
+        var chtArray = responseformodal.chtName;
+        var itemIDArray = responseformodal.itemID;
+        var rootIDArray = responseformodal.rootID;
+        var itemTypeArray = responseformodal.itemType;
+        console.log("itemTypeArray : ", itemTypeArray);
+
+        var modal = document.getElementById("modal");
+        modal.style.display = "block";
+        //console.log("modal : ", modal);
+
+        var closeButton = document.querySelector('.btn-close');
+
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+
+        ////console.log("keyArray : ", keyArray);
+        ////console.log("valueArray : ", valueArray);
+
+        const container = document.getElementById('result_data'); // example container 
+        container.innerHTML = ''; // empty the container
+        var lengthOfRecord = $(target).parents('tr').children('td').length;
+        //console.log("lengthOfRecord : ", lengthOfRecord);
+        var text = "";
+        var textArray = [];
+        for(var i=1 ; i<lengthOfRecord ; i++){
+            if ($(target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                text += "「" + $(target).parents('tr').children('td').eq(i).html() + "」 ";
+                textArray.push($(target).parents('tr').children('td').eq(i).html());
+            }
+        }
+        var number = document.createElement('span');
+        number.innerHTML = "Using : " + text;
+        container.appendChild(number); // append the dropdown to the container element
+        
+        //itemID
+        var itemID = document.createElement('span');
+        itemID.innerHTML = "<br><br>輸入itemID : ";
+        container.appendChild(itemID); // append the dropdown to the container element
+        itemID = document.createElement('input');
+        var length = itemIDArray.length;
+        itemID.placeholder = `input itemID, 目前最大值為 : ${itemIDArray[length-1]}`;
+        itemID.className = "form-control";
+        itemID.id = "inputItemID";
+        container.appendChild(itemID); // append the dropdown to the container element
+
+        
+        //rootID
+        
+        // var rootID = document.createElement('span');
+        // rootID.innerHTML = "<br><br>itemID : ";
+        // container.appendChild(rootID); // append the dropdown to the container element
+        var dropdown1 = document.createElement('select'); // create a new dropdown element
+        dropdown1.className = "form-select";
+        dropdown1.id = `SelectrootID`;
+        text = "<br><br>選擇rootID : ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        var element = "";
+        // console.log("internalNodeID : ", internalNodeID);
+        for (let j = 0; j < nameArray.length; j++) {
+            var option = document.createElement('option');
+            option.text = itemIDArray[j].toString() + " | " + nameArray[j] + " | " + chtArray[j]; 
+            option.value = itemIDArray[j]; 
+            option.itemID = itemIDArray[j];
+            if (itemTypeArray[j] === 1){
+                dropdown1.add(option);
+            }
+            // console.log("itemIDArray[j] : ", itemIDArray[j]);
+            if(itemIDArray[j].toString() === internalNodeID){
+                option.setAttribute('selected', true);
+            }
+        }
+        container.appendChild(dropdown1); 
+
+
+        //itemName
+        var itemName = document.createElement('span');
+        itemName.innerHTML = "<br><br>輸入itemName : ";
+        container.appendChild(itemName); // append the dropdown to the container element
+        itemName = document.createElement('input');
+        itemName.placeholder = "input itemName";
+        itemName.className = "form-control";
+        itemName.id = "inputItemName";
+        var text = "";
+        for (var i=0 ; i<textArray.length ; i++){
+            if(textArray[i] === "[SPACE]"){
+                text += " ";
+            }
+            else{
+                text += textArray[i];
+            }
+        }
+        itemName.value = text;
+        itemName.innerHTML = text;
+        container.appendChild(itemName); // append the dropdown to the container element
+
+        
+        //engName
+        var engName = document.createElement('span');
+        engName.innerHTML = "<br><br>輸入engName : ";
+        container.appendChild(engName); // append the dropdown to the container element
+        engName = document.createElement('input');
+        engName.placeholder = "input engName";
+        engName.className = "form-control";
+        engName.id = "inputEngName";
+        container.appendChild(engName); // append the dropdown to the container element
+
+        
+        //chtName
+        var chtName = document.createElement('span');
+        chtName.innerHTML = "<br><br>輸入chtName : ";
+        container.appendChild(chtName); // append the dropdown to the container element
+        chtName = document.createElement('input');
+        chtName.placeholder = "input chtName";
+        chtName.className = "form-control";
+        chtName.id = "inputChtName";
+        container.appendChild(chtName); // append the dropdown to the container element
+
+        //綁定group1
+        var dropdown1 = document.createElement('select'); // create a new dropdown element
+        dropdown1.className = "form-select";
+        dropdown1.id = `group1`;
+        text = "<br><br>選擇group1 : ";
+        number = document.createElement('span');
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
+        var element = "";
+        for (let j = 0; j < nameArray.length; j++) {
+            var option = document.createElement('option');
+            option.text = itemIDArray[j].toString() + " | " + nameArray[j] + " | " + chtArray[j]; 
+            option.value = itemIDArray[j]; 
+            option.itemID = itemIDArray[j];
+            if (itemTypeArray[j] === 3 && rootIDArray[j].toString() === rootID){
+                dropdown1.add(option);
+            }
+        }
+        container.appendChild(dropdown1); 
+        console.log("tableType : ", tableType);
+        if(tableType === "5"){
+            //綁定group2
+            var dropdown1 = document.createElement('select'); // create a new dropdown element
+            dropdown1.className = "form-select";
+            dropdown1.id = `group2`;
+            text = "<br><br>選擇group2 : ";
+            number = document.createElement('span');
+            number.innerHTML = text;
+            container.appendChild(number); // append the dropdown to the container element
+            var element = "";
+            for (let j = 0; j < nameArray.length; j++) {
+                var option = document.createElement('option');
+                option.text = itemIDArray[j].toString() + " | " + nameArray[j] + " | " + chtArray[j]; 
+                option.value = itemIDArray[j]; 
+                option.itemID = itemIDArray[j];
+                if (itemTypeArray[j] === 3 && rootIDArray[j].toString() === rootID){
+                    dropdown1.add(option);
+                }
+            }
+            container.appendChild(dropdown1); 
+
+        }
+
+        
+        //itemType
+        var itemType = document.createElement('span');
+        itemType.innerHTML = "<br>itemType為 '2' (leadingNode)<br>";
+        container.appendChild(itemType); // append the dropdown to the container element
+
+        var button = document.createElement('button'); // create a new button element
+        button.textContent = '儲存'; // set the text of the button
+        button.id = 'leadingNodeStoreButton'; // set the text of the button
+        button.classList.add('btn', 'btn-secondary'); // add classes to the button
+
+        // add a click event listener to the button
+        button.addEventListener('click', function() {
+            // //console.log("確認儲存");
+            var html = "";
+            Swal.fire({
+                title: '確認儲存此leadingNode?',
+                icon: 'question',
+                html: html,
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    button.disabled = true;
+                    var btn = document.getElementById("leadingNodeStoreButton");
+                    var text = "儲存中";
+                    var count = 0;
+                    button.disabled = true; // Disable the button during the search
+
+                    var reportID = "1";
+                    var intervalId = setInterval(function() {
+                        count++;
+                        if (count > 3) {
+                        count = 0;
+                        }
+                        switch (count) {
+                        case 0:
+                            button.innerHTML = text;
+                            break;
+                        case 1:
+                            button.innerHTML = text + ".";
+                            break;
+                        case 2:
+                            button.innerHTML = text + "..";
+                            break;
+                        case 3:
+                            button.innerHTML = text + "...";
+                            break;
+                        }
+                    }, 500); // Update the text every 500 milliseconds
+                    
+                    
+
+
+                    var itemID = document.getElementById("inputItemID").value;
+                    var rootID = document.getElementById("SelectrootID").value;
+                    var itemName = document.getElementById("inputItemName").value;
+                    var engName = document.getElementById("inputEngName").value;
+                    var chtName = document.getElementById("inputChtName").value;
+                    var itemType = "2";
+
+                    var rootName = "";
+                    //console.log("itemID : ", itemID);
+                    //console.log("rootID : ", rootID);
+                    //console.log("itemName : ", itemName);
+                    //console.log("engName : ", engName);
+                    //console.log("chtName : ", chtName);
+                    //console.log("itemType : ", itemType);
+                    // if (rootID === "0"){
+                    //     rootName = "無";
+                    // }
+                    // else{
+                    //     var response = searchItem(rootID);
+                    //     //console.log("response : ", response);
+                    //     // printResult(response);
+                    //     rootName = response.chtName;
+                    // }
+                    
+                    //console.log("rootName : ", rootName);
+                    var leadingID = [];
+                    var groupingID = [];
+                    try{
+                        
+                            
+                        if (rootName == undefined){
+                            // Swal.fire({
+                            //     title: '父節點錯誤',
+                            //     icon: 'error',
+                            // })
+                            throw new Error('父節點錯誤');
+                        }
+                        else{
+                            // Swal.fire({
+                            //     title: '父節點成功',
+                            //     icon: 'success',
+                            // })
+                            
+                            leadingID.push(itemID);
+                            var groupID1 = document.getElementById("group1").value;
+                            
+                            groupingID.push(groupID1);
+                            if(tableType === "5"){                            
+                                var groupID2 = document.getElementById("group2").value;
+                                groupingID.push(groupID2);
+                            }
+                            if (itemID == ""){
+                                // Swal.fire({
+                                //     title: 'itemID不可為空',
+                                //     icon: 'error',
+                                // })
+                                
+                                throw new Error('itemID不可為空');
+                            }
+                            if (groupID1 != groupID2){
+                                // console.log("leadingID : ", leadingID);
+                                // console.log("groupingID : ", groupingID);
+                                // var resTrans = insertLeadingGroup(leadingID, groupingID);
+                                // printResult(resTrans);
+                                // if (resTrans.status != "0"){
+                                //     throw new Error(resTrans.ERRMSG);
+                                // }
+                                console.log("leadingID : ", leadingID);
+                                var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType, leadingID, groupingID);  
+                                printResult(resInsert);
+                                
+                                if (resInsert.status === "0"){
+                                    
+                                    getitemTable();
+                                    // var response = getItemDefinition();
+                                    // responseformodal = response;
+                                    // //console.log("response : ", response);
+                        
+                                    // $('#itemDefinition tbody').empty()
+                                    // let element = '';
+                                    // for(let i=0;i<response.itemID.length;i++){
+                                    //     element += `<tr>
+                                    //         <td>${response.itemID[i]}</td>
+                                    //         <td>${response.rootID[i]}</td>
+                                    //         <td>${response.itemName[i]}</td>
+                                    //         <td>${response.engName[i]}</td>
+                                    //         <td>${response.chtName[i]}</td>
+                                    //         <td>${responseItem.itemType[i]}</td>
+                                    //         </tr>`;
+                                    // }
+                                    // $('#itemDefinition tbody').append(element);
+                                    
+                                    modal.style.display = "none";
+                                    $(target).removeClass("btn-secondary");
+                                    $(target).addClass("btn-danger");
+                                }
+                                else{
+                                    throw new Error(resInsert.ERRMSG);
+                                }
+                            }
+                            else{
+                                // Swal.fire({
+                                //     title: 'group1 與 group2 不可相同!',
+                                //     icon: 'error',
+                                //     confirmButtonText: 'ok',
+                                // })
+                                throw new Error('group1 與 group2 不可相同!');
+                            }
+                        }
+                    } catch (error) {
+                        if (error instanceof Error) {
+                            Swal.fire({
+                                title: 'Error',
+                                text: error,
+                                icon: 'error',
+                                confirmButtonText: 'Ok',
+                            })
+                            
+                            button.disabled = false;
+                            clearInterval(intervalId);
+                            return;
+                        }
+                    }
+                    
+
+                    
+                    
+                    button.disabled = false;
+                    clearInterval(intervalId);
+                        
+                }
+            });
+        });
+
+        // append the button to the document body
+        container.appendChild(button);
+    }
+
     
     function selectRoot(){
         var res;
@@ -1503,7 +2112,7 @@ $(document).ready(function (e) {
             url: '{% url "mark:selectRoot" %}',
             success:function (response){
                 res = response;
-                console.log("selectRoot : ", response)
+                //console.log("selectRoot : ", response)
             },
         });
         return res;
@@ -1520,23 +2129,258 @@ $(document).ready(function (e) {
             url: '{% url "mark:selectInteralNodeofRoot" %}',
             success:function (response){
                 res = response;
-                console.log("selectRoot : ", response)
+                //console.log("selectRoot : ", response)
+            },
+        });
+        return res;
+    }
+    
+    function selectGroupNodeofRoot(rootID, itemType){
+        var res;
+        $.ajax({
+            async: false,
+            type: 'POST',            
+            data:JSON.stringify({
+                'rootID': rootID,
+                'itemType': itemType,
+            }),
+            url: '{% url "mark:selectGroupNodeofRoot" %}',
+            success:function (response){
+                res = response;
+                //console.log("selectRoot : ", response)
             },
         });
         return res;
     }
     function getREofRecord2(){
-        //console.log(event.target);
+        ////console.log(event.target);
         //showModalReportText(event.target);
+        // var token1 = $(event.target).parents('tr').children('td').eq(1).html();
+        // var token2 = $(event.target).parents('tr').children('td').eq(2).html();
+        // showModalStatics2(event.target);
+
         var token1 = $(event.target).parents('tr').children('td').eq(1).html();
         var token2 = $(event.target).parents('tr').children('td').eq(2).html();
-        showModalStatics2(event.target);
+        var target = event.target;
+
+        
+        //1. 選root
+        var resRoot = selectRoot();
+        //console.log("resRoot : ", resRoot);
+        var rootArray = resRoot.chtName;
+        var element = `<select class="form-select" id="rootSelect">`
+        for(var i=0 ; i<rootArray.length ; i++){
+            element += `<option value="${rootArray[i].itemID}" id="root${rootArray[i].itemID}">${rootArray[i].chtName}</option>`
+        }
+        element += `</select>`
+        Swal.fire({
+            title: '請選擇root',
+            html: element,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                var rootID = document.getElementById("rootSelect").value;
+                var chtNameRoot = document.getElementById(`root${rootID}`).innerHTML;
+                
+                // Swal.fire({
+                //     title: `rootID = ${rootID}, chtName = ${chtNameRoot}`,
+                //     html: "123",
+                //     icon: 'info',
+                //     showCancelButton: true,
+                //     confirmButtonText: 'Yes',
+                //     cancelButtonText: 'No'
+                // })
+                // 2. 選該root的leading
+                
+                var resInternalNode = selectInteralNodeofRoot(rootID, "1");
+                //console.log("resInternalNode : ", resInternalNode);
+                var internalNodeArray = resInternalNode.chtName;
+                element = `<select class="form-select" id="internalNodeSelect">`
+                if (internalNodeArray == undefined ){
+                    Swal.fire({
+                        title: '此root無相關子節點, 請重新選擇',
+                        icon: 'error',
+                        confirmButtonText: 'ok',
+                    })
+                    return;
+                }
+                for(var i=0 ; i<internalNodeArray.length ; i++){
+                    element += `<option value="${internalNodeArray[i].itemID}" id="internal${internalNodeArray[i].itemID}">${internalNodeArray[i].chtName} ${internalNodeArray[i].itemName}</option>`
+                }
+                element += `</select>`
+
+
+
+
+                Swal.fire({
+                    title: '請選擇internal Node',
+                    html: element,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        var internalNodeID = document.getElementById("internalNodeSelect").value;
+                        //console.log("internalNodeID : ", internalNodeID);
+                        var chtNameInternal = document.getElementById(`internal${internalNodeID}`).innerHTML;
+                        //console.log("chtNameInternal : ", chtNameInternal);
+
+                        var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
+                        //console.log("resLeadingNode : ", resLeadingNode);
+
+                        
+                        
+                        element = `<select class="form-select" id="leadingNodeSelect">`
+                        if (resLeadingNode.status === "0"){                            
+                            var leadingNodeArray = resLeadingNode.chtName;
+                            for(var i=0 ; i<leadingNodeArray.length ; i++){
+                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${leadingNodeArray[i].itemName}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                            }
+                        }
+                        element += `</select>`
+                        
+                        Swal.fire({
+                            title: '請選擇leading Node',
+                            html: element,
+                            icon: 'info',
+                            showCancelButton: true,
+                            showDenyButton: true,
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                            denyButtonText: `新增`,
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                var leadingID = document.getElementById("leadingNodeSelect").value;
+                                var selectedItemName = $("#leadingNodeSelect option:selected").attr("itemName");
+                                console.log("selectedItemName : ", selectedItemName);
+                                $("#storebtn").attr("leadingID", leadingID);
+                                $("#storebtn").attr("itemName", selectedItemName);
+                                var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
+
+                                //console.log("leadingID : ", leadingID);
+
+                                var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
+                                //console.log("resgroupNode : ", resgroupNode);
+                                printResult(resgroupNode);
+                                var groupNodeArray = resgroupNode.chtName;
+                                element = `<select class="form-select" id="groupNodeSelect">`
+                                for(var i=0 ; i<groupNodeArray.length ; i++){
+                                    element += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}">${groupNodeArray[i].chtName}   ${groupNodeArray[i].itemName}</option>`
+                                }
+                                element += `</select>`
+
+                                var element1 = `<select class="form-select" id="groupNodeSelect1">`
+                                for(var i=0 ; i<groupNodeArray.length ; i++){
+                                    element1 += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}">${groupNodeArray[i].chtName}   ${groupNodeArray[i].itemName}</option>`
+                                }
+                                element1 += `</select>`
+                                
+                                element += element1;
+                                if (groupNodeArray.length > 0){
+                                    Swal.fire({
+                                        title: '已找到如下groupingID',
+                                        html: element,
+                                        icon: 'info',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Yes',
+                                        cancelButtonText: 'No'
+                                    })
+                                    .then((result) => {
+                                        if (result.isConfirmed) {
+                                            console.log("target : ", target);
+                                            //console.log("groupNodeSelect : ", groupNodeSelect.value);
+                                            var selectedGroup = groupNodeSelect.value;
+                                            var selectedGroup1 = groupNodeSelect1.value;
+                                            selectLeading = chtNameleading;
+                                            //console.log("selectLeading : ", selectLeading);
+                                            showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1);
+                                        }else{
+                                            Swal.fire({
+                                                title: 'Request Canceled',
+                                                icon: 'info',
+                                            })
+                                        }
+                                    });
+                                }else{
+                                    Swal.fire({
+                                        title: '未發現相關groupingNode, 請設定',
+                                        // html: element,
+                                        icon: 'info',
+                                        confirmButtonText: 'ok',
+                                    })
+                                    // .then((result) => {
+                                    //     if (result.isConfirmed) {
+                                    //         appendNewgroupingNode(target);
+                                    //     }else{
+                                    //         Swal.fire({
+                                    //             title: 'Request Canceled',
+                                    //             icon: 'info',
+                                    //         })
+                                    //     }
+                                    // });
+                                }
+
+                            }else if (result.isDenied){
+                                //Swal.fire('Denied', '', 'info');
+                                
+                                var lengthOfRecord = $(target).parents('tr').children('td').length;
+                                //console.log("lengthOfRecord : ", lengthOfRecord);
+                                var text = "";
+                                var textArray = [];
+                                for(var i=1 ; i<lengthOfRecord ; i++){
+                                    if ($(target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                                        text += "「" + $(target).parents('tr').children('td').eq(i).html() + "」 ";
+                                        textArray.push($(target).parents('tr').children('td').eq(i).html());
+                                    }
+                                }
+                                console.log("textArray : ", textArray);
+                                appendNewleadingNode(target, "5", textArray, internalNodeID, rootID);
+                            }
+                            else{
+                                Swal.fire({
+                                    title: 'Request Canceled',
+                                    icon: 'info',
+                                })
+                            }
+                        });
+                        
+
+                    } else{
+                        Swal.fire({
+                            title: 'Request Canceled',
+                            icon: 'info',
+                        })
+                    }
+                });
+
+
+
+
+
+
+
+
+
+            } else{
+                Swal.fire({
+                    title: 'Request Canceled',
+                    icon: 'info',
+                })
+            }
+        });
     }
 
-    function showModalStatics(target) {
+    function showModalStatics(target, resgroupNode, selectedGroup, selectLeading, leadingID) {
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        console.log("modal : ", modal);
+        //console.log("modal : ", modal);
 
         var closeButton = document.querySelector('.btn-close');
 
@@ -1545,19 +2389,19 @@ $(document).ready(function (e) {
         });
 
 
-        //console.log("keyArray : ", keyArray);
-        //console.log("valueArray : ", valueArray);
+        ////console.log("keyArray : ", keyArray);
+        ////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
-        var lengthOfRecord = $(event.target).parents('tr').children('td').length;
-        console.log("lengthOfRecord : ", lengthOfRecord);
+        var lengthOfRecord = $(target).parents('tr').children('td').length;
+        //console.log("lengthOfRecord : ", lengthOfRecord);
         var text = "";
         var textArray = [];
         for(var i=1 ; i<lengthOfRecord ; i++){
-            if ($(event.target).parents('tr').children('td').eq(i).attr('class') === "show"){
-                text += "「" + $(event.target).parents('tr').children('td').eq(i).html() + "」 ";
-                textArray.push($(event.target).parents('tr').children('td').eq(i).html());
+            if ($(target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                text += "「" + $(target).parents('tr').children('td').eq(i).html() + "」 ";
+                textArray.push($(target).parents('tr').children('td').eq(i).html());
             }
         }
         var number = document.createElement('span');
@@ -1569,12 +2413,12 @@ $(document).ready(function (e) {
         number.innerHTML = text;
         container.appendChild(number); // append the dropdown to the container element
 
-        for (let i = 0; i<3 ; i++) {            
+        for (var i = 0; i<3 ; i++) {            
             const dropdown = document.createElement('select'); // create a new dropdown element
             dropdown.className = "form-select";
             dropdown.id = `selectItem${i}`;
             var element = "";
-            for (let j = 0; j < textArray.length; j++) {
+            for (var j = 0; j < textArray.length; j++) {
                 //element += `<tr>
                 //<td>${response.itemID[i]}</td>
                 //<td>${response.rootID[i]}</td>
@@ -1587,9 +2431,9 @@ $(document).ready(function (e) {
                 option.value = textArray[j]; 
                 option.id = `option${i.toString()}${j.toString}`; // set the text of the option
                 dropdown.add(option); // add the option to the dropdown
-                // console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 // if (nameArray[j] == keyArray[i]){
-                //     console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 //     option.setAttribute('selected', true);
                 // }
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-2)){
@@ -1632,22 +2476,32 @@ $(document).ready(function (e) {
         dropdown1.id = `SelectitemName`;
         text = "<br>itemName: ";
         number = document.createElement('span');
-        number.innerHTML = text;
-        container.appendChild(number); // append the dropdown to the container element
         var element = "";
+        var autoSelect = 0;
         for (let j = 0; j < nameArray.length; j++) {            
             const option = document.createElement('option');
             option.text = nameArray[j] + " " + chtArray[j]; 
             option.value = nameArray[j]; 
             option.itemID = itemIDArray[j];
-            dropdown1.add(option); 
-            
+            if (option.itemID == selectedGroup){
+                option.setAttribute('selected', true);
+                autoSelect = 1;
+            }
+            dropdown1.add(option);            
         }
+        if (autoSelect == 1){
+            dropdown1.disabled = true;
+            text = `<br>已自動選擇"${selectLeading}"的itemName`;
+        }
+        $("#storebtn").attr("autoSelect", autoSelect);
+        number.innerHTML = text;
+        container.appendChild(number); // append the dropdown to the container element
         container.appendChild(dropdown1); 
+        
 
-        if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
-            option.setAttribute('selected', true);
-        }
+        // if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
+        //     option.setAttribute('selected', true);
+        // }
         text = "<br>";
         number = document.createElement('span');
         number.innerHTML = text;
@@ -1692,7 +2546,7 @@ $(document).ready(function (e) {
 
                 var pattern = /[\\^$.|?*+(){[}\]]/g;
                 var matches = textArray[i].match(pattern);
-                console.log("matches : ", matches);
+                //console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
                     RE += " ";
                 }
@@ -1716,17 +2570,7 @@ $(document).ready(function (e) {
                         <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
                         <label for="floatingInput">Auto generated RE</label>
                         </div>`
-
-
-
-
-
-
-
-
-
-
-            console.log("textArray : ", textArray);
+            //console.log("textArray : ", textArray);
             Swal.fire({
                 title: '自動填入此RE?',
                 icon: 'question',
@@ -1737,16 +2581,16 @@ $(document).ready(function (e) {
             })
             .then((result) => {
                 if (result.isConfirmed) {
-                    // console.log("success");
+                    // //console.log("success");
                     var regexFinished = document.getElementById("floatingInput").value;
                     document.getElementById("regexText").innerHTML = regexFinished;
                     document.getElementById("regexText").value = regexFinished;
                     modal.style.display = "none";
-                    console.log("this : ", this.getAttribute("lastReportID"));
+                    //console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
                     //找report
                     var report = getReportBylastReportID(reportID.toString());
-                    console.log("report : ", report);
+                    //console.log("report : ", report);
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
@@ -1754,7 +2598,7 @@ $(document).ready(function (e) {
                     emphasizeInput(regexText);
                 } 
                 else{
-                    console.log("fail");
+                    //console.log("fail");
                 }                
             });
         });
@@ -1762,15 +2606,16 @@ $(document).ready(function (e) {
         // append the button to the document body
         container.appendChild(button);
 
-        // console.log("target : ", target.innerHTML);
-        // console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // //console.log("target : ", target.innerHTML);
+        // //console.log("reportID : ", $(target).parents('tr').attr("reportID"));
         // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
     } 
 
-    function showModalStatics2(target) {
+    function showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1) {
+        console.log("target : ", target);
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        console.log("modal : ", modal);
+        //console.log("modal : ", modal);
 
         var closeButton = document.querySelector('.btn-close');
 
@@ -1779,21 +2624,22 @@ $(document).ready(function (e) {
         });
 
 
-        //console.log("keyArray : ", keyArray);
-        //console.log("valueArray : ", valueArray);
+        ////console.log("keyArray : ", keyArray);
+        ////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
-        var lengthOfRecord = $(event.target).parents('tr').children('td').length;
-        console.log("lengthOfRecord : ", lengthOfRecord);
+        var lengthOfRecord = $(target).parents('tr').children('td').length;
+        //console.log("lengthOfRecord : ", lengthOfRecord);
         var text = "";
         var textArray = [];
         for(var i=1 ; i<lengthOfRecord ; i++){
-            if ($(event.target).parents('tr').children('td').eq(i).attr('class') === "show"){
-                text += "「" + $(event.target).parents('tr').children('td').eq(i).html() + "」 ";
-                textArray.push($(event.target).parents('tr').children('td').eq(i).html());
+            if ($(target).parents('tr').children('td').eq(i).attr('class') === "show"){
+                text += "「" + $(target).parents('tr').children('td').eq(i).html() + "」 ";
+                textArray.push($(target).parents('tr').children('td').eq(i).html());
             }
         }
+        console.log("text : ", text);
         var number = document.createElement('span');
         number.innerHTML = "Using : " + text;
         container.appendChild(number); // append the dropdown to the container element
@@ -1820,10 +2666,11 @@ $(document).ready(function (e) {
                 option.text = textArray[j];
                 option.value = textArray[j]; 
                 option.id = `option${i.toString()}${j.toString}`; // set the text of the option
+                
                 dropdown.add(option); // add the option to the dropdown
-                // console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 // if (nameArray[j] == keyArray[i]){
-                //     console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 //     option.setAttribute('selected', true);
                 // }
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-4) || (i == 3 && j == textArray.length-2)){
@@ -1880,15 +2727,26 @@ $(document).ready(function (e) {
         number = document.createElement('span');
         number.innerHTML = text;
         container.appendChild(number); // append the dropdown to the container element
-        var element = "";
+        var element = "";        
+        var autoSelect = 0;
         for (let j = 0; j < nameArray.length; j++) {            
             const option = document.createElement('option');
             option.text = nameArray[j] + " " + chtArray[j]; 
             option.value = nameArray[j]; 
             option.itemID = itemIDArray[j];
+            
+            if (option.itemID == selectedGroup){
+                option.setAttribute('selected', true);
+                autoSelect = 1;
+            }
             dropdown1.add(option); 
             
+        }        
+        if (autoSelect == 1){
+            dropdown1.disabled = true;
+            text = `<br>已自動選擇"${selectLeading}"的itemName`;
         }
+        $("#storebtn").attr("autoSelect", autoSelect);
         container.appendChild(dropdown1); 
 
         const dropdown2 = document.createElement('select'); // create a new dropdown element
@@ -1899,19 +2757,30 @@ $(document).ready(function (e) {
         number.innerHTML = text;
         container.appendChild(number); // append the dropdown to the container element
         var element = "";
+        autoSelect = 0;
         for (let j = 0; j < nameArray.length; j++) {            
             const option = document.createElement('option');
             option.text = nameArray[j] + " " + chtArray[j]; 
             option.value = nameArray[j]; 
             option.itemID = itemIDArray[j];
+            if (option.itemID == selectedGroup1){
+                option.setAttribute('selected', true);
+                autoSelect = 1;
+            }
             dropdown2.add(option); 
             
         }
+        
+        if (autoSelect == 1){
+            dropdown2.disabled = true;
+            text = `<br>已自動選擇"${selectLeading}"的itemName`;
+        }
+        $("#storebtn").attr("autoSelect", autoSelect);
         container.appendChild(dropdown2); 
 
-        if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
-            option.setAttribute('selected', true);
-        }
+        // if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1)){
+        //     option.setAttribute('selected', true);
+        // }
         text = "<br>";
         number = document.createElement('span');
         number.innerHTML = text;
@@ -1959,7 +2828,7 @@ $(document).ready(function (e) {
                     itemNum = 1;
                     var pattern = /[\\^$.|?*+(){[}\]]/g;
                     var matches = textArray[i].match(pattern);
-                    console.log("matches : ", matches);
+                    //console.log("matches : ", matches);
                     if (textArray[i] == "[SPACE]" ){    
                         RE += " ";
                     }
@@ -1983,7 +2852,7 @@ $(document).ready(function (e) {
                     itemNum = 2;
                     var pattern = /[\\^$.|?*+(){[}\]]/g;
                     var matches = textArray[i].match(pattern);
-                    console.log("matches : ", matches);
+                    //console.log("matches : ", matches);
                     if (textArray[i] == "[SPACE]" ){    
                         RE += " ";
                     }
@@ -2004,7 +2873,7 @@ $(document).ready(function (e) {
                 
                 var pattern = /[\\^$.|?*+(){[}\]]/g;
                 var matches = textArray[i].match(pattern);
-                console.log("matches : ", matches);
+                //console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
                     RE += " ";
                 }
@@ -2038,7 +2907,7 @@ $(document).ready(function (e) {
 
 
 
-            console.log("textArray : ", textArray);
+            //console.log("textArray : ", textArray);
             Swal.fire({
                 title: '自動填入此RE?',
                 icon: 'question',
@@ -2051,8 +2920,8 @@ $(document).ready(function (e) {
                 if (result.isConfirmed) {
                     var item1 = $("#SelectitemName").val();
                     var item2 = $("#SelectitemName1").val();
-                    console.log("item1 : ", item1);
-                    console.log("item2 : ", item2);
+                    //console.log("item1 : ", item1);
+                    //console.log("item2 : ", item2);
                     if (item1 === item2){
                         Swal.fire({
                             title: 'itemName不可相同',
@@ -2060,16 +2929,16 @@ $(document).ready(function (e) {
                             confirmButtonText: 'ok',
                         })
                     }
-                    // console.log("success");
+                    // //console.log("success");
                     var regexFinished = document.getElementById("floatingInput").value;
                     document.getElementById("regexText").innerHTML = regexFinished;
                     document.getElementById("regexText").value = regexFinished;
                     modal.style.display = "none";
-                    console.log("this : ", this.getAttribute("lastReportID"));
+                    //console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
                     //找report
                     var report = getReportBylastReportID(reportID.toString());
-                    console.log("report : ", report);
+                    //console.log("report : ", report);
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
@@ -2077,7 +2946,7 @@ $(document).ready(function (e) {
                     emphasizeInput(regexText);
                 } 
                 else{
-                    console.log("fail");
+                    //console.log("fail");
                 }                
             });
         });
@@ -2085,8 +2954,8 @@ $(document).ready(function (e) {
         // append the button to the document body
         container.appendChild(button);
 
-        // console.log("target : ", target.innerHTML);
-        // console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // //console.log("target : ", target.innerHTML);
+        // //console.log("reportID : ", $(target).parents('tr').attr("reportID"));
         // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
     } 
 

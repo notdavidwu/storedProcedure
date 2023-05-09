@@ -104,118 +104,118 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-            "ENGINE": "mssql",
-            'NAME': 'Django',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'TUBE': {
-            'ENGINE': 'mssql',
-            'NAME': 'Tube',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.157',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'AIC_Infection': {
-            'ENGINE': 'mssql',
-            'NAME': 'AIC_Infection',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
+        # 'default': {
+        #     "ENGINE": "mssql",
+        #     'NAME': 'Django',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'TUBE': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'Tube',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.157',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'AIC_Infection': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'AIC_Infection',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
 
-        'MEWS': {
-            'ENGINE': 'mssql',
-            'NAME': 'MEWS',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'HealthData': {
-            'ENGINE': 'mssql',
-            'NAME': 'HealthData',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
+        # 'MEWS': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'MEWS',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'HealthData': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'HealthData',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
 
 
 
-        'dbDesigning': {
-            'ENGINE': 'mssql',
-            'NAME': 'dbDesigning',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': { 
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'coreDB': {
-            'ENGINE': 'mssql',
-            'NAME': 'coreDB',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': { 
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'AIC': {
-            'ENGINE': 'mssql',
-            'NAME': 'AIC',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': { 
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'practiceDB': {
-            'ENGINE': 'mssql',
-            'NAME': 'practiceDB',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': { 
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
+        # 'dbDesigning': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'dbDesigning',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': { 
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'coreDB': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'coreDB',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': { 
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'AIC': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'AIC',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': { 
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'practiceDB': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'practiceDB',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': { 
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
         
         'AIC_Infection2': {
             'ENGINE': 'mssql',
@@ -229,67 +229,67 @@ DATABASES = {
                 'MARS_Connection': True,
             },
         },
-        'NursingRecord': {
-            'ENGINE': 'mssql',
-            'NAME': 'NursingRecord',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'aicCenter': {
-            'ENGINE': 'mssql',
-            'NAME': 'aicCenter',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'aicInfection': {
-            'ENGINE': 'mssql',
-            'NAME': 'aicInfection',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'powerBI': {
-            'ENGINE': 'mssql',
-            'NAME': 'powerBI',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'powerBI(web test server)': {
-            'ENGINE': 'mssql',
-            'NAME': 'powerBI(web test server)',
-            'USER': 'TEST',
-            'PASSWORD': '81218',
-            'HOST': '172.31.6.22',
-            'PORT': '1433',
-            'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
-                'MARS_Connection': True,
-            },
-        },
-        'buildVocabulary': {
+        # 'NursingRecord': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'NursingRecord',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'aicCenter': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'aicCenter',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'aicInfection': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'aicInfection',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'powerBI': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'powerBI',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        # 'powerBI(web test server)': {
+        #     'ENGINE': 'mssql',
+        #     'NAME': 'powerBI(web test server)',
+        #     'USER': 'TEST',
+        #     'PASSWORD': '81218',
+        #     'HOST': '172.31.6.22',
+        #     'PORT': '1433',
+        #     'OPTIONS': {
+        #         'driver': 'ODBC Driver 17 for SQL Server',  # ODBC連線應用驅動
+        #         'MARS_Connection': True,
+        #     },
+        # },
+        'default': {
             'ENGINE': 'mssql',
             'NAME': 'buildVocabulary',
             'USER': 'N824',

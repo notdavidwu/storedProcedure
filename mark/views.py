@@ -978,7 +978,7 @@ def inserttokenREItem(request):
             itemDefinition2 = cursor.fetchone()
             if itemDefinition2 == None:
                 raise Exception("Item not found")
-            # # print("itemID : ", itemDefinition2)
+            print("itemID : ", itemDefinition2)
             # if itemDefinition2 == None:
             #     query = 'insert into [itemDefinition2] (itemName) output [INSERTED].itemID values(?);'
             #     args = [request.POST.get('itemName')]
@@ -988,7 +988,7 @@ def inserttokenREItem(request):
             # else:
                 # print("original itemID : ", itemDefinition2.itemID)
             #插入資料表
-            query = 'INSERT into [REItem] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
+            query = 'INSERT into [REItem2] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
             args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
             # # # # # print(args)
             cursor.execute(query, args)
@@ -3830,16 +3830,43 @@ def insertintoItemDefinition(request):
 
         raw = request.body.decode('utf-8')
         try :
+            
             # print("in")
             body = json.loads(raw)
+            
+            control = body['control']
+            if control == "1":
+                leadingID = body['leadingID']
+                groupingID = body['groupingID']
+                if leadingID == None or groupingID == None :
+                    raise Exception("輸入值不可為空")
+                print("leadingID : ", leadingID)
+                print("groupingID : ", groupingID)
+                for ind,i in enumerate(groupingID):
+                    query = "select * from itemTrans where leadingID = ? and groupingID = ? and seqNo = ?;"
+                    args = [leadingID[0], i, ind+1]
+                    print(args)
+                    cursor.execute(query, args)
+                    olddata = cursor.fetchone()
+                    print("olddata : ", olddata)
+                    if olddata != None:
+                        raise Exception("資料庫存在相同資料")
+                    else:
+                        query = "insert into itemTrans (leadingID, groupingID, seqNo) output inserted.leadingID, inserted.groupingID, inserted.seqNo values(?, ?, ?);"
+                        args = [leadingID[0], i, ind+1]
+                        print(args)
+                        cursor.execute(query, args)
+                        newdata = cursor.fetchone()
+                        print("newdata : ", newdata)
+
             itemID = body['itemID']
             rootID = body['rootID']
             itemName = body['itemName']
             engName = body['engName']
             chtName = body['chtName']
             itemType = body['itemType']
-            print("data : ", itemID, rootID, itemName, engName, chtName, itemType)
-            print("data : ", type(itemID), type(rootID), type(itemName), type(engName), type(chtName), type(itemType))
+            # print("data : ", itemID, rootID, itemName, engName, chtName, itemType)
+            # print("data : ", type(itemID), type(rootID), type(itemName), type(engName), type(chtName), type(itemType))
             if itemID == "" or rootID == "" or itemName == "" or engName == "" or chtName == "" or itemType == "":
                 raise Exception("輸入值不可為空")
             
@@ -3860,10 +3887,62 @@ def insertintoItemDefinition(request):
                 raise Exception("新增失敗")
             # print(data)
             result['chtName'] = data.chtName
-            print(result)
+            # print(result)
             result['status'] = "0"
             
             result['MSG'] = "新增成功"
+            
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            # print("rollbacked, error message : ", e)
+            result['ERRMSG'] = str(e)
+
+        conn.close()
+    return JsonResponse(result)
+
+
+
+@csrf_exempt
+def insertintoItemTrans(request):
+    if request.method == 'POST':
+        server = '172.31.6.22' 
+        database = 'nlpVocabularyLatest ' 
+        username = 'N824' 
+        password = 'test81218' 
+        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+        cursor = conn.cursor()
+
+
+        result = {'status': "1"}
+
+        raw = request.body.decode('utf-8')
+        try :
+            # print("in")
+            body = json.loads(raw)
+            leadingID = body['leadingID']
+            groupingID = body['groupingID']
+            if leadingID == None or groupingID == None :
+                raise Exception("輸入值不可為空")
+            print("leadingID : ", leadingID)
+            print("groupingID : ", groupingID)
+            for ind,i in enumerate(groupingID):
+                query = "select * from itemTrans where leadingID = ? and groupingID = ? and seqNo = ?;"
+                args = [leadingID[0], i, ind+1]
+                print(args)
+                cursor.execute(query, args)
+                olddata = cursor.fetchone()
+                print("olddata : ", olddata)
+                if olddata != None:
+                    raise Exception("資料庫存在相同資料")
+                else:
+                    query = "insert into itemTrans (leadingID, groupingID, seqNo) output inserted.leadingID, inserted.groupingID, inserted.seqNo values(?, ?, ?);"
+                    args = [leadingID[0], i, ind+1]
+                    print(args)
+                    cursor.execute(query, args)
+                    newdata = cursor.fetchone()
+                    print("newdata : ", newdata)
+            result['status'] = "0"
             
             conn.commit()
         except Exception as e:
@@ -4045,18 +4124,20 @@ def getTokenBynumReports(request):
     body = json.loads(raw)
     tokenID1 = body['tokenID1']
     tokenID2 = body['tokenID2']
-    query = f'''	
-		select c.tokenID, c.token, count(distinct a.reportID) as 'numReports', count(*) as 'times'
-		from (
-						select distinct a.reportID, a.posEnd+1 as 'LB', b.posStart-1 as 'UB'
-						from textToken as a inner join textToken as b on a.reportID=b.reportID and a.tokenID={int(tokenID1)} and b.tokenID={int(tokenID2)}
-										inner join textToken as c on a.reportID=c.reportID and c.posStart between a.posEnd+1 and b.posStart-1
-										inner join Vocabulary as d on c.tokenID=d.tokenID
-						where d.token like '[Ll][Uu][Nn][Gg]%'
-				) as a inner join textToken as b on a.reportID=b.reportID and b.posStart between a.LB and a.UB
-							inner join Vocabulary as c on b.tokenID=c.tokenID
-		group by c.token, c.tokenID
-		order by numReports desc
+    query = f'''select c.tokenID, c.token, count(distinct a.reportID) as 'numReports', count(*) as 'times'
+        from (
+        select distinct a.reportID, a.posEnd+1 as 'LB', b.posStart-1 as 'UB'
+        from textToken as a inner join textToken as b on a.reportID=b.reportID and a.tokenID={int(tokenID1)} and b.tokenID={int(tokenID2)}
+        inner join textToken as c on a.reportID=c.reportID and c.posStart between a.posEnd+1 and b.posStart-1
+        inner join Vocabulary as d on c.tokenID=d.tokenID
+        where d.token like '[Ll][Uu][Nn][Gg]%'
+        ) as a inner join textToken as b on a.reportID=b.reportID and b.posStart between a.LB and a.UB
+        inner join Vocabulary as c on b.tokenID=c.tokenID
+        left outer join reportItemToken as d on b.tokenID=d.tokenID
+        where d.tokenID is null
+        group by c.token, c.tokenID
+        order by numReports desc
+        
         '''
     cursor.execute(query,[])
     res = cursor.fetchall()
@@ -4328,10 +4409,12 @@ def selectInteralNodeofRoot(request):
         body = json.loads(raw)
         rootID = body['rootID']
         itemType = body['itemType']
-        if rootID == "" or rootID == "":
+        if rootID == "" or rootID == None:
             raise Exception("RootID 錯誤")
-        if itemType == "" or itemType == "":
+        if itemType == "" or itemType == None:
             raise Exception("itemType 錯誤")
+        print("rootID : ", rootID)
+        print("itemType : ", itemType)
         query = f'''
             select * from itemDefinition2 where itemType = ? and rootID = ?;
             '''
@@ -4356,10 +4439,83 @@ def selectInteralNodeofRoot(request):
         result['ERRMSG'] = str(e)
     
     conn.close()
+    print(result)
     return JsonResponse(result)
 
 
+@csrf_exempt
+def selectGroupNodeofRoot(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
 
+    raw = request.body.decode('utf-8')
+
+    try:        
+        body = json.loads(raw)
+        rootID = body['rootID']
+        itemType = body['itemType']
+        if rootID == "" or rootID == None:
+            raise Exception("RootID 錯誤")
+        if itemType == "" or itemType == None:
+            raise Exception("itemType 錯誤")
+        print("rootID : ", rootID)
+        print("itemType : ", itemType)
+        query = f'''select * from itemTrans where leadingID = ? order by seqNo;'''
+        args = [rootID]
+        cursor.execute(query, args)
+        itemTransres = cursor.fetchall()
+        print("itemTransres : ", itemTransres)
+        groupingIDArray = []
+        
+        chtName = []
+        for i in itemTransres:
+            if rootID != str(i.leadingID):
+                raise Exception("RootID leadingID 對應錯誤")
+
+            query = f'''
+                select * from itemDefinition2 where itemID = ?;
+                '''
+            args = [i.groupingID]
+            cursor.execute(query, args)
+            itemDefRes = cursor.fetchone()
+            print("itemDefRes : ", itemDefRes)
+            if (itemDefRes == None):
+                print("獲取group節點失敗")
+                raise Exception("獲取group節點失敗")
+            else:
+                groupingIDArray.append(itemDefRes.itemID)
+                record = {"itemID":itemDefRes.itemID, "chtName" : itemDefRes.chtName, "itemName" : itemDefRes.itemName}
+                chtName.append(record)
+        result['chtName'] = chtName
+
+        print(groupingIDArray, len(groupingIDArray))
+        print(itemTransres, len(itemTransres))
+
+        # if itemDefRes == None or itemDefRes == []:
+        #     raise Exception("此Root無Internal Node節點")
+        # else:
+        #     chtName = []
+        #     for i in itemDefRes:
+        #         record = {"itemID":i.itemID, "chtName" : i.chtName, "itemName" : i.itemName}
+        #         chtName.append(record)
+        #     result['chtName'] = chtName
+        print(result)
+  
+        result['status'] = "0"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
 
 
 

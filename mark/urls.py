@@ -105,5 +105,7 @@ urlpatterns = [
     path('checkFormName/', checkFormName, name='checkFormName'),
     path('selectRoot/', selectRoot, name='selectRoot'),
     path('selectInteralNodeofRoot/', selectInteralNodeofRoot, name='selectInteralNodeofRoot'),
+    path('selectGroupNodeofRoot/', selectGroupNodeofRoot, name='selectGroupNodeofRoot'),
+    path('insertintoItemTrans/', insertintoItemTrans, name='insertintoItemTrans'),
     
 ]

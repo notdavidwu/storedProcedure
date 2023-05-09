@@ -133,6 +133,15 @@
                 <label for="token" class="form-label">token</label>
                 <input type="text" class="form-control" id="token">
             </div>
+            <div class="col-md-12">
+                <label for="itemDefinition_itemType" class="form-label">itemType</label>
+                <select class="form-select" id="itemDefinition_itemType">
+                    <option value="0" selected>0 Root</option>
+                    <option value="1">1 Internal Node</option>
+                    <option value="2">2 Leading Word</option>
+                    <option value="3">3 Group</option>
+                </select>
+            </div>
             <div id="search" class="col-12">
                 <button type="button" class="btn btn-primary form-control" id="insertDef">新增</button>
                 <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
