@@ -80,11 +80,11 @@ def getStasticTable(request):
             VocabularyData = cursor.fetchone()
             IDList.append(VocabularyData.tokenID)
             
-        print("in")
+        print("innnnnnnnnnnn")
 
 
         
-        query = f'''select count(distinct a.reportID) as 'numReports', count(*) as 'times', min(a.reportID) as 'exReportID', c.word1, c.word2, c.word3, b.word4, b.word5, b.word6, a.targetWord1, a.targetWord2, a.targetWord3
+        query = f'''select  count(distinct a.reportID) as 'numReports', count(*) as 'times', min(a.reportID) as 'exReportID', c.word1, c.word2, c.word3, b.word4, b.word5, b.word6 , a.targetWord1, a.targetWord2, a.targetWord3
 							from (
 											select a.reportID, a.posStart, b.token as 'targetWord1', c.token as 'targetWord2', d.token as 'targetWord3'
 											from (
@@ -131,11 +131,12 @@ def getStasticTable(request):
 										) as c on b.reportID=c.reportID and c.posEnd=(b.startT4-1)
 						group by a.targetWord1, a.targetWord2, a.targetWord3,
 											b.word6, b.word5, b.word4, c.word3, c.word2, c.word1
-						order by 1 desc
+						order by 9,8,7,6,5,4
         '''
         cursor.execute(query,[])
         res = cursor.fetchall()
-        # print(res)
+
+        print("resssssssssssssssssssssssssssssssssssssss", res[0])
         # reportID = [row.exReport for row in res]
         # numReports = [row.numReports for row in res]
         # times = [row.times for row in res]
@@ -198,7 +199,7 @@ def getStasticTable(request):
                          'status':"0",
                          }
         
-        result['MSG'] = "查詢成功"
+        result[''] = "查詢成功"
         
             
         conn.commit()
@@ -252,7 +253,7 @@ def getStasticTable2(request):
 
 
         
-        query = f'''select count(distinct a.reportID) as 'numReports', count(*) as 'times', min(a.reportID) as 'exReportID', c.word1, c.word2, c.word3, b.word4, b.word5, b.word6, a.targetWord1, a.targetWord2, a.targetWord3, a.targetWord4, a.targetWord5
+        query = f'''select count(distinct a.reportID) as 'numReports', count(*) as 'times', min(a.reportID) as 'exReportID', c.word1, c.word2, c.word3, b.word4, b.word5, b.word6 as 'word6', a.targetWord1, a.targetWord2, a.targetWord3, a.targetWord4, a.targetWord5
 							from (
 											select a.reportID, a.posStart, b.token as 'targetWord1', c.token as 'targetWord2', d.token as 'targetWord3', e.token as 'targetWord4', f.token as 'targetWord5'
 											from (
@@ -305,7 +306,7 @@ def getStasticTable2(request):
 										) as c on b.reportID=c.reportID and c.posEnd=(b.startT4-1)
 						group by a.targetWord1, a.targetWord2, a.targetWord3, a.targetWord4, a.targetWord5,
 											b.word6, b.word5, b.word4, c.word3, c.word2, c.word1
-						order by 1 desc
+						order by 9,8,7,6,5,4
         '''
         cursor.execute(query,[])
         res = cursor.fetchall()

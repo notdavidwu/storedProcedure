@@ -22,6 +22,7 @@ from time import process_time
 from .view_dictionary import *
 from .view_moveRE import *
 from .view_expression import *
+from .view_typo import *
 from datetime import datetime
 import time
 
@@ -261,19 +262,21 @@ def insertVocabulary(request):
         record['nWord'] = request.POST.get('nWord')
         record['tokenType'] = request.POST.get('tokenType')
 
-
-        query = 'select * from [nlpVocabularyLatest  ].[dbo].[Vocabulary] where token = ? and nWord = ?;'
-        args = [request.POST.get('token'),int(request.POST.get('nWord'))]
+        print(record['token'])
+        print(record['nWord'])
+        print(record['tokenType'])
+        query = 'select * from Vocabulary where token = ?;'
+        args = [request.POST.get('token')]
         cursor.execute(query, args)
         tokenID_original = cursor.fetchone()
-        # # # # print("tokenID_original : ", tokenID_original)
+        print("tokenID_original : ", tokenID_original)
 
         
         if tokenID_original == None and request.POST.get('tokenType'):
 
         #插入資料表
-            query = 'INSERT into [nlpVocabularyLatest  ].[dbo].[Vocabulary] (token,nWord,tokenType) OUTPUT [INSERTED].tokenID,[INSERTED].token,[INSERTED].tokenType VALUES (?, ?, ?);'
-            args = [request.POST.get('token'),int(request.POST.get('nWord')),request.POST.get('tokenType')]
+            query = 'INSERT INTO Vocabulary (token,nWord,tokenType, prototype) OUTPUT [INSERTED].tokenID VALUES (?, ?, ?, ?);'
+            args = [request.POST.get('token'),int(request.POST.get('nWord')),request.POST.get('tokenType'), request.POST.get('token')]
             # # # # # print(args)
             cursor.execute(query, args)
             tokenID = cursor.fetchall()
@@ -307,7 +310,7 @@ def insertVocabulary_U(request):
         result = {'status':'1'} #預設失敗
         #建立連線
         server = '172.31.6.22' 
-        database = 'nlpVocabularyLatest ' 
+        database = 'nlpVocabularyLatest'
         username = 'N824' 
         password = 'test81218' 
         conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -4518,7 +4521,55 @@ def selectGroupNodeofRoot(request):
     return JsonResponse(result)
 
 
+def edit_distance(string1, string2):
 
+    if len(string1) > len(string2):
+        difference = len(string1) - len(string2)
+        string1[:difference]
+
+    elif len(string2) > len(string1):
+        difference = len(string2) - len(string1)
+        string2[:difference]
+
+    else:
+        difference = 0
+
+    for i in range(len(string1)):
+        if string1[i] != string2[i]:
+            difference += 1
+
+    return difference
+
+
+@csrf_exempt
+def differenceDistance(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+
+    raw = request.body.decode('utf-8')
+
+    try:        
+        body = json.loads(raw)
+        string1 = body['string1']
+        string2 = body['string2']
+
+        diff = edit_distance(string1, string2)
+        print("diff : ", diff)
+        result['status'] = "0"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
 
 
 
@@ -4564,6 +4615,9 @@ def reportForm(request):
     
 def expression(request):
     return render(request, 'mark/expression.html')
+
+def typo(request):
+    return render(request, 'mark/typo.html')
 class selectVocabulary(ListView):
     model = Text
     template_name = 'selectVocabulary.js'

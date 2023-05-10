@@ -88,9 +88,13 @@ $(document).ready(function (e) {
         searchArticleClick();
     }); 
 
-    //新增按鈕
-    $("#insertDef").click(function(){
-        insertDefButton();
+    //查詢按鈕
+    $("#searchButton").click(function(){
+        var type = $("#itemDefinition_itemType").val();
+        console.log("type : ", type);
+        if (type == "1"){
+            getitemTable();
+        }
         
     }); 
 
@@ -104,32 +108,32 @@ $(document).ready(function (e) {
 
     //初始化
     function init(){
-        var wordsOption = document.getElementById("wordsOption");
-        wordsOption.addEventListener("change", onWordsOptionChange);
-        var inputText = document.getElementById("inputkeywords");
-        inputText.value = "( [Number] )";
-        inputText.innerHTML = "( [Number] )";
+        // var wordsOption = document.getElementById("wordsOption");
+        // wordsOption.addEventListener("change", onWordsOptionChange);
+        // var inputText = document.getElementById("inputkeywords");
+        // inputText.value = "( [Number] )";
+        // inputText.innerHTML = "( [Number] )";
 
         $('#loader').css('display','none');
         $('#frame').css('visibility','visible');
 
-        //console.log("responseItem : ", responseItem);
+        // //console.log("responseItem : ", responseItem);
         
-        getitemTable();
-        // $('#itemDefinition tbody').empty()
-        // let element = '';
-        // for(let i=0;i<responseItem.itemID.length;i++){
-        //     element += `<tr>
-        //         <td>${responseItem.itemID[i]}</td>
-        //         <td>${responseItem.rootID[i]}</td>
-        //         <td>${responseItem.itemName[i]}</td>
-        //         <td>${responseItem.engName[i]}</td>
-        //         <td>${responseItem.chtName[i]}</td>
-        //         <td>${responseItem.itemType[i]}</td>
-        //         </tr>`;
-        // }
-        // $('#itemDefinition tbody').append(element);
-        getEToken();
+        // // getitemTable();
+        // // $('#itemDefinition tbody').empty()
+        // // let element = '';
+        // // for(let i=0;i<responseItem.itemID.length;i++){
+        // //     element += `<tr>
+        // //         <td>${responseItem.itemID[i]}</td>
+        // //         <td>${responseItem.rootID[i]}</td>
+        // //         <td>${responseItem.itemName[i]}</td>
+        // //         <td>${responseItem.engName[i]}</td>
+        // //         <td>${responseItem.chtName[i]}</td>
+        // //         <td>${responseItem.itemType[i]}</td>
+        // //         </tr>`;
+        // // }
+        // // $('#itemDefinition tbody').append(element);
+        // getEToken();
     }
 
     
@@ -149,67 +153,16 @@ $(document).ready(function (e) {
     //儲存按鈕
     function storebtnClick(){
         var autoSelect = document.getElementById("storebtn").autoSelect;
-        var tokenName = document.getElementById("regexName").value;
-        //console.log("tokenName : ", tokenName);
-        if (tokenName === ""){ 
-            Swal.fire({
-                title: '請輸入tokenName',
-                icon: 'error',
-                confirmButtonText: 'ok',
-            })
-            return;
-        }
+        var text = document.getElementById("correct").value;
+        console.log("text : ", text);
+        var words = text.split('\n');
+        console.log("words : ", words);
         
-        var regex = document.getElementById("regexText").value;
-        //console.log("regex : ", regex);
-        if (regex === ""){ 
-            Swal.fire({
-                title: '請輸入RE',
-                icon: 'error',
-                confirmButtonText: 'ok',
-            })
-            return;
-        }
-
-        var extractedArray = [];
-        var keyArray = [];
-        var valueArray = [];
-        Swal.fire({
-            title: '進入下一步確認各項參數?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
-        })
-        .then((result) => {
-            if (result.isConfirmed) {
-                try{
-                    storebtnClickCheck(extractedArray, keyArray, valueArray);
-                    showModal(keyArray, valueArray);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: error,
-                            icon: 'error',
-                            confirmButtonText: 'Ok',
-                        })
-                        return;
-                    }
-                }
-                
-            } else{
-                Swal.fire({
-                    title: 'Request Canceled',
-                    icon: 'info',
-                })
-            }
-        });
     }
 
     //儲存按鈕確認
     function storebtnClickCheck(extractedArray, keyArray, valueArray){            
-        let textToSearch = document.getElementById("regexText").value;                
+        let textToSearch = document.getElementById("correct").value;                
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
         //////console.log("dateFormat: "+ dateFormat);          
@@ -327,186 +280,68 @@ $(document).ready(function (e) {
         }
     }
     
-    //新增itemName按鈕
-    function insertDefButton(){
-        var itemID = document.getElementById("itemDefinition_itemID").value;
-        var rootID = document.getElementById("itemDefinition_rootID").value;
-        var itemName = document.getElementById("itemDefinition_itemName").value;
-        var engName = document.getElementById("itemDefinition_engName").value;
-        var chtName = document.getElementById("itemDefinition_chtName").value;
-        var itemType = document.getElementById("itemDefinition_itemType").value;
-        var rootName = "";
-        //console.log("itemID : ", itemID);
-        //console.log("rootID : ", rootID);
-        //console.log("itemName : ", itemName);
-        //console.log("engName : ", engName);
-        //console.log("chtName : ", chtName);
-        //console.log("itemType : ", itemType);
-        if (rootID === "0"){
-            rootName = "無";
-        }
-        else{
-            var response = searchItem(rootID);
-            //console.log("response : ", response);
-            printResult(response);
-            rootName = response.chtName;
-        }
-        Swal.fire({
-            title: 'Create a new itemDefinition ?',
-            html: "rootName : " + rootName,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
-        })
-        .then((result) => {
-            if (result.isConfirmed) {
-                var resInsert = insertItemDefinition1(itemID, rootID, itemName, engName, chtName, itemType);  
-                printResult(resInsert);
-                
-                getitemTable();
-                // var response = getItemDefinition();
-                // responseformodal = response;
-                // //console.log("response : ", response);
-                
-                // $('#itemDefinition tbody').empty()
-                // let element = '';
-                // for(let i=0;i<response.itemID.length;i++){
-                //     element += `<tr>
-                //         <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.itemID[i]}</td>
-                //         <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.rootID[i]}</td>
-                //         <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${response.itemName[i]}</td>
-                //         <td class="double-clickable-engName" style="user-select : none; cursor: pointer;" >${response.engName[i]}</td>
-                //         <td class="double-clickable-chtName" style="user-select : none; cursor: pointer;" >${response.chtName[i]}</td>
-                //         <td class="double-clickable-itemType" style="user-select : none; cursor: pointer;" >${responseItem.itemType[i]}</td>
-                //         </tr>`;
-                // }
-                // $('.double-clickable-itemID').on('dblclick', function() {
-                //     getitemID();
-                // });
-                // $('.double-clickable-itemName').on('dblclick', function() {
-                //     getitemName();
-                // });
-                // $('.double-clickable-engName').on('dblclick', function() {
-                //     getengName();
-                // });
-                // $('.double-clickable-chtName').on('dblclick', function() {
-                //     getchtName();
-                // });
-                // $('.double-clickable-itemType').on('dblclick', function() {
-                //     getitemType();
-                // });
-                // $('#itemDefinition tbody').append(element);
-            } else{
-                Swal.fire({
-                    title: 'Request Canceled',
-                    icon: 'info',
-                })
-            }
-        });
-    }
+    
 
     function getitemTable(){
         console.log("getitemTable in ");
         
-        responseItem = getItemDefinition();
+        responseItem = getTypoToken();
         responseformodal = responseItem;
         response = responseItem;
         //console.log("response : ", response);
         
         $('#itemDefinition tbody').empty();
         let element = '';
-        for(let i=0;i<response.itemID.length;i++){
+        for(let i=0;i<response.tokenID1.length;i++){
             element += `<tr>
-                <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.itemID[i]}</td>
-                <td class="double-clickable-itemID" style="user-select : none; cursor: pointer;" >${response.rootID[i]}</td>
-                <td class="double-clickable-itemName" style="user-select : none; cursor: pointer;" >${response.itemName[i]}</td>
-                <td class="double-clickable-engName" style="user-select : none; cursor: pointer;" >${response.engName[i]}</td>
-                <td class="double-clickable-chtName" style="user-select : none; cursor: pointer;" >${response.chtName[i]}</td>
-                <td class="double-clickable-itemType" style="user-select : none; cursor: pointer;" >${responseItem.itemType[i]}</td>
+                <td class="double-clickable-correct" style="user-select : none; cursor: pointer;" tokenID=${response.tokenID1[i]}>${response.token1[i]}</td>
+                <td class="double-clickable-wrong" style="user-select : none; cursor: pointer;" tokenID=${response.tokenID2[i]}>${response.token2[i]}</td>
                 </tr>`;
         }
         
         $('#itemDefinition tbody').append(element);
-        $('.double-clickable-itemID').on('dblclick', function() {
-            getitemID();
+        $('.double-clickable-correct').on('dblclick', function() {
+            getCorrect();
         });
-        $('.double-clickable-itemName').on('dblclick', function() {
-            getitemName();
-        });
-        $('.double-clickable-engName').on('dblclick', function() {
-            getengName();
-        });
-        $('.double-clickable-chtName').on('dblclick', function() {
-            getchtName();
-        });
-        $('.double-clickable-itemType').on('dblclick', function() {
-            getitemType();
+        $('.double-clickable-wrong').on('dblclick', function() {
+            getWrong();
         });
         
     }
 
-    //取得雙擊元素itemID
-    function getitemID(){
+    //取得雙擊元素correct
+    function getCorrect(){
         console.log("target : ", event.target);
-        var element = document.getElementById("itemDefinition_itemID");
-        element.value = event.target.innerHTML;
-        element.innerHTML = event.target.innerHTML;
-        emphasizeInput(element);
-    }
-
-    //取得雙擊元素itemName
-    function getitemName(){
-        console.log("target : ", event.target);
-        var element = document.getElementById("itemDefinition_itemName");
-        element.value = event.target.innerHTML;
-        element.innerHTML = event.target.innerHTML;
-        emphasizeInput(element);
-    }
-
-    //取得雙擊元素engName
-    function getengName(){
-        console.log("target : ", event.target);
-        var element = document.getElementById("itemDefinition_engName");
-        element.value = event.target.innerHTML;
-        element.innerHTML = event.target.innerHTML;
-        emphasizeInput(element);
-    }
-
-    //取得雙擊元素chtName
-    function getchtName(){
-        console.log("target : ", event.target);
-        var element = document.getElementById("itemDefinition_chtName");
-        element.value = event.target.innerHTML;
-        element.innerHTML = event.target.innerHTML;
-        emphasizeInput(element);
-    }
-
-    //取得雙擊元素itemType
-    function getitemType(){
-        // console.log("target : ", event.target);
-        // var element = document.getElementById("itemDefinition_itemType");
-        // element.value = event.target.innerHTML;
-        // element.innerHTML = event.target.innerHTML;
-        // emphasizeInput(element);
-        console.log("target : ", event.target);
-        var selectedItemType = event.target.innerHTML.trim();
-        var itemTypeOptions = document.querySelectorAll('#itemDefinition_itemType option');
-        for (var i = 0; i < itemTypeOptions.length; i++) {
-            var optionValue = itemTypeOptions[i].getAttribute('value').trim();
-            if (optionValue === selectedItemType) {
-                itemTypeOptions[i].selected = true;
-                break;
-            }
+        var element = document.getElementById("correct");
+        if(element.value != ""){
+            element.value += "\n" + event.target.innerHTML;
+            element.innerHTML += "\n" + event.target.innerHTML;
         }
-        var element = document.getElementById("itemDefinition_itemType");
-        // element.innerHTML = element.options[element.selectedIndex].innerHTML;
+        else{
+            element.value += event.target.innerHTML;
+            element.innerHTML += event.target.innerHTML;
+        }
+        emphasizeInput(element);
+    }
+
+    //取得雙擊元素wrong
+    function getWrong(){
+        console.log("target : ", event.target);
+        var element = document.getElementById("wrong");
+        if(element.value != ""){
+            element.value += "\n" + event.target.innerHTML;
+            element.innerHTML += "\n" + event.target.innerHTML;
+        }
+        else{
+            element.value += event.target.innerHTML;
+            element.innerHTML += event.target.innerHTML;
+        }
         emphasizeInput(element);
     }
 
     //查看報告
     function collapseButtonClick(){
-        let textToSearch = document.getElementById("regexText").value;
+        let textToSearch = document.getElementById("correct").value;
                         
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
@@ -802,13 +637,13 @@ $(document).ready(function (e) {
         });
     }
 
-    //取得所有itemName
-    function getItemDefinition(){
+    //取得所有tokenTypo
+    function getTypoToken(){
         var res;
         $.ajax({
             async:false,
-            type: 'GET',
-            url: '{% url "mark:getItemDefinition" %}',
+            type: 'POST',
+            url: '{% url "mark:getTypoToken" %}',
             success:function (response){
                 res = response;
                 //console.log(response, res);
@@ -883,12 +718,12 @@ $(document).ready(function (e) {
                         <td><button class="btn btn-secondary" onclick="getREofRecord()">${i+1}</button></td>
                         <td>${response.numReports[i]}</td>
                         <td>${response.times[i]}</td>
-                        <td class="show" word="word1">${response.word1[i]}</td>
-                        <td class="show" word="word2">${response.word2[i]}</td>
-                        <td class="show" word="word3">${response.word3[i]}</td>
-                        <td class="show" word="word4">${response.word4[i]}</td>
-                        <td class="show" word="word5">${response.word5[i]}</td>
-                        <td class="show" word="word6">${response.word6[i]}</td>
+                        <td class="show">${response.word1[i]}</td>
+                        <td class="show">${response.word2[i]}</td>
+                        <td class="show">${response.word3[i]}</td>
+                        <td class="show">${response.word4[i]}</td>
+                        <td class="show">${response.word5[i]}</td>
+                        <td class="show">${response.word6[i]}</td>
                         <td class="show">${response.targetWord1[i]}</td>
                         <td class="show">${response.targetWord2[i]}</td>
                         <td class="show">${response.targetWord3[i]}</td>
@@ -972,12 +807,12 @@ $(document).ready(function (e) {
                     <td><button class="btn btn-secondary" onclick="getREofRecord2()">${i+1}</button></td>
                     <td>${response.numReports[i]}</td>
                     <td>${response.times[i]}</td>
-                    <td class="show" word="word1">${response.word1[i]}</td>
-                    <td class="show" word="word2">${response.word2[i]}</td>
-                    <td class="show" word="word3">${response.word3[i]}</td>
-                    <td class="show" word="word4">${response.word4[i]}</td>
-                    <td class="show" word="word5">${response.word5[i]}</td>
-                    <td class="show" word="word6">${response.word6[i]}</td>
+                    <td class="show">${response.word1[i]}</td>
+                    <td class="show">${response.word2[i]}</td>
+                    <td class="show">${response.word3[i]}</td>
+                    <td class="show">${response.word4[i]}</td>
+                    <td class="show">${response.word5[i]}</td>
+                    <td class="show">${response.word6[i]}</td>
                     <td class="show">${response.targetWord1[i]}</td>
                     <td class="show">${response.targetWord2[i]}</td>
                     <td class="show">${response.targetWord3[i]}</td>
@@ -1000,7 +835,7 @@ $(document).ready(function (e) {
         highLight = document.getElementById('flexRadioDefault1')
         if (highLight.checked == true) {
             //定義輸入的regex值存進變數
-            let textToSearch = document.getElementById("regexText").value; 
+            let textToSearch = document.getElementById("correct").value; 
 
             //定義輸入的文本存進變數
             let text = document.getElementById("inputText");
@@ -1062,8 +897,8 @@ $(document).ready(function (e) {
         exTract = document.getElementById('flexRadioDefault2')
         if (exTract.checked == true) {
             //定義輸入的regex值存進變數
-            let textToSearch = document.getElementById("regexText").value; 
-            let table_regex = document.getElementById("regexText").value;
+            let textToSearch = document.getElementById("correct").value; 
+            let table_regex = document.getElementById("correct").value;
 
             //定義輸入的文本存進變數
             let text = document.getElementById("inputText");
@@ -1277,7 +1112,7 @@ $(document).ready(function (e) {
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
         
-        var response = getItemDefinition();
+        var response = getTypoToken();
         var nameArray = response.itemName;   
         var chtArray = response.chtName;   
         var itemIDArray = response.itemID;
@@ -1333,16 +1168,7 @@ $(document).ready(function (e) {
 
         // add a click event listener to the button
         button.addEventListener('click', function() {
-            
-            var tableWord = document.getElementById("wordsOption").value;
-            if (tableWord === "1"){
-                hideElement("stasticsTable");
-            }
-            else if (tableWord === "2"){                
-                hideElement("stasticsTable2");
-            }
-
-
+                 
             var html = "";
             var itemName = [];
             for (let i = 0; i<keyArray.length; i++) {      
@@ -1370,8 +1196,6 @@ $(document).ready(function (e) {
             })
             .then((result) => {
                 if (result.isConfirmed) {
-                    //放在這
-
                     Swal.fire({
                         title: 'Data Saved',
                         icon: 'success',
@@ -1398,104 +1222,6 @@ $(document).ready(function (e) {
 
         // append the button to the document body
         container.appendChild(button);
-    }
-
-    function hideElement(tableid){
-        var from = document.getElementById("storebtn").getAttribute("from");
-        var to = document.getElementById("storebtn").getAttribute("to");
-        var no = document.getElementById("storebtn").getAttribute("no");
-        console.log("from : ", from);
-        console.log("to : ", to);
-        var t = document.getElementById(tableid);
-        console.log("t : ", t);
-        
-        var b = t.getElementsByTagName("tbody")[0];
-
-        var d = b.getElementsByTagName("tr")[no-1];
-        console.log("d : ", d);
-        var word1 = d.getElementsByTagName("td")[3];
-        var word2 = d.getElementsByTagName("td")[4];
-        var word3 = d.getElementsByTagName("td")[5];
-        var word4 = d.getElementsByTagName("td")[6];
-        var word5 = d.getElementsByTagName("td")[7];
-        var word6 = d.getElementsByTagName("td")[8];
-        
-        console.log("word1 : ", word1.innerHTML);
-        console.log("word2 : ", word2.innerHTML);
-        console.log("word3 : ", word3.innerHTML);
-        console.log("word4 : ", word4.innerHTML);
-        console.log("word5 : ", word5.innerHTML);
-        console.log("word6 : ", word6.innerHTML);
-
-        var alltr = b.getElementsByTagName("tr");
-        var totalText = "";
-        for(var i=0 ; i<alltr.length ; i++){
-            var error = 0;
-            var word1all = alltr[i].getElementsByTagName("td")[3];
-            var word2all = alltr[i].getElementsByTagName("td")[4];
-            var word3all = alltr[i].getElementsByTagName("td")[5];
-            var word4all = alltr[i].getElementsByTagName("td")[6];
-            var word5all = alltr[i].getElementsByTagName("td")[7];
-            var word6all = alltr[i].getElementsByTagName("td")[8];
-        
-            // console.log("word1all : ", word1all);
-            // console.log("word2all : ", word2all);
-            // console.log("word3all : ", word3all);
-            // console.log("word4all : ", word4all);
-            // console.log("word5all : ", word5all);
-            // console.log("word6all : ", word6all);
-            if(word6all.innerHTML === word6.innerHTML){                    
-                totalText += "\n";
-                totalText += word6all.innerHTML + " ";
-                //console.log(word6all.innerHTML, word6.innerHTML);
-                //console.log("match");
-                //console.log(alltr[i]);
-                if (from <= 4 && word5all.innerHTML === word5.innerHTML){
-                    totalText += word5all.innerHTML + " ";
-                    //console.log(alltr[i]);                        
-                    if (from <= 3 && word4all.innerHTML === word4.innerHTML){
-                        totalText += word4all.innerHTML + " ";
-                        //console.log(alltr[i]);
-                        if (from <= 2 && word3all.innerHTML === word3.innerHTML){
-                        totalText += word3all.innerHTML + " ";
-                        //console.log(alltr[i]);                                
-                            if (from <= 1 && word2all.innerHTML === word2.innerHTML){
-                            totalText += word2all.innerHTML + " ";
-                            //console.log(alltr[i]);
-                                if (from <= 0 && word1all.innerHTML === word1.innerHTML){
-                                totalText += word1all.innerHTML + " ";
-                                //console.log(alltr[i]);
-                                }
-                                else if(word1all.innerHTML != word1.innerHTML){
-                                    error = 1;
-                                }
-                            }
-                            else if(word2all.innerHTML != word2.innerHTML){
-                                error = 1;
-                            }
-                        }
-                        else if(word3all.innerHTML != word3.innerHTML){
-                            error = 1;
-                        }
-                    }
-                    else if(word4all.innerHTML != word4.innerHTML){
-                        error = 1;
-                    }
-                }
-                else if(word5all.innerHTML != word5.innerHTML){
-                    error = 1;
-                }
-            }
-            else if(word6all.innerHTML != word6.innerHTML){
-                error = 1;
-            }
-            // console.log(alltr[i]);
-            if (error != 1){
-                console.log(alltr[i]);
-                alltr[i].style.display = "none";
-            }
-        }
-        console.log("totalText : ", totalText);
     }
 
     //輸入元素強調
@@ -1546,7 +1272,7 @@ $(document).ready(function (e) {
     function BtnClicked_2(response,itemName){
         ////console.log("btnclicked_2 : " + response.data[0].tokenID)
         tokenID = response.data[0].tokenID;        
-        regex = document.getElementById('regexText').value
+        regex = document.getElementById('correct').value
         ////console.log("tokenID : " + tokenID);
 
         $.ajax({
@@ -1703,7 +1429,7 @@ $(document).ready(function (e) {
                                 //console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
-                                console.log("resgroupNode : ", resgroupNode);
+                                //console.log("resgroupNode : ", resgroupNode);
                                 printResult(resgroupNode);
                                 var groupNodeArray = resgroupNode.chtName;
                                 element = `<select class="form-select" id="groupNodeSelect">`
@@ -1822,7 +1548,7 @@ $(document).ready(function (e) {
         //             var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType);  
         //             printResult(resInsert);
                     
-        //             var response = getItemDefinition();
+        //             var response = getTypoToken();
         //             responseformodal = response;
         //             //console.log("response : ", response);
                     
@@ -1855,7 +1581,6 @@ $(document).ready(function (e) {
         responseformodal = responseItem;
         var nameArray = responseformodal.itemName;   
         var chtArray = responseformodal.chtName;
-        var engArray = responseformodal.engName;
         var itemIDArray = responseformodal.itemID;
         var rootIDArray = responseformodal.rootID;
         var itemTypeArray = responseformodal.itemType;
@@ -1900,8 +1625,6 @@ $(document).ready(function (e) {
         itemID.placeholder = `input itemID, 目前最大值為 : ${itemIDArray[length-1]}`;
         itemID.className = "form-control";
         itemID.id = "inputItemID";
-        itemID.innerHTML = itemIDArray[length-1]+1;
-        itemID.value = itemIDArray[length-1]+1;
         container.appendChild(itemID); // append the dropdown to the container element
 
         
@@ -1919,8 +1642,6 @@ $(document).ready(function (e) {
         container.appendChild(number); // append the dropdown to the container element
         var element = "";
         // console.log("internalNodeID : ", internalNodeID);
-        var chtname = "";
-        var engname = "";
         for (let j = 0; j < nameArray.length; j++) {
             var option = document.createElement('option');
             option.text = itemIDArray[j].toString() + " | " + nameArray[j] + " | " + chtArray[j]; 
@@ -1932,12 +1653,9 @@ $(document).ready(function (e) {
             // console.log("itemIDArray[j] : ", itemIDArray[j]);
             if(itemIDArray[j].toString() === internalNodeID){
                 option.setAttribute('selected', true);
-                chtname = chtArray[j];
-                engname = engArray[j];
             }
         }
         container.appendChild(dropdown1); 
-        dropdown1.setAttribute("disabled", true);
 
 
         //itemName
@@ -1970,8 +1688,6 @@ $(document).ready(function (e) {
         engName.placeholder = "input engName";
         engName.className = "form-control";
         engName.id = "inputEngName";
-        engName.innerHTML = engname;
-        engName.value = engname;
         container.appendChild(engName); // append the dropdown to the container element
 
         
@@ -1983,8 +1699,6 @@ $(document).ready(function (e) {
         chtName.placeholder = "input chtName";
         chtName.className = "form-control";
         chtName.id = "inputChtName";
-        chtName.innerHTML = chtname;
-        chtName.value = chtname;
         container.appendChild(chtName); // append the dropdown to the container element
 
         //綁定group1
@@ -2007,7 +1721,7 @@ $(document).ready(function (e) {
         }
         container.appendChild(dropdown1); 
         console.log("tableType : ", tableType);
-        // if(tableType === "5"){
+        if(tableType === "5"){
             //綁定group2
             var dropdown1 = document.createElement('select'); // create a new dropdown element
             dropdown1.className = "form-select";
@@ -2028,7 +1742,7 @@ $(document).ready(function (e) {
             }
             container.appendChild(dropdown1); 
 
-        // }
+        }
 
         
         //itemType
@@ -2133,10 +1847,10 @@ $(document).ready(function (e) {
                             var groupID1 = document.getElementById("group1").value;
                             
                             groupingID.push(groupID1);
-                            // if(tableType === "5"){                            
+                            if(tableType === "5"){                            
                                 var groupID2 = document.getElementById("group2").value;
                                 groupingID.push(groupID2);
-                            // }
+                            }
                             if (itemID == ""){
                                 // Swal.fire({
                                 //     title: 'itemID不可為空',
@@ -2160,7 +1874,7 @@ $(document).ready(function (e) {
                                 if (resInsert.status === "0"){
                                     
                                     getitemTable();
-                                    // var response = getItemDefinition();
+                                    // var response = getTypoToken();
                                     // responseformodal = response;
                                     // //console.log("response : ", response);
                         
@@ -2388,7 +2102,7 @@ $(document).ready(function (e) {
                                 //console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
-                                console.log("resgroupNode : ", resgroupNode);
+                                //console.log("resgroupNode : ", resgroupNode);
                                 printResult(resgroupNode);
                                 var groupNodeArray = resgroupNode.chtName;
                                 element = `<select class="form-select" id="groupNodeSelect">`
@@ -2399,7 +2113,7 @@ $(document).ready(function (e) {
 
                                 var element1 = `<select class="form-select" id="groupNodeSelect1">`
                                 for(var i=0 ; i<groupNodeArray.length ; i++){
-                                    element1 += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}" selected>${groupNodeArray[i].itemName}</option>`
+                                    element1 += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}">${groupNodeArray[i].itemName}</option>`
                                 }
                                 element1 += `</select>`
                                 
@@ -2419,13 +2133,6 @@ $(document).ready(function (e) {
                                             //console.log("groupNodeSelect : ", groupNodeSelect.value);
                                             var selectedGroup = groupNodeSelect.value;
                                             var selectedGroup1 = groupNodeSelect1.value;
-                                            if(selectedGroup === selectedGroup1){
-                                                Swal.fire({
-                                                    title: '不可選擇相同item',
-                                                    icon: 'error',
-                                                    confirmButtonText: 'ok',
-                                                })
-                                            }
                                             selectLeading = chtNameleading;
                                             //console.log("selectLeading : ", selectLeading);
                                             showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1);
@@ -2545,13 +2252,6 @@ $(document).ready(function (e) {
             const dropdown = document.createElement('select'); // create a new dropdown element
             dropdown.className = "form-select";
             dropdown.id = `selectItem${i}`;
-            
-            
-            // dropdown.onchange = () => {
-            //     var selectedOption = this.options[0];
-            //     console.log("selectedOption : ", selectedOption);
-            // };
-
             var element = "";
             for (var j = 0; j < textArray.length; j++) {
                 //element += `<tr>
@@ -2571,7 +2271,6 @@ $(document).ready(function (e) {
                 //     //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 //     option.setAttribute('selected', true);
                 // }
-                option.setAttribute('position', j);
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-2)){
                     option.setAttribute('selected', true);
                 }
@@ -2701,15 +2400,6 @@ $(document).ready(function (e) {
                 }
             }
 
-            
-            var from = $("#selectItem0").find(':selected').attr("position");
-            console.log("from : ", from);
-            
-            var to = $("#selectItem1").find(':selected').attr("position");
-            console.log("to : ", to);
-
-            var no = $(target).parents('tr').children('td').eq(0).children('button').html();
-            console.log("no : ", no);
 
             var html = `<div class="form-floating mb-3">
                         <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
@@ -2727,14 +2417,9 @@ $(document).ready(function (e) {
             .then((result) => {
                 if (result.isConfirmed) {
                     // //console.log("success");
-                    var storeButton = document.getElementById("storebtn");
-                    storeButton.setAttribute("from", from);
-                    storeButton.setAttribute("to", to);
-                    storeButton.setAttribute("no", no);
-
                     var regexFinished = document.getElementById("floatingInput").value;
-                    document.getElementById("regexText").innerHTML = regexFinished;
-                    document.getElementById("regexText").value = regexFinished;
+                    document.getElementById("correct").innerHTML = regexFinished;
+                    document.getElementById("correct").value = regexFinished;
                     modal.style.display = "none";
                     //console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
@@ -2744,9 +2429,8 @@ $(document).ready(function (e) {
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
-                    var regexText = document.querySelector('#regexText');
-                    emphasizeInput(regexText);
-
+                    var correct = document.querySelector('#correct');
+                    emphasizeInput(correct);
                 } 
                 else{
                     //console.log("fail");
@@ -3055,14 +2739,7 @@ $(document).ready(function (e) {
 
 
 
-            var from = $("#selectItem0").find(':selected').attr("position");
-            console.log("from : ", from);
-            
-            var to = $("#selectItem1").find(':selected').attr("position");
-            console.log("to : ", to);
 
-            var no = $(target).parents('tr').children('td').eq(0).children('button').html();
-            console.log("no : ", no);
 
 
             //console.log("textArray : ", textArray);
@@ -3087,16 +2764,10 @@ $(document).ready(function (e) {
                             confirmButtonText: 'ok',
                         })
                     }
-                    
-                    var storeButton = document.getElementById("storebtn");
-                    storeButton.setAttribute("from", from);
-                    storeButton.setAttribute("to", to);
-                    storeButton.setAttribute("no", no);
-
                     // //console.log("success");
                     var regexFinished = document.getElementById("floatingInput").value;
-                    document.getElementById("regexText").innerHTML = regexFinished;
-                    document.getElementById("regexText").value = regexFinished;
+                    document.getElementById("correct").innerHTML = regexFinished;
+                    document.getElementById("correct").value = regexFinished;
                     modal.style.display = "none";
                     //console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
@@ -3106,8 +2777,8 @@ $(document).ready(function (e) {
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
-                    var regexText = document.querySelector('#regexText');
-                    emphasizeInput(regexText);
+                    var correct = document.querySelector('#correct');
+                    emphasizeInput(correct);
                 } 
                 else{
                     //console.log("fail");

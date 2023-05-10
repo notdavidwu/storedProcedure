@@ -107,5 +107,8 @@ urlpatterns = [
     path('selectInteralNodeofRoot/', selectInteralNodeofRoot, name='selectInteralNodeofRoot'),
     path('selectGroupNodeofRoot/', selectGroupNodeofRoot, name='selectGroupNodeofRoot'),
     path('insertintoItemTrans/', insertintoItemTrans, name='insertintoItemTrans'),
+    path('differenceDistance/', differenceDistance, name='differenceDistance'),
     
+    path('typo/', typo,name="typo"),
+    path('getTypoToken/', getTypoToken,name="getTypoToken"),
 ]

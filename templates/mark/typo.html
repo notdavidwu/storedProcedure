@@ -58,13 +58,20 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+
+        <!-- JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.min.js"></script>
+        
+        
+
         
         
 
         <title>CSMU AIC</title>
     </head>
-{% include 'mark/newReportForm.js.html' %}
-{% include 'mark/newReportForm.css' %}
+{% include 'mark/typo.js.html' %}
+{% include 'mark/typo.css' %}
 
 
 <body >
@@ -78,20 +85,16 @@
     {{ user.last_name|json_script:"hospital" }}
     <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="frame">
-        <div id=pool class="row g-3"> 
-            <div id='firstTag' class="col">
-                <div class="optionbox">
-                    <select class="form-select" id="token1">       
-                    </select>
-                </div>
-            </div>
-            <div id='secondTag' class="col">
-                <div class="optionbox">
-                    <select class="form-select"  id="token2">
-                    </select>
-                </div>
-            </div>
+        <div id=pool class="row g-3">
             
+            <div class="col-md-12">
+                <label for="itemDefinition_itemType" class="form-label">表格種類</label>
+                <select class="form-select" id="itemDefinition_itemType">
+                    <option value="0" selected>Typo 錯別字</option>
+                    <option value="1">Capitalization 大小寫</option>
+                    <option value="2">Plural 單複數</option>
+                </select>
+            </div>
             <div id="search" class="col-12">
                 <button type="button" class="btn btn-primary form-control" id="searchButton">查詢</button>
                 <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
@@ -99,64 +102,13 @@
                     Loading...
                 </button>
             </div>
-            
-            <div id="selectArea" class="col-md-12">
-                <!-- <select class="selectVocabulary" multiple>
-
-                </select> -->
-                <table class='table table-striped-columns' id="itemDefinition">
-                    <thead style="position: sticky;top: 0" class="thead-dark">
-                        <tr>
-                            <th class="header" scope="col">numReport</th>
-                            <th class="header" scope="col">times</th>
-                            <th class="header" scope="col">token</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                
-            </div>
-        </div>
-
-
-        <div id=right class="row g-3">
-            <div class="col-md-12">
-                <label for="itemDefinition_itemType" class="form-label">itemType</label>
-                <select class="form-select" id="itemDefinition_itemType">
-                    <option value="0" selected>0 Root</option>
-                    <option value="1">1 Internal Node</option>
-                    <option value="2">2 Leading Word</option>
-                    <option value="3">3 Group</option>
-                </select>
-            </div>
-            <div class="col-md-12">
-                <label for="FormNme" class="form-label">formName</label>
-                <input type="text" class="form-control" id="FormName">
-            </div>
-            <div class="col-md-12">
-                <label for="itemName" class="form-label">itemName</label>
-                <input type="text" class="form-control" id="itemName">
-            </div>
-            <div class="col-md-12">
-                <label for="token" class="form-label">token</label>
-                <input type="text" class="form-control" id="token">
-            </div>
-            <div id="search" class="col-12">
-                <button type="button" class="btn btn-primary form-control" id="insertDef">新增</button>
-                <button class="btn btn-primary form-control" type="button" id='searchingButton' disabled>
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                    Loading...
-                </button>
-            </div>
 
             <div class="col-md-12" id='itemDefinition_frame'>
-                <table class='table table-striped-columns' id="FormInfo">
+                <table class='table' id="itemDefinition">
                     <thead style="position: sticky;top: 0" class="thead-dark">
                         <tr>
-                            <th class="header" scope="col">formName</th>
-                            <th class="header" scope="col">itemName</th>
-                            <th class="header" scope="col">token</th>
+                            <th class="header" scope="col">token1 小寫</th>
+                            <th class="header" scope="col">token2 大寫</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,13 +117,50 @@
             </div>
            
         </div>
-        
 
-        
+        <div id="statisticsArea">
+            
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    
+                    
+                    <div>
+                        <span class="btn-close" style="user-select: none;" id="closeModal">&times;</span>
+                        <div id="result_data"></div>
+                        </div>
+                    </div>
+            </div>    
+
+
+            <div id="setting" class="row g-3">
+                <div class="col-md-6" id="regexTextArea">
+                    <textarea class="form-control" placeholder="已選取的原字" id="correct" disabled></textarea>
+                </div>
+                <div class="col-md-6" id="regexTextArea1">
+                    <textarea class="form-control" placeholder="已選取的大小寫錯別字" id="wrong" disabled></textarea>
+                </div>
+                
+                <div class="col-md-12" id="countResult">
+                    <p id="count" >目前已選取單字數：</p>
+                </div>               
+            </div>
+
+
+            <!-- 右下 -->
+            <div id="statistics" class="row g-3">
+                <div class="col-md-12" >
+                    <a class='btn btn-primary form-control' id="storebtn" >儲存</a>
+                </div>
+            </div>            
+            <!-- 右下 -->
+
+
+        </div>
+        <div id="view">
+        </div>
     </div>
     <div id="cover">
     <div>
-        
 
 
 </body >
