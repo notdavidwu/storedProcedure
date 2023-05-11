@@ -89,9 +89,9 @@
             
             <div class="col-md-12">
                 <label for="itemDefinition_itemType" class="form-label">表格種類</label>
-                <select class="form-select" id="itemDefinition_itemType">
-                    <option value="0" selected>Typo 錯別字</option>
-                    <option value="1">Capitalization 大小寫</option>
+                <select class="form-select" id="itemDefinition_itemType" onchange="handleItemTypeChange()">
+                    <option value="0" >Typo 錯別字</option>
+                    <option value="1"selected >Capitalization 大小寫</option>
                     <option value="2">Plural 單複數</option>
                 </select>
             </div>
@@ -104,6 +104,8 @@
             </div>
 
             <div class="col-md-12" id='itemDefinition_frame'>
+                
+                <!-- cap -->
                 <table class='table' id="itemDefinition">
                     <thead style="position: sticky;top: 0" class="thead-dark">
                         <tr>
@@ -114,6 +116,19 @@
                     <tbody>
                     </tbody>
                 </table>
+                <!-- cap -->
+
+                <!-- typo -->
+                <table class='table' id="typoTable" style="display: none;">
+                    <thead style="position: sticky;top: 0" class="thead-dark">
+                        <tr>
+                            <th class="header" scope="col">全部token</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <!-- typo -->
             </div>
            
         </div>
@@ -133,17 +148,38 @@
 
 
             <div id="setting" class="row g-3">
+                <!-- cap -->
                 <div class="col-md-6" id="regexTextArea">
                     <textarea class="form-control" placeholder="已選取的原字" id="correct" disabled></textarea>
                 </div>
                 <div class="col-md-6" id="regexTextArea1">
                     <textarea class="form-control" placeholder="已選取的大小寫錯別字" id="wrong" disabled></textarea>
                 </div>
+                <div class="col-md-6" id="countResult">
+                    <p id="countCorrect" >大小寫正確單字數： 0</p>
+                </div>
                 
-                <div class="col-md-12" id="countResult">
-                    <p id="count" >目前已選取單字數：</p>
-                </div>               
+                <div class="col-md-6" id="countResult">
+                    <p id="countWrong" >大小寫錯誤單字數： 0</p>
+                </div>                               
+                <!-- cap -->
+                
+                <!-- typo -->
+                <div class="col-md-6" id="selectedTypo" style="display: none;" >
+                    <textarea class="form-control" placeholder="已選取的原字" id="typoCorrect" disabled></textarea>
+                </div>
+                <div class="col-md-6" id="checkboxDiv" style="display: none;">
+                    <div class="col-md-6 form-check form-check-reverse" id="checkboxDivinside" style="overflow-y: auto; max-height: 300px;">
+                    </div>
+                </div>
+                
+                <div class="col-md-12" id="typoResult"  style="display: none;" >
+                    <p id="countWrong" >已選擇錯別字數： 0</p>
+                </div>       
+                
+                <!-- typo -->
             </div>
+            
 
 
             <!-- 右下 -->

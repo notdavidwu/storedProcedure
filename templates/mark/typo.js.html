@@ -37,63 +37,16 @@ $(document).ready(function (e) {
 
     //初始化
     init();
-    //搜尋按鈕
-    $("#searchbtn").click(function(){
-        //console.log("clicked");
-        var string = document.getElementById("inputkeywords").value;
-        var word = document.getElementById("wordsOption").value;
-        if (word === "1"){
-            var response = getStasticTable(string);
-        }
-        else{
-            var response = getStasticTable2(string);
-        }
-        
-    });
-
-    
-    //查看報告
-    $("#collapseButton").click(function(){
-        collapseButtonClick();
-    });
-
-    //執行按鈕
-    $("#executebtn").click(function(){
-        Highlight_Extract();
-    });
-
-
-    //確認名稱
-    $("#check").click(function(){
-        //////console.log("check clicked");
-        Name = [];
-        Name.push(document.getElementById("regexName").value);
-        //////console.log(name);
-        
-        //不為空檢查，否則顯示不可為空
-        if (Name[0] != ""){
-            tokenTYPE = checkName(Name);
-        }
-        else{
-            Swal.fire({
-                title: '請輸入token',
-                icon: 'error',
-                confirmButtonText: 'ok',
-            })
-        }
-    }); 
-
-    //查詢文章
-    $("#searchArticle").click(function(){
-        searchArticleClick();
-    }); 
 
     //查詢按鈕
     $("#searchButton").click(function(){
         var type = $("#itemDefinition_itemType").val();
-        console.log("type : ", type);
-        if (type == "1"){
+        //console.log("type : ", type);
+        if (type === "1"){
             getitemTable();
+        }
+        else if (type === "0"){
+            getTypoTabletypo();
         }
         
     }); 
@@ -103,6 +56,36 @@ $(document).ready(function (e) {
         storebtnClick();
     });
 })
+    
+
+    function handleItemTypeChange() {
+        var selectedItemType = document.getElementById("itemDefinition_itemType").value;
+        console.log("Selected item type: " + selectedItemType);
+        if (selectedItemType === "1"){
+            document.getElementById("itemDefinition").style.display = "table";
+            document.getElementById("regexTextArea").style.display = "block";
+            document.getElementById("regexTextArea1").style.display = "block";
+            document.getElementById("countCorrect").style.display = "block";
+            document.getElementById("countWrong").style.display = "block";
+
+            document.getElementById("typoTable").style.display = "none";
+            document.getElementById("checkboxDiv").style.display = "none";
+            document.getElementById("selectedTypo").style.display = "none";
+            document.getElementById("typoResult").style.display = "none";
+        }
+        else if (selectedItemType === "0"){            
+            document.getElementById("itemDefinition").style.display = "none";
+            document.getElementById("regexTextArea").style.display = "none";
+            document.getElementById("regexTextArea1").style.display = "none";
+            document.getElementById("countCorrect").style.display = "none";
+            document.getElementById("countWrong").style.display = "none";
+
+            document.getElementById("typoTable").style.display = "table";
+            document.getElementById("checkboxDiv").style.display = "block";
+            document.getElementById("selectedTypo").style.display = "block";
+            document.getElementById("typoResult").style.display = "block";
+        }
+    }
 
 
 
@@ -117,7 +100,7 @@ $(document).ready(function (e) {
         $('#loader').css('display','none');
         $('#frame').css('visibility','visible');
 
-        // //console.log("responseItem : ", responseItem);
+        // ////console.log("responseItem : ", responseItem);
         
         // // getitemTable();
         // // $('#itemDefinition tbody').empty()
@@ -152,20 +135,252 @@ $(document).ready(function (e) {
     
     //儲存按鈕
     function storebtnClick(){
+        try {
+            var table = document.getElementById("itemDefinition_itemType").value;
+            if (table === "1"){
+                CapStore();
+            }
+            else if (table === "0"){
+                TypoStore();
+            }
+            else if (table === "2"){
+
+            }
+            
+
+
+
+        } catch (error) {
+            if (error instanceof Error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: error,
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
+                })
+                return;
+            }
+        }
+    }
+    
+    function TypoStore(){
+        var checkedOptions = getCheckedOptions();
+        console.log("checkedOptions : ", checkedOptions);
+        var correctWord = document.getElementById("typoCorrect").innerHTML;
+        var html = `以下${checkedOptions.length}個單字將會連結到${correctWord}<br>`;
+        for (var i=0 ; i<checkedOptions.length ; i++){
+            html += `${i+1}. ${checkedOptions[i]}<br>`;
+        }
+
+        console.log("html : ", html);
+        Swal.fire({
+            title: '繼續儲存?',
+            html: html,
+            icon: 'question',
+            showCancelButton: true,
+            cancelButtonText:'cancel',
+            confirmButtonText: 'Ok',
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                console.log("isConfirmed");
+                insertTypotypo(correctWord, checkedOptions);
+                // insertTypo(correctWords, wrongWords);                
+                // CapClear();
+            } 
+            else{
+                //console.log("canceled");
+            }
+        });
+        // //確認長度相等
+        // var autoSelect = document.getElementById("storebtn").autoSelect;
+        // var text = document.getElementById("correct").value;
+        // // //console.log("text : ", text);
+        // var correctWords = text.split('\n');
+        // var correctNumber = correctWords.length;
+        // //console.log("correctWords : ", correctWords);
+        // //console.log("correctNumber : ", correctNumber);
+        
+        // text = document.getElementById("wrong").value;
+        // // //console.log("text : ", text);
+        // var wrongWords = text.split('\n');
+        // var wrongNumber = wrongWords.length;
+        // //console.log("wrongWords : ", wrongWords);
+        // //console.log("wrongNumber : ", wrongNumber);
+
+        // if (wrongNumber != correctNumber){
+        //     throw new Error("兩側數目必須相等");
+        // }
+
+        // var diffCorrect = [];
+        // var diffWrong = [];
+        // //確認是大小寫相等字
+        // for(var i=0 ; i<correctWords.length ; i++){
+        //     if (correctWords[i] != wrongWords[i].toLowerCase()){
+        //         //console.log("different : ", correctWords[i], ", ", wrongWords[i]);
+        //         diffCorrect.push(correctWords[i]);
+        //         diffWrong.push(wrongWords[i]);
+        //     }
+        // }
+
+        // //回傳確認與否
+        // if (diffCorrect.length > 0){
+        //     different(diffCorrect, diffWrong, correctWords, wrongWords);
+        // }
+        // else{
+        //     nodifferent(correctWords, wrongWords);
+        // }
+    }
+
+    function CapStore(){
+        //確認長度相等
         var autoSelect = document.getElementById("storebtn").autoSelect;
         var text = document.getElementById("correct").value;
-        console.log("text : ", text);
-        var words = text.split('\n');
-        console.log("words : ", words);
+        // //console.log("text : ", text);
+        var correctWords = text.split('\n');
+        var correctNumber = correctWords.length;
+        //console.log("correctWords : ", correctWords);
+        //console.log("correctNumber : ", correctNumber);
         
+        text = document.getElementById("wrong").value;
+        // //console.log("text : ", text);
+        var wrongWords = text.split('\n');
+        var wrongNumber = wrongWords.length;
+        //console.log("wrongWords : ", wrongWords);
+        //console.log("wrongNumber : ", wrongNumber);
+
+        if (wrongNumber != correctNumber){
+            throw new Error("兩側數目必須相等");
+        }
+
+        var diffCorrect = [];
+        var diffWrong = [];
+        //確認是大小寫相等字
+        for(var i=0 ; i<correctWords.length ; i++){
+            if (correctWords[i] != wrongWords[i].toLowerCase()){
+                //console.log("different : ", correctWords[i], ", ", wrongWords[i]);
+                diffCorrect.push(correctWords[i]);
+                diffWrong.push(wrongWords[i]);
+            }
+        }
+
+        //回傳確認與否
+        if (diffCorrect.length > 0){
+            different(diffCorrect, diffWrong, correctWords, wrongWords);
+        }
+        else{
+            nodifferent(correctWords, wrongWords);
+        }
     }
+
+    
+    function different(diffCorrect, diffWrong, correctWords, wrongWords){
+        //console.log("diffCorrect : ", diffCorrect);
+        //console.log("diffWrong : ", diffWrong);
+        var html = `以下轉換大小寫後不同的字 : <br>`;
+        for (var i=0 ; i<diffCorrect.length ; i++){
+            //console.log("in");
+            html += `${i+1}. [${diffCorrect[i]} , ${diffWrong[i]}]<br>`;
+        }
+        //console.log(html);
+        Swal.fire({
+            title: '繼續儲存?',
+            html: html,
+            icon: 'question',
+            showCancelButton: true,
+            cancelButtonText:'cancel',
+            confirmButtonText: 'Ok',
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //console.log("isConfirmed");
+                
+                insertTypo(correctWords, wrongWords);                
+                CapClear();
+            } 
+            else{
+                //console.log("canceled");
+            }
+        });
+    }
+
+    function nodifferent(correctWords, wrongWords){
+        console.log("in");
+        console.log("correctWords : ", correctWords);
+        console.log("wrongWords : ", wrongWords);
+        var html = `請再次確認 : <br>`;
+        for (var i=0 ; i<correctWords.length ; i++){
+            //console.log("in");
+            html += `${i+1}. [${correctWords[i]} , ${wrongWords[i]}]<br>`;
+        }
+        //console.log(html);
+        Swal.fire({
+            title: '繼續儲存?',
+            html: html,
+            icon: 'question',
+            showCancelButton: true,
+            cancelButtonText:'cancel',
+            confirmButtonText: 'Ok',
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                //console.log("isConfirmed");
+                insertTypo(correctWords, wrongWords);
+                CapClear();
+            } 
+            else{
+                //console.log("canceled");
+            }
+        });
+    }
+    
+
+    function insertTypo(correctWords, wrongWords){
+        console.log("insertTypo");
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'mark:insertTypo' %}",
+            data:JSON.stringify({
+                'insertType': "captalization",
+                'correctWord': correctWords,
+                'wrongWord': wrongWords,
+            }),
+            success:function (response){
+                printResult(response);
+            },
+        });
+    }
+
+    function insertTypotypo(correctWords, wrongWords){
+        console.log("insertTypo");
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'mark:insertTypo' %}",
+            data:JSON.stringify({
+                'insertType': "typo",
+                'correctWord': correctWords,
+                'wrongWord': wrongWords,
+            }),
+            success:function (response){
+                printResult(response);
+            },
+        });
+    }
+
+    function CapClear(){
+        document.getElementById("correct").value = "";
+        document.getElementById("correct").innerHTML = "";
+        document.getElementById("wrong").value = "";
+        document.getElementById("wrong").innerHTML = "";
+    }
+
 
     //儲存按鈕確認
     function storebtnClickCheck(extractedArray, keyArray, valueArray){            
         let textToSearch = document.getElementById("correct").value;                
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
-        //////console.log("dateFormat: "+ dateFormat);          
+        ////////console.log("dateFormat: "+ dateFormat);          
         result_array = []
         var paragraph = document.getElementById("reportText").innerHTML;
         
@@ -175,19 +390,19 @@ $(document).ready(function (e) {
 
         //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
         while(null != (g = dateFormat.exec(paragraph))) {
-            ////console.log("groups: " + g.groups);  // ouput: "a"
-            //console.log("pattern: " + g);
+            //////console.log("groups: " + g.groups);  // ouput: "a"
+            ////console.log("pattern: " + g);
             result_array.push(g.groups);
             extractedArray.push(g[0]);
         }
-        //console.log("result_array : ", result_array);
+        ////console.log("result_array : ", result_array);
         
         var allkeyArray = [];
         var allvalueArray = [];
         for(var i=0 ; i<result_array.length ; i++){
             var  entries = Object.entries(result_array[i]);
             for (const [key, value] of entries) {
-                //console.log(`Key: ${key}, Value: ${value}`);
+                ////console.log(`Key: ${key}, Value: ${value}`);
                 if(!keyArray.includes(key)){
                     keyArray.push(key);
                     valueArray.push(value);
@@ -197,8 +412,8 @@ $(document).ready(function (e) {
             }
         }
 
-        //console.log("extractedArray : ", extractedArray);
-        //console.log("allvalueArray : ", allvalueArray);
+        ////console.log("extractedArray : ", extractedArray);
+        ////console.log("allvalueArray : ", allvalueArray);
         var ex = "";
         var count = 0;
         for(var i=0 ; i<allvalueArray.length ; i++){
@@ -206,8 +421,8 @@ $(document).ready(function (e) {
             count += 1;
         }
 
-        //console.log("keyArray : ", keyArray);
-        //console.log("valueArray : ", valueArray);
+        ////console.log("keyArray : ", keyArray);
+        ////console.log("valueArray : ", valueArray);
         var string = "";
         for(var i=0 ; i<keyArray.length ; i++){
             string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
@@ -220,16 +435,16 @@ $(document).ready(function (e) {
         var lastNum = "";
         var indexOfReports = 0;
         var reportArray = [];
-        //////console.log("check clicked");
+        ////////console.log("check clicked");
         word = document.getElementById("inputkeywords").value;
-        //console.log("word : ", word);
+        ////console.log("word : ", word);
 
         var number = document.getElementById("inputReportNumber").value;
         if (number === ""){
             number = "10";
         }
         
-        //console.log("lastSearch : ", lastSearch);
+        ////console.log("lastSearch : ", lastSearch);
         if (lastSearch != word || lastNum != number){
 
             var responseReport = searchReport(word, number);
@@ -238,8 +453,8 @@ $(document).ready(function (e) {
                 indexOfReports = 0;
                 reportArray = responseReport.data;
 
-                //console.log("report: ", responseReport);
-                //console.log("reportArray: ", reportArray);
+                ////console.log("report: ", responseReport);
+                ////console.log("reportArray: ", reportArray);
                 document.getElementById("inputText").value = reportArray[indexOfReports].Text;
                 document.getElementById("inputText").innerHTML = reportArray[indexOfReports].Text;
                 lastSearch = word;
@@ -283,12 +498,12 @@ $(document).ready(function (e) {
     
 
     function getitemTable(){
-        console.log("getitemTable in ");
+        //console.log("getitemTable in ");
         
-        responseItem = getTypoToken();
+        responseItem = getCapitalToken();
         responseformodal = responseItem;
         response = responseItem;
-        //console.log("response : ", response);
+        ////console.log("response : ", response);
         
         $('#itemDefinition tbody').empty();
         let element = '';
@@ -300,18 +515,155 @@ $(document).ready(function (e) {
         }
         
         $('#itemDefinition tbody').append(element);
-        $('.double-clickable-correct').on('dblclick', function() {
+        $('.double-clickable-correct').on('click', function() {
             getCorrect();
         });
-        $('.double-clickable-wrong').on('dblclick', function() {
+        $('.double-clickable-wrong').on('click', function() {
             getWrong();
         });
         
     }
 
+    function getTypoTable(){
+        //console.log("getitemTable in ");
+        
+        responseItem = getCapitalToken();
+        responseformodal = responseItem;
+        response = responseItem;
+        ////console.log("response : ", response);
+        
+        $('#itemDefinition tbody').empty();
+        let element = '';
+        for(let i=0;i<response.tokenID1.length;i++){
+            element += `<tr>
+                <td class="double-clickable-correct" style="user-select : none; cursor: pointer;" tokenID=${response.tokenID1[i]}>${response.token1[i]}</td>
+                <td class="double-clickable-wrong" style="user-select : none; cursor: pointer;" tokenID=${response.tokenID2[i]}>${response.token2[i]}</td>
+                </tr>`;
+        }
+        
+        $('#itemDefinition tbody').append(element);
+        $('.double-clickable-correct').on('click', function() {
+            getCorrect();
+        });
+        $('.double-clickable-wrong').on('click', function() {
+            getWrong();
+        });
+        
+    }
+    
+    function getTypoTabletypo(){
+        //console.log("getitemTable in ");
+        
+        var response = getTypoToken();
+        ////console.log("response : ", response);
+        
+        $('#typoTable tbody').empty();
+        let element = '';
+        for(let i=0;i<response.tokenID.length;i++){
+            element += `<tr>
+                <td class="double-clickable-typo" style="user-select : none; cursor: pointer;" tokenID=${response.tokenID[i]}>${response.token[i]}</td>
+                </tr>`;
+        }
+        
+        $('#typoTable tbody').append(element);
+        $('.double-clickable-typo').on('click', function() {
+            getTypo();
+        });
+        
+    }
+    //取得雙擊元素correct
+    function getTypo(){
+        //console.log("target : ", event.target);
+        var element = document.getElementById("typoCorrect");
+        element.value = event.target.innerHTML;
+        element.innerHTML = event.target.innerHTML;
+        emphasizeInput(element);
+        var token = event.target.innerHTML;
+        console.log("token : ", token);
+        getTypoTokenDistance(token);
+    }
+
+    function getTypoTokenDistance(token){
+        console.log("insertTypo");
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'mark:getTypoTokenDistance' %}",
+            data:JSON.stringify({
+                'token': token,
+            }),
+            success:function (response){
+                printResult(response);
+                if (response.status === "0"){
+                    //生成option
+                    createOption(response.token);
+                }
+                
+            },
+        });
+    }
+
+    function createOption(tokenArray){
+        var targetDiv = document.getElementById("checkboxDivinside");
+        targetDiv.innerHTML = "";
+        targetDiv.value = "";
+        if (tokenArray.length > 0){
+            for (var i=0 ; i<tokenArray.length ; i++){
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = `myCheckbox${i}`;
+                checkbox.name = `myCheckbox${i}`;
+                checkbox.className = 'class="form-check-input"';
+
+                var label = document.createElement("label");
+                label.innerHTML = tokenArray[i];
+                label.setAttribute("for", `myCheckbox${i}`);
+                label.className = 'class="form-check-label"';
+                label.style = "user-select : none";
+                // Append the checkbox element to the target div
+                targetDiv.appendChild(checkbox);
+                targetDiv.appendChild(label);
+                
+                targetDiv.appendChild(document.createElement("br"));
+            }
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var labels = document.querySelectorAll('label');
+
+            console.log(labels);
+
+            // Loop through the checkboxes and add an event listener to each one
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].addEventListener('click', function() {
+                    this.classList.toggle('checked');
+                    var checkedOptions = getCheckedOptions();
+                    // console.log("checkedOptions : ", checkedOptions);
+                    document.getElementById("typoResult").innerHTML = `已選擇錯別字數： ${checkedOptions.length}`;
+                });
+            }
+        }
+        else{
+            targetDiv.innerHTML = "";
+            targetDiv.value = "";
+            targetDiv.innerHTML = "無資料";
+        }
+    }
+
+    function getCheckedOptions() {
+        var checkboxes = document.querySelectorAll('input[type=checkbox]');
+        var labels = document.querySelectorAll('label');
+        var checkedOptions = [];
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                checkedOptions.push(labels[i+1].innerHTML);
+            }
+        }
+
+        return checkedOptions;
+    }
+
     //取得雙擊元素correct
     function getCorrect(){
-        console.log("target : ", event.target);
+        //console.log("target : ", event.target);
         var element = document.getElementById("correct");
         if(element.value != ""){
             element.value += "\n" + event.target.innerHTML;
@@ -321,12 +673,20 @@ $(document).ready(function (e) {
             element.value += event.target.innerHTML;
             element.innerHTML += event.target.innerHTML;
         }
+        var autoSelect = document.getElementById("storebtn").autoSelect;
+        var text = document.getElementById("correct").value;
+        // //console.log("text : ", text);
+        var correctWords = text.split('\n');
+        var correctNumber = correctWords.length;
+        //console.log("correctWords : ", correctWords);
+        //console.log("correctNumber : ", correctNumber);
+        document.getElementById("countCorrect").innerHTML = `大小寫正確單字數：${correctNumber}`;
         emphasizeInput(element);
     }
 
     //取得雙擊元素wrong
     function getWrong(){
-        console.log("target : ", event.target);
+        //console.log("target : ", event.target);
         var element = document.getElementById("wrong");
         if(element.value != ""){
             element.value += "\n" + event.target.innerHTML;
@@ -336,6 +696,13 @@ $(document).ready(function (e) {
             element.value += event.target.innerHTML;
             element.innerHTML += event.target.innerHTML;
         }
+        var text = document.getElementById("wrong").value;
+        // //console.log("text : ", text);
+        var wrongWords = text.split('\n');
+        var wrongNumber = wrongWords.length;
+        //console.log("wrongWords : ", wrongWords);
+        //console.log("wrongNumber : ", wrongNumber);
+        document.getElementById("countWrong").innerHTML = `大小寫錯誤單字數：${wrongNumber}`;
         emphasizeInput(element);
     }
 
@@ -345,7 +712,7 @@ $(document).ready(function (e) {
                         
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
-        //////console.log("dateFormat: "+ dateFormat);          
+        ////////console.log("dateFormat: "+ dateFormat);          
         result_array = []
         var paragraph = $("#reportText").attr("originalReport");
 
@@ -452,7 +819,7 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        //console.log("reportID" + reportID);     
+        ////console.log("reportID" + reportID);     
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:getReportByReportID' %}',
@@ -475,7 +842,7 @@ $(document).ready(function (e) {
 
     //找文章
     function searchReport(word, number){
-        //console.log("number : ", number);
+        ////console.log("number : ", number);
         var res;
         $.ajax({
             async: false, 
@@ -564,7 +931,7 @@ $(document).ready(function (e) {
 
     //找父節點
     function searchItem(itemID){
-        //console.log("itemID : ", itemID);
+        ////console.log("itemID : ", itemID);
         var res;
         $.ajax({
             async: false, 
@@ -630,11 +997,26 @@ $(document).ready(function (e) {
             sortable: true,
         });
         dlb2.addEventListener('added', function(event){
-            //console.log(event);
+            ////console.log(event);
         });
         dlb2.addEventListener('removed', function(event){
-            //console.log(event);
+            ////console.log(event);
         });
+    }
+
+    //取得所有tokenCapital
+    function getCapitalToken(){
+        var res;
+        $.ajax({
+            async:false,
+            type: 'POST',
+            url: '{% url "mark:getCapitalToken" %}',
+            success:function (response){
+                res = response;
+                ////console.log(response, res);
+            },
+        });
+        return res;
     }
 
     //取得所有tokenTypo
@@ -646,11 +1028,13 @@ $(document).ready(function (e) {
             url: '{% url "mark:getTypoToken" %}',
             success:function (response){
                 res = response;
-                //console.log(response, res);
+                ////console.log(response, res);
             },
         });
         return res;
     }
+
+    
 
     //三字表格
     function getStasticTable(string){
@@ -689,9 +1073,9 @@ $(document).ready(function (e) {
             url: '{% url "mark:getStasticTable" %}',
             success:function (response){
                 res = response;
-                //console.log(response, res);
+                ////console.log(response, res);
                 printResult(response);
-                //console.log("response : ", response);
+                ////console.log("response : ", response);
                 
                 $('#stasticsTable tbody').empty()
                 element = '';
@@ -775,10 +1159,10 @@ $(document).ready(function (e) {
         url: '{% url "mark:getStasticTable2" %}',
         success:function (response){
             res = response;
-            //console.log(response, res);
+            ////console.log(response, res);
             clearInterval(intervalId);
             printResult(response);
-            //console.log("response : ", response);
+            ////console.log("response : ", response);
             
             $('#stasticsTable2 tbody').empty()
             element = '';
@@ -852,8 +1236,8 @@ $(document).ready(function (e) {
                 paragraph = text.value
                 //處理輸入的regex文本
                 textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
-                //////console.log(textToSearch)
-                //////console.log(paragraph)
+                ////////console.log(textToSearch)
+                ////////console.log(paragraph)
                 //將處理好的regex文本定義為新的regex物件
                 try {                
                     let pattern = new RegExp(`${textToSearch}`,"g");                
@@ -861,20 +1245,20 @@ $(document).ready(function (e) {
                     //將輸出文本與regex物件有符合的地方加上<mark>標籤，然後丟到輸出欄位
                     document.getElementById("result").innerHTML = paragraph.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
                     // while(null != (g = pattern.exec(paragraph))) {
-                    //     //console.log("groups: " , g.groups);  // ouput: "a"
-                    //     //console.log("pattern: " , g);
-                    //     //console.log("test: " , g[0], g[1], g[2]);
+                    //     ////console.log("groups: " , g.groups);  // ouput: "a"
+                    //     ////console.log("pattern: " , g);
+                    //     ////console.log("test: " , g[0], g[1], g[2]);
 
                     //     var  entries = Object.entries(g.groups);
                     //     var length = entries.length;
-                    //     //console.log("length of groups : ", length);
-                    //     //console.log("length of groups member : ", length);
+                    //     ////console.log("length of groups : ", length);
+                    //     ////console.log("length of groups member : ", length);
                     //     for (const [key, value] of entries) {
-                    //         //console.log(`Key: ${key}, Value: ${value}`);
+                    //         ////console.log(`Key: ${key}, Value: ${value}`);
                             
                     //     }
                     //     // for (var i=0 ; i<g.groups.length ; i++){
-                    //     //     //console.log("i: ", g.groups[i]);
+                    //     //     ////console.log("i: ", g.groups[i]);
                     //     // }
                     //     //textToSearch.substring(0, g.index) + replacement + textToSearch.substring(g.index + replacement.length);
                     // }
@@ -889,7 +1273,7 @@ $(document).ready(function (e) {
                         return;
                     }
                 }
-                //////console.log(pattern)
+                ////////console.log(pattern)
             }
         }
 
@@ -911,17 +1295,17 @@ $(document).ready(function (e) {
             paragraph = text.value
             //處理輸入的regex文本
             textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
-            //////console.log(textToSearch)
-            //////console.log(paragraph)
+            ////////console.log(textToSearch)
+            ////////console.log(paragraph)
             //將處理好的regex文本定義為新的regex物件
             try {                
                 let pattern = new RegExp(`${textToSearch}`,"g");
-                //////console.log(pattern)
+                ////////console.log(pattern)
                 
                 
                 //將輸出文本與regex物件有符合的地方取代為空白      
                 document.getElementById("result").innerHTML = paragraph.replace(pattern, " ");
-                //////console.log(text.value.match(pattern))
+                ////////console.log(text.value.match(pattern))
                 //抓出被取代的資料 + 排版
                 //extractedArray = text.value.match(pattern);
 
@@ -932,7 +1316,7 @@ $(document).ready(function (e) {
                 //     ex = ex.concat((i+1).toString(), ". ", extractedArray[i], "\n")
                 //     count += 1;
                 // }
-                //console.log("ex:", ex);
+                ////console.log("ex:", ex);
                 if (textToSearch == ""){
                     diaplay_please_input_something();
                 }
@@ -943,16 +1327,16 @@ $(document).ready(function (e) {
                     //開始建立表格
                     //解析輸入的regex
                     let dateFormat = new RegExp(`${textToSearch}`,"g");
-                    //////console.log("dateFormat: "+ dateFormat);          
+                    ////////console.log("dateFormat: "+ dateFormat);          
                     result_array = []
                     //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
                     while(null != (g = dateFormat.exec(paragraph))) {
-                        ////console.log("groups: " + g.groups);  // ouput: "a"
-                        //console.log("pattern: " + g);
+                        //////console.log("groups: " + g.groups);  // ouput: "a"
+                        ////console.log("pattern: " + g);
                         result_array.push(g.groups);
                         extractedArray.push(g[0]);
                     }
-                    //console.log(result_array);
+                    ////console.log(result_array);
                     var keyArray = [];
                     var valueArray = [];
                     
@@ -961,7 +1345,7 @@ $(document).ready(function (e) {
                     for(var i=0 ; i<result_array.length ; i++){
                         var  entries = Object.entries(result_array[i]);
                         for (const [key, value] of entries) {
-                            //console.log(`Key: ${key}, Value: ${value}`);
+                            ////console.log(`Key: ${key}, Value: ${value}`);
                             if(!keyArray.includes(key)){
                                 keyArray.push(key);
                                 valueArray.push(value);
@@ -970,8 +1354,8 @@ $(document).ready(function (e) {
                             allvalueArray.push(value);
                         }
                     }
-                    //console.log("extractedArray : ", extractedArray);
-                    //console.log("allvalueArray : ", allvalueArray);
+                    ////console.log("extractedArray : ", extractedArray);
+                    ////console.log("allvalueArray : ", allvalueArray);
                     var ex = "";
                     var count = 0;
                     for(var i=0 ; i<allvalueArray.length ; i++){
@@ -983,18 +1367,18 @@ $(document).ready(function (e) {
                     document.getElementById("ExtractOutput").innerHTML = ex;
                     document.getElementById("ExtractOutput").value = ex;
 
-                    //console.log("keyArray : ", keyArray);
-                    //console.log("valueArray : ", valueArray);
+                    ////console.log("keyArray : ", keyArray);
+                    ////console.log("valueArray : ", valueArray);
                     var string = "";
                     for(var i=0 ; i<keyArray.length ; i++){
                         string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
                     }
                     // //如果有用named capture groups
                     // if (result_array[0] != null){
-                    //     //////console.log(result_array);
+                    //     ////////console.log(result_array);
                     //     //創建表格元素
                     //     let myTable = document.querySelector('#table');
-                    //     //////console.log(Object.keys(result_array[0]));
+                    //     ////////console.log(Object.keys(result_array[0]));
                     //     let headers = Object.keys(result_array[0]);
                     //     let table = document.createElement('table');
                     //     let headerRow = document.createElement('tr');
@@ -1034,8 +1418,8 @@ $(document).ready(function (e) {
                     //         if (result.isConfirmed) {
                     //             showModal(keyArray, valueArray);
                     //             //if (tokenType === "E"){
-                    //             //    //console.log("result_array : " , result_array);
-                    //             //    ////console.log("save pressed E");
+                    //             //    ////console.log("result_array : " , result_array);
+                    //             //    //////console.log("save pressed E");
                     //             //    //資料到後端儲存
                     //             //    BtnClicked_1(Object.keys(result_array[0]));
                     //             //    document.getElementById("returnbtn").style.visibility = 'visible';
@@ -1071,7 +1455,7 @@ $(document).ready(function (e) {
             if (response.MSG){                
                 Swal.fire({
                     title: 'Success',
-                    text: response.MSG,
+                    html: response.MSG,
                     icon: 'success',
                 })
             }
@@ -1098,7 +1482,7 @@ $(document).ready(function (e) {
     function showModal(keyArray, valueArray) {
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        //console.log("modal : ", modal);
+        ////console.log("modal : ", modal);
 
         var closeButton = document.querySelector('#closeModal');
 
@@ -1106,15 +1490,15 @@ $(document).ready(function (e) {
             modal.style.display = 'none';
         });
 
-        ////console.log("keyArray : ", keyArray);
-        ////console.log("valueArray : ", valueArray);
+        //////console.log("keyArray : ", keyArray);
+        //////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
         
-        var response = getTypoToken();
-        var nameArray = response.itemName;   
-        var chtArray = response.chtName;   
+        var response = getCapitalToken();
+        var nameArray = response.itemName;
+        var chtArray = response.chtName;
         var itemIDArray = response.itemID;
 
         
@@ -1122,7 +1506,7 @@ $(document).ready(function (e) {
         Text.innerHTML = "請確認 REitem 對應<br>";
         
         var LeadingID = $("#storebtn").attr("leadingID");
-        console.log("LeadingID : ", LeadingID);
+        //console.log("LeadingID : ", LeadingID);
         if (LeadingID){
             Text.innerHTML = `已自動選取"${selectLeading}"的相關item<br>`;
         }
@@ -1146,9 +1530,9 @@ $(document).ready(function (e) {
                 option.value = nameArray[j]; // set the text of the option
                 option.itemID = itemIDArray[j]; // set the text of the option
                 dropdown.add(option); // add the option to the dropdown
-                //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 if (nameArray[j] == keyArray[i]){
-                    //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                    ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                     option.setAttribute('selected', true);
                 }
             }
@@ -1173,7 +1557,7 @@ $(document).ready(function (e) {
             var itemName = [];
             for (let i = 0; i<keyArray.length; i++) {      
                 var select = document.getElementById(`selectItem${i}`)
-                //console.log("select : ", select);
+                ////console.log("select : ", select);
                 var selectedValue = select.value.toString();
                 var text = select.innerHTML;
                 var selectedOption = select.options[select.selectedIndex];
@@ -1181,7 +1565,7 @@ $(document).ready(function (e) {
                 // Get the innerHTML value of the selected option element
                 var selectedOptionInnerHTML = selectedOption.innerHTML;
 
-                //console.log("selectedValue : ", selectedValue);
+                ////console.log("selectedValue : ", selectedValue);
                 html += (keyArray[i]).toString() + ": " + selectedOptionInnerHTML + "<br>"
                 itemName.push(selectedValue);
             }
@@ -1204,7 +1588,7 @@ $(document).ready(function (e) {
                     
                     modal.style.display = "none";
                     var itemName1 = $("#storebtn").attr("itemName");
-                    console.log("itemName1 : ", itemName1);
+                    //console.log("itemName1 : ", itemName1);
                     itemName = [];
                     itemName.push(itemName1);
                     BtnClicked_1(itemName);
@@ -1227,7 +1611,7 @@ $(document).ready(function (e) {
     //輸入元素強調
     function emphasizeInput(element) {
         // save the current background color of the input element
-        var currentColor = element.style.backgroundColor;
+        var currentColor = "#E9ECEF";
 
         // set the background color of the input element to the emphasized color
         element.style.backgroundColor = "#BAD6F0";
@@ -1235,21 +1619,21 @@ $(document).ready(function (e) {
         // after a short delay, restore the original background color
         setTimeout(function() {
             element.style.backgroundColor = currentColor;
-        }, 300); // adjust the delay time to match the animation duration in your CSS
+        }, 150); // adjust the delay time to match the animation duration in your CSS
     }
 
     //存檔到後端資料庫
     function BtnClicked_1(itemName){
-        //////console.log("execute in")
-        console.log("itemName : ", itemName);
+        ////////console.log("execute in")
+        //console.log("itemName : ", itemName);
 
 
         token = document.getElementById('regexName').value;
-        //console.log("token : ", token);
+        ////console.log("token : ", token);
         tokenType = "E";
-        ////console.log("tokenType : " + tokenType)
+        //////console.log("tokenType : " + tokenType)
         //count = getLength(token);
-        //////console.log(input,regex)
+        ////////console.log(input,regex)
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:insertVocabulary' %}',
@@ -1259,7 +1643,7 @@ $(document).ready(function (e) {
                 'tokenType': tokenType,                
             },
             success:function (response){
-                ////console.log("result : " + response.status)
+                //////console.log("result : " + response.status)
                 if (tokenType == 'E'){
                     BtnClicked_2(response,itemName);
                 }
@@ -1270,10 +1654,10 @@ $(document).ready(function (e) {
 
     //存檔到後端資料庫
     function BtnClicked_2(response,itemName){
-        ////console.log("btnclicked_2 : " + response.data[0].tokenID)
+        //////console.log("btnclicked_2 : " + response.data[0].tokenID)
         tokenID = response.data[0].tokenID;        
         regex = document.getElementById('correct').value
-        ////console.log("tokenID : " + tokenID);
+        //////console.log("tokenID : " + tokenID);
 
         $.ajax({
             type: 'POST',
@@ -1283,9 +1667,9 @@ $(document).ready(function (e) {
                 'RE': regex,               
             },
             success:function (response){  
-                ////console.log("BtnClicked_2 : ", response)  
+                //////console.log("BtnClicked_2 : ", response)  
                 if (tokenType === 'E' && response.status === '0'){
-                    ////console.log("btnclicked3")
+                    //////console.log("btnclicked3")
                     BtnClicked_3(response,itemName);
                 }
                 
@@ -1298,11 +1682,11 @@ $(document).ready(function (e) {
 
     //存檔到後端資料庫
     function BtnClicked_3(response,itemName){   
-        ////console.log("btnclicked3_itemName " + itemName)  
+        //////console.log("btnclicked3_itemName " + itemName)  
         tokenREID = response.data[0].tokenREID;        
-        ////console.log("btnclicked")
+        //////console.log("btnclicked")
         for (var i=0 ; i< itemName.length ; i++){
-            ////console.log("btnclicked :" + (i+1) + "times")
+            //////console.log("btnclicked :" + (i+1) + "times")
             $.ajax({
                 type: 'POST',
                 url: '{% url 'mark:inserttokenREItem' %}',
@@ -1321,7 +1705,7 @@ $(document).ready(function (e) {
     }
 
     function getREofRecord(){
-        ////console.log(event.target);
+        //////console.log(event.target);
         //showModalReportText(event.target);
         var token1 = $(event.target).parents('tr').children('td').eq(1).html();
         var token2 = $(event.target).parents('tr').children('td').eq(2).html();
@@ -1330,7 +1714,7 @@ $(document).ready(function (e) {
         
         //1. 選root
         var resRoot = selectRoot();
-        //console.log("resRoot : ", resRoot);
+        ////console.log("resRoot : ", resRoot);
         var rootArray = resRoot.chtName;
         var element = `<select class="form-select" id="rootSelect">`
         for(var i=0 ; i<rootArray.length ; i++){
@@ -1361,7 +1745,7 @@ $(document).ready(function (e) {
                 // 2. 選該root的leading
                 
                 var resInternalNode = selectInteralNodeofRoot(rootID, "1");
-                //console.log("resInternalNode : ", resInternalNode);
+                ////console.log("resInternalNode : ", resInternalNode);
                 var internalNodeArray = resInternalNode.chtName;
                 element = `<select class="form-select" id="internalNodeSelect">`
                 if (internalNodeArray == undefined ){
@@ -1391,12 +1775,12 @@ $(document).ready(function (e) {
                 .then((result) => {
                     if (result.isConfirmed) {
                         var internalNodeID = document.getElementById("internalNodeSelect").value;
-                        //console.log("internalNodeID : ", internalNodeID);
+                        ////console.log("internalNodeID : ", internalNodeID);
                         var chtNameInternal = document.getElementById(`internal${internalNodeID}`).innerHTML;
-                        //console.log("chtNameInternal : ", chtNameInternal);
+                        ////console.log("chtNameInternal : ", chtNameInternal);
 
                         var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
-                        //console.log("resLeadingNode : ", resLeadingNode);
+                        ////console.log("resLeadingNode : ", resLeadingNode);
                         
                         element = `<select class="form-select" id="leadingNodeSelect">`
                         if (resLeadingNode.status === "0"){                            
@@ -1421,15 +1805,15 @@ $(document).ready(function (e) {
                             if (result.isConfirmed) {
                                 var leadingID = document.getElementById("leadingNodeSelect").value;
                                 var selectedItemName = $("#leadingNodeSelect option:selected").attr("itemName");
-                                console.log("selectedItemName : ", selectedItemName);
+                                //console.log("selectedItemName : ", selectedItemName);
                                 $("#storebtn").attr("leadingID", leadingID);
                                 $("#storebtn").attr("itemName", selectedItemName);
                                 var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
 
-                                //console.log("leadingID : ", leadingID);
+                                ////console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
-                                //console.log("resgroupNode : ", resgroupNode);
+                                ////console.log("resgroupNode : ", resgroupNode);
                                 printResult(resgroupNode);
                                 var groupNodeArray = resgroupNode.chtName;
                                 element = `<select class="form-select" id="groupNodeSelect">`
@@ -1448,11 +1832,11 @@ $(document).ready(function (e) {
                                     })
                                     .then((result) => {
                                         if (result.isConfirmed) {
-                                            //console.log("target : ", target);
-                                            //console.log("groupNodeSelect : ", groupNodeSelect.value);
+                                            ////console.log("target : ", target);
+                                            ////console.log("groupNodeSelect : ", groupNodeSelect.value);
                                             var selectedGroup = groupNodeSelect.value;
                                             selectLeading = chtNameleading;
-                                            //console.log("selectLeading : ", selectLeading);
+                                            ////console.log("selectLeading : ", selectLeading);
                                             showModalStatics(target, resgroupNode, selectedGroup, selectLeading, leadingID);
                                         }else{
                                             Swal.fire({
@@ -1485,7 +1869,7 @@ $(document).ready(function (e) {
                                 
                                 
                                 var lengthOfRecord = $(target).parents('tr').children('td').length;
-                                //console.log("lengthOfRecord : ", lengthOfRecord);
+                                ////console.log("lengthOfRecord : ", lengthOfRecord);
                                 var text = "";
                                 var textArray = [];
                                 for(var i=1 ; i<lengthOfRecord ; i++){
@@ -1494,7 +1878,7 @@ $(document).ready(function (e) {
                                         textArray.push($(target).parents('tr').children('td').eq(i).html());
                                     }
                                 }
-                                console.log("textArray : ", textArray);
+                                //console.log("textArray : ", textArray);
                                 appendNewleadingNode(target, "3", textArray, internalNodeID, rootID);
                             }
                             else{
@@ -1548,9 +1932,9 @@ $(document).ready(function (e) {
         //             var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType);  
         //             printResult(resInsert);
                     
-        //             var response = getTypoToken();
+        //             var response = getCapitalToken();
         //             responseformodal = response;
-        //             //console.log("response : ", response);
+        //             ////console.log("response : ", response);
                     
         //             $('#itemDefinition tbody').empty()
         //             let element = '';
@@ -1584,11 +1968,11 @@ $(document).ready(function (e) {
         var itemIDArray = responseformodal.itemID;
         var rootIDArray = responseformodal.rootID;
         var itemTypeArray = responseformodal.itemType;
-        console.log("itemTypeArray : ", itemTypeArray);
+        //console.log("itemTypeArray : ", itemTypeArray);
 
         var modal = document.getElementById("modal");
         modal.style.display = "block";
-        //console.log("modal : ", modal);
+        ////console.log("modal : ", modal);
 
         var closeButton = document.querySelector('.btn-close');
 
@@ -1597,13 +1981,13 @@ $(document).ready(function (e) {
         });
 
 
-        ////console.log("keyArray : ", keyArray);
-        ////console.log("valueArray : ", valueArray);
+        //////console.log("keyArray : ", keyArray);
+        //////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
         var lengthOfRecord = $(target).parents('tr').children('td').length;
-        //console.log("lengthOfRecord : ", lengthOfRecord);
+        ////console.log("lengthOfRecord : ", lengthOfRecord);
         var text = "";
         var textArray = [];
         for(var i=1 ; i<lengthOfRecord ; i++){
@@ -1641,7 +2025,7 @@ $(document).ready(function (e) {
         number.innerHTML = text;
         container.appendChild(number); // append the dropdown to the container element
         var element = "";
-        // console.log("internalNodeID : ", internalNodeID);
+        // //console.log("internalNodeID : ", internalNodeID);
         for (let j = 0; j < nameArray.length; j++) {
             var option = document.createElement('option');
             option.text = itemIDArray[j].toString() + " | " + nameArray[j] + " | " + chtArray[j]; 
@@ -1650,7 +2034,7 @@ $(document).ready(function (e) {
             if (itemTypeArray[j] === 1){
                 dropdown1.add(option);
             }
-            // console.log("itemIDArray[j] : ", itemIDArray[j]);
+            // //console.log("itemIDArray[j] : ", itemIDArray[j]);
             if(itemIDArray[j].toString() === internalNodeID){
                 option.setAttribute('selected', true);
             }
@@ -1720,7 +2104,7 @@ $(document).ready(function (e) {
             }
         }
         container.appendChild(dropdown1); 
-        console.log("tableType : ", tableType);
+        //console.log("tableType : ", tableType);
         if(tableType === "5"){
             //綁定group2
             var dropdown1 = document.createElement('select'); // create a new dropdown element
@@ -1757,7 +2141,7 @@ $(document).ready(function (e) {
 
         // add a click event listener to the button
         button.addEventListener('click', function() {
-            // //console.log("確認儲存");
+            // ////console.log("確認儲存");
             var html = "";
             Swal.fire({
                 title: '確認儲存此leadingNode?',
@@ -1808,23 +2192,23 @@ $(document).ready(function (e) {
                     var itemType = "2";
 
                     var rootName = "";
-                    //console.log("itemID : ", itemID);
-                    //console.log("rootID : ", rootID);
-                    //console.log("itemName : ", itemName);
-                    //console.log("engName : ", engName);
-                    //console.log("chtName : ", chtName);
-                    //console.log("itemType : ", itemType);
+                    ////console.log("itemID : ", itemID);
+                    ////console.log("rootID : ", rootID);
+                    ////console.log("itemName : ", itemName);
+                    ////console.log("engName : ", engName);
+                    ////console.log("chtName : ", chtName);
+                    ////console.log("itemType : ", itemType);
                     // if (rootID === "0"){
                     //     rootName = "無";
                     // }
                     // else{
                     //     var response = searchItem(rootID);
-                    //     //console.log("response : ", response);
+                    //     ////console.log("response : ", response);
                     //     // printResult(response);
                     //     rootName = response.chtName;
                     // }
                     
-                    //console.log("rootName : ", rootName);
+                    ////console.log("rootName : ", rootName);
                     var leadingID = [];
                     var groupingID = [];
                     try{
@@ -1860,23 +2244,23 @@ $(document).ready(function (e) {
                                 throw new Error('itemID不可為空');
                             }
                             if (groupID1 != groupID2){
-                                // console.log("leadingID : ", leadingID);
-                                // console.log("groupingID : ", groupingID);
+                                // //console.log("leadingID : ", leadingID);
+                                // //console.log("groupingID : ", groupingID);
                                 // var resTrans = insertLeadingGroup(leadingID, groupingID);
                                 // printResult(resTrans);
                                 // if (resTrans.status != "0"){
                                 //     throw new Error(resTrans.ERRMSG);
                                 // }
-                                console.log("leadingID : ", leadingID);
+                                //console.log("leadingID : ", leadingID);
                                 var resInsert = insertItemDefinition(itemID, rootID, itemName, engName, chtName, itemType, leadingID, groupingID);  
                                 printResult(resInsert);
                                 
                                 if (resInsert.status === "0"){
                                     
                                     getitemTable();
-                                    // var response = getTypoToken();
+                                    // var response = getCapitalToken();
                                     // responseformodal = response;
-                                    // //console.log("response : ", response);
+                                    // ////console.log("response : ", response);
                         
                                     // $('#itemDefinition tbody').empty()
                                     // let element = '';
@@ -1947,7 +2331,7 @@ $(document).ready(function (e) {
             url: '{% url "mark:selectRoot" %}',
             success:function (response){
                 res = response;
-                //console.log("selectRoot : ", response)
+                ////console.log("selectRoot : ", response)
             },
         });
         return res;
@@ -1964,7 +2348,7 @@ $(document).ready(function (e) {
             url: '{% url "mark:selectInteralNodeofRoot" %}',
             success:function (response){
                 res = response;
-                //console.log("selectRoot : ", response)
+                ////console.log("selectRoot : ", response)
             },
         });
         return res;
@@ -1982,13 +2366,13 @@ $(document).ready(function (e) {
             url: '{% url "mark:selectGroupNodeofRoot" %}',
             success:function (response){
                 res = response;
-                //console.log("selectRoot : ", response)
+                ////console.log("selectRoot : ", response)
             },
         });
         return res;
     }
     function getREofRecord2(){
-        ////console.log(event.target);
+        //////console.log(event.target);
         //showModalReportText(event.target);
         // var token1 = $(event.target).parents('tr').children('td').eq(1).html();
         // var token2 = $(event.target).parents('tr').children('td').eq(2).html();
@@ -2001,7 +2385,7 @@ $(document).ready(function (e) {
         
         //1. 選root
         var resRoot = selectRoot();
-        //console.log("resRoot : ", resRoot);
+        ////console.log("resRoot : ", resRoot);
         var rootArray = resRoot.chtName;
         var element = `<select class="form-select" id="rootSelect">`
         for(var i=0 ; i<rootArray.length ; i++){
@@ -2032,7 +2416,7 @@ $(document).ready(function (e) {
                 // 2. 選該root的leading
                 
                 var resInternalNode = selectInteralNodeofRoot(rootID, "1");
-                //console.log("resInternalNode : ", resInternalNode);
+                ////console.log("resInternalNode : ", resInternalNode);
                 var internalNodeArray = resInternalNode.chtName;
                 element = `<select class="form-select" id="internalNodeSelect">`
                 if (internalNodeArray == undefined ){
@@ -2062,12 +2446,12 @@ $(document).ready(function (e) {
                 .then((result) => {
                     if (result.isConfirmed) {
                         var internalNodeID = document.getElementById("internalNodeSelect").value;
-                        //console.log("internalNodeID : ", internalNodeID);
+                        ////console.log("internalNodeID : ", internalNodeID);
                         var chtNameInternal = document.getElementById(`internal${internalNodeID}`).innerHTML;
-                        //console.log("chtNameInternal : ", chtNameInternal);
+                        ////console.log("chtNameInternal : ", chtNameInternal);
 
                         var resLeadingNode = selectInteralNodeofRoot(internalNodeID, "2");
-                        //console.log("resLeadingNode : ", resLeadingNode);
+                        ////console.log("resLeadingNode : ", resLeadingNode);
 
                         
                         
@@ -2094,15 +2478,15 @@ $(document).ready(function (e) {
                             if (result.isConfirmed) {
                                 var leadingID = document.getElementById("leadingNodeSelect").value;
                                 var selectedItemName = $("#leadingNodeSelect option:selected").attr("itemName");
-                                console.log("selectedItemName : ", selectedItemName);
+                                //console.log("selectedItemName : ", selectedItemName);
                                 $("#storebtn").attr("leadingID", leadingID);
                                 $("#storebtn").attr("itemName", selectedItemName);
                                 var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
 
-                                //console.log("leadingID : ", leadingID);
+                                ////console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
-                                //console.log("resgroupNode : ", resgroupNode);
+                                ////console.log("resgroupNode : ", resgroupNode);
                                 printResult(resgroupNode);
                                 var groupNodeArray = resgroupNode.chtName;
                                 element = `<select class="form-select" id="groupNodeSelect">`
@@ -2129,12 +2513,12 @@ $(document).ready(function (e) {
                                     })
                                     .then((result) => {
                                         if (result.isConfirmed) {
-                                            console.log("target : ", target);
-                                            //console.log("groupNodeSelect : ", groupNodeSelect.value);
+                                            //console.log("target : ", target);
+                                            ////console.log("groupNodeSelect : ", groupNodeSelect.value);
                                             var selectedGroup = groupNodeSelect.value;
                                             var selectedGroup1 = groupNodeSelect1.value;
                                             selectLeading = chtNameleading;
-                                            //console.log("selectLeading : ", selectLeading);
+                                            ////console.log("selectLeading : ", selectLeading);
                                             showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1);
                                         }else{
                                             Swal.fire({
@@ -2166,7 +2550,7 @@ $(document).ready(function (e) {
                                 //Swal.fire('Denied', '', 'info');
                                 
                                 var lengthOfRecord = $(target).parents('tr').children('td').length;
-                                //console.log("lengthOfRecord : ", lengthOfRecord);
+                                ////console.log("lengthOfRecord : ", lengthOfRecord);
                                 var text = "";
                                 var textArray = [];
                                 for(var i=1 ; i<lengthOfRecord ; i++){
@@ -2175,7 +2559,7 @@ $(document).ready(function (e) {
                                         textArray.push($(target).parents('tr').children('td').eq(i).html());
                                     }
                                 }
-                                console.log("textArray : ", textArray);
+                                //console.log("textArray : ", textArray);
                                 appendNewleadingNode(target, "5", textArray, internalNodeID, rootID);
                             }
                             else{
@@ -2215,7 +2599,7 @@ $(document).ready(function (e) {
     function showModalStatics(target, resgroupNode, selectedGroup, selectLeading, leadingID) {
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        //console.log("modal : ", modal);
+        ////console.log("modal : ", modal);
 
         var closeButton = document.querySelector('.btn-close');
 
@@ -2224,13 +2608,13 @@ $(document).ready(function (e) {
         });
 
 
-        ////console.log("keyArray : ", keyArray);
-        ////console.log("valueArray : ", valueArray);
+        //////console.log("keyArray : ", keyArray);
+        //////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
         var lengthOfRecord = $(target).parents('tr').children('td').length;
-        //console.log("lengthOfRecord : ", lengthOfRecord);
+        ////console.log("lengthOfRecord : ", lengthOfRecord);
         var text = "";
         var textArray = [];
         for(var i=1 ; i<lengthOfRecord ; i++){
@@ -2266,9 +2650,9 @@ $(document).ready(function (e) {
                 option.value = textArray[j]; 
                 option.id = `option${i.toString()}${j.toString}`; // set the text of the option
                 dropdown.add(option); // add the option to the dropdown
-                // //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 // if (nameArray[j] == keyArray[i]){
-                //     //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 //     option.setAttribute('selected', true);
                 // }
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-2)){
@@ -2381,7 +2765,7 @@ $(document).ready(function (e) {
 
                 var pattern = /[\\^$.|?*+(){[}\]]/g;
                 var matches = textArray[i].match(pattern);
-                //console.log("matches : ", matches);
+                ////console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
                     RE += " ";
                 }
@@ -2405,7 +2789,7 @@ $(document).ready(function (e) {
                         <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
                         <label for="floatingInput">Auto generated RE</label>
                         </div>`
-            //console.log("textArray : ", textArray);
+            ////console.log("textArray : ", textArray);
             Swal.fire({
                 title: '自動填入此RE?',
                 icon: 'question',
@@ -2416,16 +2800,16 @@ $(document).ready(function (e) {
             })
             .then((result) => {
                 if (result.isConfirmed) {
-                    // //console.log("success");
+                    // ////console.log("success");
                     var regexFinished = document.getElementById("floatingInput").value;
                     document.getElementById("correct").innerHTML = regexFinished;
                     document.getElementById("correct").value = regexFinished;
                     modal.style.display = "none";
-                    //console.log("this : ", this.getAttribute("lastReportID"));
+                    ////console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
                     //找report
                     var report = getReportBylastReportID(reportID.toString());
-                    //console.log("report : ", report);
+                    ////console.log("report : ", report);
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
@@ -2433,7 +2817,7 @@ $(document).ready(function (e) {
                     emphasizeInput(correct);
                 } 
                 else{
-                    //console.log("fail");
+                    ////console.log("fail");
                 }                
             });
         });
@@ -2441,16 +2825,16 @@ $(document).ready(function (e) {
         // append the button to the document body
         container.appendChild(button);
 
-        // //console.log("target : ", target.innerHTML);
-        // //console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // ////console.log("target : ", target.innerHTML);
+        // ////console.log("reportID : ", $(target).parents('tr').attr("reportID"));
         // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
     } 
 
     function showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1) {
-        console.log("target : ", target);
+        //console.log("target : ", target);
 		var modal = document.getElementById("modal");
         modal.style.display = "block";
-        //console.log("modal : ", modal);
+        ////console.log("modal : ", modal);
 
         var closeButton = document.querySelector('.btn-close');
 
@@ -2459,13 +2843,13 @@ $(document).ready(function (e) {
         });
 
 
-        ////console.log("keyArray : ", keyArray);
-        ////console.log("valueArray : ", valueArray);
+        //////console.log("keyArray : ", keyArray);
+        //////console.log("valueArray : ", valueArray);
 
         const container = document.getElementById('result_data'); // example container 
         container.innerHTML = ''; // empty the container
         var lengthOfRecord = $(target).parents('tr').children('td').length;
-        //console.log("lengthOfRecord : ", lengthOfRecord);
+        ////console.log("lengthOfRecord : ", lengthOfRecord);
         var text = "";
         var textArray = [];
         for(var i=1 ; i<lengthOfRecord ; i++){
@@ -2474,7 +2858,7 @@ $(document).ready(function (e) {
                 textArray.push($(target).parents('tr').children('td').eq(i).html());
             }
         }
-        console.log("text : ", text);
+        //console.log("text : ", text);
         var number = document.createElement('span');
         number.innerHTML = "Using : " + text;
         container.appendChild(number); // append the dropdown to the container element
@@ -2503,9 +2887,9 @@ $(document).ready(function (e) {
                 option.id = `option${i.toString()}${j.toString}`; // set the text of the option
                 
                 dropdown.add(option); // add the option to the dropdown
-                // //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                // ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 // if (nameArray[j] == keyArray[i]){
-                //     //console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
+                //     ////console.log("nameArray[j], keyArray[i]", nameArray[j], keyArray[i]);
                 //     option.setAttribute('selected', true);
                 // }
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-4) || (i == 3 && j == textArray.length-2)){
@@ -2663,7 +3047,7 @@ $(document).ready(function (e) {
                     itemNum = 1;
                     var pattern = /[\\^$.|?*+(){[}\]]/g;
                     var matches = textArray[i].match(pattern);
-                    //console.log("matches : ", matches);
+                    ////console.log("matches : ", matches);
                     if (textArray[i] == "[SPACE]" ){    
                         RE += " ";
                     }
@@ -2687,7 +3071,7 @@ $(document).ready(function (e) {
                     itemNum = 2;
                     var pattern = /[\\^$.|?*+(){[}\]]/g;
                     var matches = textArray[i].match(pattern);
-                    //console.log("matches : ", matches);
+                    ////console.log("matches : ", matches);
                     if (textArray[i] == "[SPACE]" ){    
                         RE += " ";
                     }
@@ -2708,7 +3092,7 @@ $(document).ready(function (e) {
                 
                 var pattern = /[\\^$.|?*+(){[}\]]/g;
                 var matches = textArray[i].match(pattern);
-                //console.log("matches : ", matches);
+                ////console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
                     RE += " ";
                 }
@@ -2742,7 +3126,7 @@ $(document).ready(function (e) {
 
 
 
-            //console.log("textArray : ", textArray);
+            ////console.log("textArray : ", textArray);
             Swal.fire({
                 title: '自動填入此RE?',
                 icon: 'question',
@@ -2755,8 +3139,8 @@ $(document).ready(function (e) {
                 if (result.isConfirmed) {
                     var item1 = $("#SelectitemName").val();
                     var item2 = $("#SelectitemName1").val();
-                    //console.log("item1 : ", item1);
-                    //console.log("item2 : ", item2);
+                    ////console.log("item1 : ", item1);
+                    ////console.log("item2 : ", item2);
                     if (item1 === item2){
                         Swal.fire({
                             title: 'itemName不可相同',
@@ -2764,16 +3148,16 @@ $(document).ready(function (e) {
                             confirmButtonText: 'ok',
                         })
                     }
-                    // //console.log("success");
+                    // ////console.log("success");
                     var regexFinished = document.getElementById("floatingInput").value;
                     document.getElementById("correct").innerHTML = regexFinished;
                     document.getElementById("correct").value = regexFinished;
                     modal.style.display = "none";
-                    //console.log("this : ", this.getAttribute("lastReportID"));
+                    ////console.log("this : ", this.getAttribute("lastReportID"));
                     var reportID = this.getAttribute("lastReportID");
                     //找report
                     var report = getReportBylastReportID(reportID.toString());
-                    //console.log("report : ", report);
+                    ////console.log("report : ", report);
 
                     var inputElement = document.querySelector('#regexName');
                     emphasizeInput(inputElement);
@@ -2781,7 +3165,7 @@ $(document).ready(function (e) {
                     emphasizeInput(correct);
                 } 
                 else{
-                    //console.log("fail");
+                    ////console.log("fail");
                 }                
             });
         });
@@ -2789,8 +3173,8 @@ $(document).ready(function (e) {
         // append the button to the document body
         container.appendChild(button);
 
-        // //console.log("target : ", target.innerHTML);
-        // //console.log("reportID : ", $(target).parents('tr').attr("reportID"));
+        // ////console.log("target : ", target.innerHTML);
+        // ////console.log("reportID : ", $(target).parents('tr').attr("reportID"));
         // $("#storebtn").attr("lastReportID", $(target).parents('tr').attr("reportID"));
     } 
 

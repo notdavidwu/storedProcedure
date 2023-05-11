@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import connections
 import pyodbc
 import json
-DATABASE_NAME = 'nlpVocabularyLatest' 
+DATABASE_NAME = 'buildVocabulary' 
 
 @csrf_exempt
 def getTag(request):
@@ -22,7 +22,7 @@ def getTag(request):
 @csrf_exempt
 def getItemDefinition(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'buildVocabulary ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -47,7 +47,7 @@ def getItemDefinition(request):
 @csrf_exempt
 def getStasticTable(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'buildVocabulary ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -216,7 +216,7 @@ def getStasticTable(request):
 @csrf_exempt
 def getStasticTable2(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'buildVocabulary ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')

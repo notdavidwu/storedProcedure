@@ -111,4 +111,7 @@ urlpatterns = [
     
     path('typo/', typo,name="typo"),
     path('getTypoToken/', getTypoToken,name="getTypoToken"),
+    path('insertTypo/', insertTypo,name="insertTypo"),
+    path('getCapitalToken/', getCapitalToken,name="getCapitalToken"),
+    path('getTypoTokenDistance/', getTypoTokenDistance,name="getTypoTokenDistance"),
 ]

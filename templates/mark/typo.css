@@ -370,7 +370,7 @@
         margin-top:0px;
         z-index: 0;
     }    
-    #setting > .col-md-6{
+    #setting > .col-md-6 > textarea{
         height:300px;
     }
     #setting > .countResult{
@@ -430,6 +430,11 @@
     top:0;
 }
     #correct{
+        resize:none;
+        height:100%;
+    }
+    
+    #typoCorrect{
         resize:none;
         height:100%;
     }
