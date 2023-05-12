@@ -74,19 +74,31 @@ def getTypoToken(request):
     
     try:        
         # body = json.loads(raw)
-        query = '''select * from Vocabulary where tokenType = 'G' '''
+        query = '''select a.token, count(*) as 'times' from Vocabulary as a 
+        inner join textToken as b 
+        on a.tokenID = b.tokenID 
+        where tokenType = 'G'
+        group by a.token
+        order by times '''
         cursor.execute(query)
         res = cursor.fetchall()
-        # print(res)
-        tokenID1 = [row.tokenID for row in res]
-        token1 = [row.token for row in res]
+        # print(res[0])
+        # tokenID1 = [row.tokenID for row in res]
+        # token1 = [row.token for row in res]
 
         result['status'] = "0"
         
-        result['tokenID'] = tokenID1
-        result['token'] = token1
+        # result['tokenID'] = tokenID1
+        # result['token'] = token1
+        result['data'] = []
+        for i in res:
+            # print(i)
+            result['data'].append({
+                'token': i[0],
+                'times': i[1],
+            })
         conn.commit()
-    
+        print(result['data'])
     except Exception as e:
         conn.rollback()
         result['ERRMSG'] = str(e)

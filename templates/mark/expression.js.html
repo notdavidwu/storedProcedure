@@ -1379,10 +1379,15 @@ $(document).ready(function (e) {
                     })
                     
                     modal.style.display = "none";
-                    var itemName1 = $("#storebtn").attr("itemName");
-                    console.log("itemName1 : ", itemName1);
-                    itemName = [];
-                    itemName.push(itemName1);
+                    var itemName = $("#storebtn").attr("itemName");
+                    console.log("itemName : ", itemName);
+                    itemNameArray = [];
+                    itemNameArray.push(itemName);
+                    var wordNum = document.getElementById("wordsOption").value;
+                    if (wordNum === "2"){
+                        var itemName1 = $("#storebtn").attr("itemName1");
+                        itemNameArray.push(itemName1);
+                    }
                     BtnClicked_1(itemName);
                 } 
                 else{
@@ -1582,23 +1587,23 @@ $(document).ready(function (e) {
         ////console.log("btnclicked3_itemName " + itemName)  
         tokenREID = response.data[0].tokenREID;        
         ////console.log("btnclicked")
-        for (var i=0 ; i< itemName.length ; i++){
-            ////console.log("btnclicked :" + (i+1) + "times")
-            $.ajax({
-                type: 'POST',
-                url: '{% url 'mark:inserttokenREItem' %}',
-                data:{
-                    'tokenREID': tokenREID,
-                    'serialNo': i+1,
-                    'itemName': itemName[i],               
-                },
-                success:function (response){
-                    printResult(response);
-                },
-                fail:function (){              
-                },
-            });
-        }        
+        // for (var i=0 ; i< itemName.length ; i++){
+        //     ////console.log("btnclicked :" + (i+1) + "times")
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'mark:inserttokenREItem' %}',
+            data:{
+                'tokenREID': tokenREID,
+                'serialNo': i+1,
+                'itemName': itemName,
+            },
+            success:function (response){
+                printResult(response);
+            },
+            fail:function (){              
+            },
+        });
+        // }
     }
 
     function getREofRecord(){
@@ -1707,7 +1712,7 @@ $(document).ready(function (e) {
                                 $("#storebtn").attr("itemName", selectedItemName);
                                 var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
 
-                                //console.log("leadingID : ", leadingID);
+                                console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
                                 console.log("resgroupNode : ", resgroupNode);
@@ -2392,12 +2397,13 @@ $(document).ready(function (e) {
                                 $("#storebtn").attr("itemName", selectedItemName);
                                 var chtNameleading = document.getElementById(`leading${leadingID}`).innerHTML;
 
-                                //console.log("leadingID : ", leadingID);
+                                console.log("leadingID : ", leadingID);
 
                                 var resgroupNode = selectGroupNodeofRoot(leadingID, "3");
                                 console.log("resgroupNode : ", resgroupNode);
                                 printResult(resgroupNode);
                                 var groupNodeArray = resgroupNode.chtName;
+                                console.log("groupNodeArray : ", groupNodeArray);
                                 element = `<select class="form-select" id="groupNodeSelect">`
                                 for(var i=0 ; i<groupNodeArray.length ; i++){
                                     element += `<option value="${groupNodeArray[i].itemID}" id="group${groupNodeArray[i].itemID}">${groupNodeArray[i].itemName}</option>`
@@ -2835,6 +2841,8 @@ $(document).ready(function (e) {
                 if ((i == 0 && j == 0) || (i == 1 && j == textArray.length-1) || (i == 2 && j == textArray.length-4) || (i == 3 && j == textArray.length-2)){
                     option.setAttribute('selected', true);
                 }
+                
+                option.setAttribute('position', j);
             }
             
             if (i == 0){
@@ -2898,6 +2906,7 @@ $(document).ready(function (e) {
                 option.setAttribute('selected', true);
                 autoSelect = 1;
             }
+            
             dropdown1.add(option); 
             
         }        
@@ -2926,6 +2935,7 @@ $(document).ready(function (e) {
                 option.setAttribute('selected', true);
                 autoSelect = 1;
             }
+            
             dropdown2.add(option); 
             
         }

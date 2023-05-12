@@ -978,6 +978,7 @@ def inserttokenREItem(request):
         try:
             query = 'select * from [itemDefinition2] where itemName = ?;'
             args = [request.POST.get('itemName')]
+            print("args : ", args)
             cursor.execute(query, args)
             itemDefinition2 = cursor.fetchone()
             if itemDefinition2 == None:
@@ -993,7 +994,8 @@ def inserttokenREItem(request):
                 # print("original itemID : ", itemDefinition2.itemID)
             #插入資料表
             query = 'INSERT into [REItem2] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
-            args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
+            # args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
+            args = [int(request.POST.get('tokenREID')), 1, itemDefinition2.itemID ]
             # # # # # print(args)
             cursor.execute(query, args)
             tokenREItemID = cursor.fetchone()

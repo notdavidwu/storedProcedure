@@ -136,9 +136,11 @@ def getStasticTable(request):
 						order by 9,8,7,6,5,4
         '''
         cursor.execute(query,[])
+        print("in")
         res = cursor.fetchall()
-
-        print("resssssssssssssssssssssssssssssssssssssss", res[0])
+        print("in")
+        if res != []:
+            print("resssssssssssssssssssssssssssssssssssssss", res[0])
         # reportID = [row.exReport for row in res]
         # numReports = [row.numReports for row in res]
         # times = [row.times for row in res]
@@ -210,7 +212,7 @@ def getStasticTable(request):
         # print("rollbacked, error message : ", e)
         
         result['ERRMSG'] = str(e)
-        print("error")
+        print("error", e)
     
     conn.close()
     return JsonResponse(result)
