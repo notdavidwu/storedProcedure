@@ -8,12 +8,12 @@ from django.db import connections
 import pyodbc
 import json
 import Levenshtein
-DATABASE_NAME = 'buildVocabulary' 
+DATABASE_NAME = 'nlpVocabularyLatest' 
 
 @csrf_exempt
 def getCapitalToken(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -64,7 +64,7 @@ def getCapitalToken(request):
 @csrf_exempt
 def getTypoToken(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -74,7 +74,7 @@ def getTypoToken(request):
     
     try:        
         # body = json.loads(raw)
-        query = '''select * from Vocabulary where tokenType not in ('S') and typo = 0'''
+        query = '''select * from Vocabulary where tokenType = 'G' '''
         cursor.execute(query)
         res = cursor.fetchall()
         # print(res)
@@ -107,7 +107,7 @@ def order_words_by_edit_distance(word_list, search_str):
 @csrf_exempt
 def getTypoTokenDistance(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -192,7 +192,7 @@ def edit_distance(s1, s2):
 @csrf_exempt
 def insertTypo(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')

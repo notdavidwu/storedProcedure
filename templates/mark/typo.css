@@ -419,8 +419,11 @@
   }
   #itemDefinition_frame{
     height:94%;
-    overflow-y:auto;
+    overflow-y:scroll;
   }
+  #typoTable tbody {
+    height: 100px;
+}
   #stastics_frame{
     height:100%;
     overflow-y:auto;

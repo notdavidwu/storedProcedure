@@ -27,7 +27,7 @@ import time
 @csrf_exempt
 def getVocabularyE(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -44,7 +44,7 @@ def getVocabularyE(request):
 @csrf_exempt
 def backupDB(request):
     server = '172.31.6.22'
-    database = 'buildVocabulary '
+    database = 'nlpVocabularyLatest '
     username = 'N824'
     password = 'test81218'
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -72,7 +72,7 @@ def backupDB(request):
 @csrf_exempt
 def moveRE(request):
     server = '172.31.6.22'
-    database = 'buildVocabulary '
+    database = 'nlpVocabularyLatest '
     username = 'N824'
     password = 'test81218'
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -93,7 +93,7 @@ def moveRE(request):
         for ind,i in enumerate(token):
             # print(i)
             query = '''
-                    SELECT * FROM [buildVocabulary ].[dbo].[Vocabulary] where token = ?;
+                    SELECT * FROM [nlpVocabularyLatest ].[dbo].[Vocabulary] where token = ?;
                     '''
             args = [str(i)]            
             cursor.execute(query, args)
@@ -117,7 +117,7 @@ def moveRE(request):
         for i in tokenIDOriginal:
             print("tokenIDOriginal :", i)
             query = '''
-                    SELECT * FROM [buildVocabulary ].[dbo].[vocabularyRE] where tokenID = ?;
+                    SELECT * FROM [nlpVocabularyLatest ].[dbo].[vocabularyRE] where tokenID = ?;
                     '''
             args = [i]
             cursor.execute(query, args)

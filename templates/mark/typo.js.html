@@ -570,6 +570,8 @@ $(document).ready(function (e) {
             getTypo();
         });
         
+        trigger("6698");
+        
     }
     //取得雙擊元素correct
     function getTypo(){
@@ -738,32 +740,48 @@ $(document).ready(function (e) {
         });
     }
 
-    //select on change顯示3-5字
-    function onWordsOptionChange() {
-        // Get the selected value from the wordsOption select element
-        var words = document.getElementById("wordsOption").value;
-        var inputText = document.getElementById("inputkeywords");
+    
+    //調整table位置
+    // function trigger(buttonId){
+    //     console.log("trigger in ");
+    //     //往父級找 找到第一個tr(返回陣列值)
+    //     var $objTr = $(`td[tokenID='${buttonId}']`).parents('tr');
+    //     console.log("objTr : ", $objTr);
+    //     //取得返回值的第一個
+    //     var objTr = $objTr[0];
+    //     console.log("objTr : ", objTr);
+    //     //捲動動畫
+    //     $('#typoTable').animate({scrollTop:(objTr.offsetTop-250)},'fast');
+    // }
 
-        var threewordTable = document.getElementById("stasticsTable");
-        var fivewordTable = document.getElementById("stasticsTable2");
-        if (words === "1"){
-            // threewordTable.style.display = "block";
-            // fivewordTable.style.display = "none";
-            fadein(threewordTable);
-            fadeout(fivewordTable);
-            inputText.value = "( [Number] )";
-            inputText.innerHTML = "( [Number] )";
-        }
-        else{
-            // threewordTable.style.display = "none";
-            // fivewordTable.style.display = "block";
-            fadeout(threewordTable);        
-            fadein(fivewordTable);
-            inputText.value = "( [Number] / [Number] )";
-            inputText.innerHTML = "( [Number] / [Number] )";
+    // function trigger(buttonId) {
+    //     console.log("trigger in ");
+    //     // Find the td element(s) with tokenID equal to buttonId
+    //     var $tdElem = $(`td[tokenID='${buttonId}']`);
+    //     console.log("$tdElem : ", $tdElem);
+    //     // Find the first parent tr element of the td element(s)
+    //     var $trElem = $tdElem.closest('tr');
+    //     console.log("$trElem : ", $trElem);
+    //     // Get the top offset of the tr element
+    //     var topOffset = $trElem.offset().top;
+    //     // Get the current scroll position of the table
+    //     var scrollTop = $('#typoTable').scrollTop();
+    //     // Compute the new scroll position for the table
+    //     var newScrollTop = scrollTop + topOffset - 250;
+    //     // Animate the table to the new scroll position
+    //     $('#typoTable').animate({ scrollTop: newScrollTop }, 'fast');
+    // }
 
-        }
+    function trigger(buttonId) {
+        console.log("trigger in ");
+        var $objTr = $(`td[tokenID='${buttonId}']`).parents('tr');
+        console.log("objTr : ", $objTr);
+        var objTr = $objTr[0];
+        console.log("objTr : ", objTr);
+        $('#typoTable').animate({ scrollTop: $(objTr).offset().top - 250 }, 'fast');
+        return 0;
     }
+
 
     //輸入元素fadeout
     function fadeout(element) {

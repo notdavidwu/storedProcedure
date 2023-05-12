@@ -1545,6 +1545,12 @@ $(document).ready(function (e) {
     //存檔到後端資料庫
     function BtnClicked_2(response,itemName){
         ////console.log("btnclicked_2 : " + response.data[0].tokenID)
+        var from = document.getElementById("storebtn").getAttribute("from");
+        var to = document.getElementById("storebtn").getAttribute("to");
+        console.log("from : ", from);
+        console.log("to : ", to);
+        var word = parseInt(to) - parseInt(from) + 1; 
+        console.log("word : ", word);
         tokenID = response.data[0].tokenID;        
         regex = document.getElementById('regexText').value
         ////console.log("tokenID : " + tokenID);
@@ -1554,7 +1560,8 @@ $(document).ready(function (e) {
             url: '{% url 'mark:inserttokenRE' %}',
             data:{
                 'tokenID': tokenID,
-                'RE': regex,               
+                'RE': regex,
+                'word': word,
             },
             success:function (response){  
                 ////console.log("BtnClicked_2 : ", response)  
@@ -2680,7 +2687,7 @@ $(document).ready(function (e) {
                     RE += `?<${itemName}>`;
                 }
 
-                var pattern = /[\\^$.|?*+(){[}\]]/g;
+                var pattern = /[\\^$.|?*+(){[}\]\"]/g;
                 var matches = textArray[i].match(pattern);
                 //console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
@@ -2710,12 +2717,13 @@ $(document).ready(function (e) {
 
             var no = $(target).parents('tr').children('td').eq(0).children('button').html();
             console.log("no : ", no);
-
+                
+            console.log("RE : ", RE);
             var html = `<div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
+                        <input class="form-control" id="floatingInput" placeholder="RE" value='${RE}'>
                         <label for="floatingInput">Auto generated RE</label>
                         </div>`
-            //console.log("textArray : ", textArray);
+            console.log("html : ", html);
             Swal.fire({
                 title: '自動填入此RE?',
                 icon: 'question',
@@ -3022,7 +3030,7 @@ $(document).ready(function (e) {
                     continue;
                 }
                 
-                var pattern = /[\\^$.|?*+(){[}\]]/g;
+                var pattern = /[\\^$.|?*+(){[}\]\"]/g;
                 var matches = textArray[i].match(pattern);
                 //console.log("matches : ", matches);
                 if (textArray[i] == "[SPACE]" ){    
@@ -3045,7 +3053,7 @@ $(document).ready(function (e) {
 
 
             var html = `<div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" placeholder="RE" value="${RE}">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="RE" value='${RE}'>
                         <label for="floatingInput">Auto generated RE</label>
                         </div>`
 

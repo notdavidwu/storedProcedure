@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import connections
 import pyodbc
 import json
-DATABASE_NAME = 'buildVocabulary' 
+DATABASE_NAME = 'nlpVocabularyLatest' 
 
 @csrf_exempt
 def getTag(request):
@@ -17,12 +17,13 @@ def getTag(request):
     res = cursor.fetchall()
     token = [row[0] for row in res]
     tokenID = [row[1] for row in res]
+    connections[DATABASE_NAME].close()
     return JsonResponse({'token':token,'tokenID':tokenID})
 
 @csrf_exempt
 def getItemDefinition(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -36,6 +37,7 @@ def getItemDefinition(request):
     engName = [row.engName for row in res]
     chtName = [row.chtName for row in res]
     itemType = [row.itemType for row in res]
+    conn.close()
     return JsonResponse({'itemID':itemID,
                          'rootID':rootID,
                          'itemName':itemName,
@@ -47,7 +49,7 @@ def getItemDefinition(request):
 @csrf_exempt
 def getStasticTable(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -199,7 +201,7 @@ def getStasticTable(request):
                          'status':"0",
                          }
         
-        result[''] = "查詢成功"
+        result['MSG'] = "查詢成功"
         
             
         conn.commit()
@@ -209,14 +211,15 @@ def getStasticTable(request):
         
         result['ERRMSG'] = str(e)
         print("error")
-
+    
+    conn.close()
     return JsonResponse(result)
 
 
 @csrf_exempt
 def getStasticTable2(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary ' 
+    database = 'nlpVocabularyLatest ' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -393,5 +396,6 @@ def getStasticTable2(request):
         result['ERRMSG'] = str(e)
         print("error")
 
+    conn.close()
     return JsonResponse(result)
     
