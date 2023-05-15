@@ -114,4 +114,5 @@ urlpatterns = [
     path('insertTypo/', insertTypo,name="insertTypo"),
     path('getCapitalToken/', getCapitalToken,name="getCapitalToken"),
     path('getTypoTokenDistance/', getTypoTokenDistance,name="getTypoTokenDistance"),
+    path('selectReportByReportID/', selectReportByReportID,name="selectReportByReportID"),
 ]

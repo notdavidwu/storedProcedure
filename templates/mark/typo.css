@@ -181,9 +181,14 @@
     }
 
     #statisticsArea > #statistics {
-        height:calc(100% - 300px);
-        
+        height:calc(100% - 1000px);
     }
+    #statistics > #report > #reportPrint{
+        height:380px;
+    }
+    /* #statistics > .col-md-12{
+        height:100px;
+    } */
     #view > div{
         height:100%;
         padding-left:10px;

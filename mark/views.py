@@ -928,28 +928,33 @@ def inserttokenRE(request):
         record['RE'] = request.POST.get('RE')
         record['word'] = request.POST.get('word')
 
-
-        query = 'select * from [vocabularyRE] where tokenID = ? and RE = ?;'
-        args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
-        cursor.execute(query, args)
-        tokenREID_original = cursor.fetchall()
-        # # # # # print("tokenREID_original : ", tokenREID_original)
-        if tokenREID_original == []:
-            #插入資料表
-            query = 'INSERT into [vocabularyRE] (tokenID, RE, nWord) OUTPUT [INSERTED].REID VALUES (?, ?, ?);'
-            args = [int(request.POST.get('tokenID')), request.POST.get('RE'), request.POST.get('word')]
-            print("args : ", args)
+        try:
+            query = 'select * from [vocabularyRE] where tokenID = ? and RE = ?;'
+            args = [int(request.POST.get('tokenID')), request.POST.get('RE') ]
             cursor.execute(query, args)
-            tokenREID = cursor.fetchall()
-            # # # # # print(tokenREID[0])
-            result['status'] = '0'
-            record['tokenREID'] = tokenREID[0][0]
-            result['data'].append(record)
-            # # # # # print("data saved(tokenRE)")
-        else:
+            tokenREID_original = cursor.fetchall()
+            # # # # # print("tokenREID_original : ", tokenREID_original)
+            if tokenREID_original == []:
+                #插入資料表
+                query = 'INSERT into [vocabularyRE] (tokenID, RE, nWord) OUTPUT [INSERTED].REID VALUES (?, ?, ?);'
+                args = [int(request.POST.get('tokenID')), request.POST.get('RE'), request.POST.get('word')]
+                print("args : ", args)
+                cursor.execute(query, args)
+                tokenREID = cursor.fetchall()
+                # # # # # print(tokenREID[0])
+                result['status'] = '0'
+                record['tokenREID'] = tokenREID[0][0]
+                result['data'].append(record)
+                # # # # # print("data saved(tokenRE)")
+            else:
+                raise Exception("RE已經存在")
+        
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            print("rollbacked, error message : ", e)
+            result['ERRMSG'] = str(e)
             result['status'] = 'already_exist'
-    
-        conn.commit()
         conn.close()
 
     return JsonResponse(result)
@@ -995,7 +1000,7 @@ def inserttokenREItem(request):
             #插入資料表
             query = 'INSERT into [REItem2] (REID, seqNo, itemID) OUTPUT [INSERTED].REItemID VALUES (?, ?, ?);'
             # args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
-            args = [int(request.POST.get('tokenREID')), 1, itemDefinition2.itemID ]
+            args = [int(request.POST.get('tokenREID')), request.POST.get('serialNo'), itemDefinition2.itemID ]
             # # # # # print(args)
             cursor.execute(query, args)
             tokenREItemID = cursor.fetchone()
@@ -1007,7 +1012,7 @@ def inserttokenREItem(request):
             conn.commit()
         except Exception as e:
             conn.rollback()
-            # print("rollbacked, error message : ", e)
+            print("rollbacked, error message : ", e)
             result['ERRMSG'] = str(e)
         # # # # print("data saved(tokenREItem)")
         # # print(result)

@@ -1379,15 +1379,15 @@ $(document).ready(function (e) {
                     })
                     
                     modal.style.display = "none";
-                    var itemName = $("#storebtn").attr("itemName");
-                    console.log("itemName : ", itemName);
-                    itemNameArray = [];
-                    itemNameArray.push(itemName);
+                    var itemName1 = $("#storebtn").attr("itemName");
+                    console.log("itemName1 : ", itemName1);
+                    itemName = [];
+                    itemName.push(itemName1);
                     var wordNum = document.getElementById("wordsOption").value;
                     if (wordNum === "2"){
-                        var itemName1 = $("#storebtn").attr("itemName1");
-                        itemNameArray.push(itemName1);
+                        itemName.push(itemName1);
                     }
+                    console.log("itemName : ", itemName);
                     BtnClicked_1(itemName);
                 } 
                 else{
@@ -1587,23 +1587,23 @@ $(document).ready(function (e) {
         ////console.log("btnclicked3_itemName " + itemName)  
         tokenREID = response.data[0].tokenREID;        
         ////console.log("btnclicked")
-        // for (var i=0 ; i< itemName.length ; i++){
-        //     ////console.log("btnclicked :" + (i+1) + "times")
-        $.ajax({
-            type: 'POST',
-            url: '{% url 'mark:inserttokenREItem' %}',
-            data:{
-                'tokenREID': tokenREID,
-                'serialNo': i+1,
-                'itemName': itemName,
-            },
-            success:function (response){
-                printResult(response);
-            },
-            fail:function (){              
-            },
-        });
-        // }
+        for (var i=0 ; i< itemName.length ; i++){
+            ////console.log("btnclicked :" + (i+1) + "times")
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'mark:inserttokenREItem' %}',
+                data:{
+                    'tokenREID': tokenREID,
+                    'serialNo': i+1,
+                    'itemName': itemName[i],               
+                },
+                success:function (response){
+                    printResult(response);
+                },
+                fail:function (){              
+                },
+            });
+        }        
     }
 
     function getREofRecord(){

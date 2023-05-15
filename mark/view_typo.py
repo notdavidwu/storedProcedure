@@ -13,7 +13,7 @@ DATABASE_NAME = 'nlpVocabularyLatest'
 @csrf_exempt
 def getCapitalToken(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -64,7 +64,7 @@ def getCapitalToken(request):
 @csrf_exempt
 def getTypoToken(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -119,7 +119,7 @@ def order_words_by_edit_distance(word_list, search_str):
 @csrf_exempt
 def getTypoTokenDistance(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -152,11 +152,31 @@ def getTypoTokenDistance(request):
                 Array.append(i.token)
 
         sorted_words = order_words_by_edit_distance(Array, token)
-        print(sorted_words)
-        print(Array)
+        print(len(sorted_words))
+        top_100 = sorted_words[:100]
+        tempArray = []
+        for i in top_100:
+            query = '''select   b.reportID, a.token from Vocabulary  as a
+            left join textToken as b 
+            on a.tokenID = b.tokenID
+
+            where a.tokenType = 'G' and a.token = ?
+            group by b.reportID, a.token'''
+            args = [i]
+            cursor.execute(query, args)
+            temp = cursor.fetchone()
+            tempArray.append(temp.reportID)
+            # print("temp : ", temp)
+        print("tempArray : ", tempArray)
+        # query = "SELECT top(1) * FROM textToken WHERE tokenID = {}".format(" OR tokenID = ".join(['?' for i in range(len(sorted_words))]))
+        print(query)
+
+        # print(sorted_words)
+        # print(Array)
         result['status'] = "0"
         
-        result['token'] = sorted_words
+        result['token'] = top_100
+        result['reportID'] = tempArray
         # result['token'] = token1
         conn.commit()
     
@@ -204,7 +224,7 @@ def edit_distance(s1, s2):
 @csrf_exempt
 def insertTypo(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest ' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -317,6 +337,40 @@ def insertTypo(request):
             result['MSG'] = "已完成更新<br>" + html
     
         result['status'] = "0"
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    # print(result)
+    
+    conn.close()
+    
+    return JsonResponse(result)
+
+@csrf_exempt
+def selectReportByReportID(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    result = {'status': "1"}    
+    raw = request.body.decode('utf-8')
+    
+    try:        
+        body = json.loads(raw)        
+        reportID = body['reportID']
+
+        query = '''select * from analyseText where reportID = ?'''
+        args = [reportID]
+        cursor.execute(query, args)
+        res = cursor.fetchone()
+        result['status'] = "0"
+        
+        result['reportText'] = res.reportText
+        # result['token'] = token1
         conn.commit()
     
     except Exception as e:

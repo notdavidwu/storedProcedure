@@ -554,7 +554,7 @@ $(document).ready(function (e) {
     }
     
     function getTypoTabletypo(){
-        //console.log("getitemTable in ");
+        
         
         var response = getTypoToken();
         ////console.log("response : ", response);
@@ -570,35 +570,6 @@ $(document).ready(function (e) {
         // $('#typoTable tbody').append(element);
         console.log("response : ", response.data);
 
-        $('#itemDefinition_frame').empty();
-        $('#itemDefinition_frame').append(`<table id='typoTable' class="table table-striped" data-toggle="table"  data-search="true"
-        data-pagination="true"
-        data-pagination-h-align="left"
-        data-pagination-detail-h-align="right"
-        data-page-size="12"
-        >
-        </table>`);
-        $('#typoTable').bootstrapTable({
-            columns: [
-            { 
-                field: 'token',
-                title: 'token',
-                sortable:true,
-            },
-            {
-                field: 'times',
-                title: 'times',
-                sortable:true,
-            },
-            ],
-            data:response.data,
-            stickyHeader: true,
-        })
-        // $('#itemDefinition_frame .fixed-table-toolbar').attr('id', 'typoTable');
-
-        $('.double-clickable-typo').on('click', function() {
-            getTypo();
-        });
 
         // $('#typoTable').bootstrapTable();
         
@@ -627,14 +598,14 @@ $(document).ready(function (e) {
                 printResult(response);
                 if (response.status === "0"){
                     //生成option
-                    createOption(response.token);
+                    createOption(response.token, response.reportID);
                 }
                 
             },
         });
     }
 
-    function createOption(tokenArray){
+    function createOption(tokenArray, reportIDArray){
         var targetDiv = document.getElementById("checkboxDivinside");
         targetDiv.innerHTML = "";
         targetDiv.value = "";
@@ -645,6 +616,7 @@ $(document).ready(function (e) {
                 checkbox.id = `myCheckbox${i}`;
                 checkbox.name = `myCheckbox${i}`;
                 checkbox.className = 'class="form-check-input"';
+                checkbox.setAttribute("reportID", reportIDArray[i]);
 
                 var label = document.createElement("label");
                 label.innerHTML = tokenArray[i];
@@ -665,7 +637,10 @@ $(document).ready(function (e) {
             // Loop through the checkboxes and add an event listener to each one
             for (var i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].addEventListener('click', function() {
+                    var reportID = this.getAttribute("reportID");
+                    console.log("reportID : ", reportID);
                     this.classList.toggle('checked');
+                    
                     var checkedOptions = getCheckedOptions();
                     // console.log("checkedOptions : ", checkedOptions);
                     document.getElementById("typoResult").innerHTML = `已選擇錯別字數： ${checkedOptions.length}`;
@@ -1069,13 +1044,91 @@ $(document).ready(function (e) {
 
     //取得所有tokenTypo
     function getTypoToken(){
+        var btn = document.getElementById("searchButton");
+        var text = "查詢中";
+        var count = 0;
+        btn.disabled = true; // Disable the button during the search
+        var intervalId = setInterval(function() {
+            count++;
+            if (count > 3) {
+            count = 0;
+            }
+            switch (count) {
+            case 0:
+                btn.innerHTML = text;
+                break;
+            case 1:
+                btn.innerHTML = text + ".";
+                break;
+            case 2:
+                btn.innerHTML = text + "..";
+                break;
+            case 3:
+                btn.innerHTML = text + "...";
+                break;
+            }
+        }, 500); // Update the text every 500 milliseconds
+        //console.log("getitemTable in ");
         var res;
         $.ajax({
-            async:false,
             type: 'POST',
             url: '{% url "mark:getTypoToken" %}',
             success:function (response){
                 res = response;
+
+                
+                $('#itemDefinition_frame').empty();
+                $('#itemDefinition_frame').append(`<table id='typoTable' class="table table-striped" data-toggle="table"  data-search="true"
+                data-pagination="true"
+                data-pagination-h-align="left"
+                data-pagination-detail-h-align="right"
+                data-page-size="12"
+                >
+                </table>`);
+                $('#typoTable').bootstrapTable({
+                    columns: [
+                    { 
+                        field: 'token',
+                        title: 'token',
+                        sortable:true,
+                    },
+                    {
+                        field: 'times',
+                        title: 'times',
+                        sortable:true,
+                    },
+                    ],
+                    data:response.data,
+                    stickyHeader: true,
+                    onPageChange: function(number, size) {
+                        var firstTds = $('#typoTable tbody tr:visible td:nth-child(1)');
+                        firstTds.attr('onclick', 'getTypo();');
+                    },
+                    onPostBody: function() {
+                        var firstTds = $('#typoTable tbody tr:visible td:nth-child(1)');
+                        firstTds.attr('onclick', 'getTypo();');
+                    },
+                })
+                // $('#itemDefinition_frame .fixed-table-toolbar').attr('id', 'typoTable');
+
+                // $('.double-clickable-typo').on('click', function() {
+                //     getTypo();
+                // });
+
+                $('#typoTable tbody tr').each(function() {
+                    var firstTd = $(this).find('td:first-child');
+                    // do something with the first td element, e.g.
+                    // firstTd.css('background-color', 'yellow');
+                    firstTd.attr('onclick', 'getTypo();');
+                });
+                
+
+                clearInterval(intervalId);
+                btn.disabled = false;
+                btn.innerHTML = "成功!";
+                setTimeout(() => {
+                    btn.innerHTML = "查詢";
+                }, 1000);
                 ////console.log(response, res);
             },
         });
