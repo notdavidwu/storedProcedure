@@ -7,7 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import connections
 import pyodbc
 import json
+
 DATABASE_NAME = 'nlpVocabularyLatest' 
+
 
 @csrf_exempt
 def getTag(request):

@@ -3889,6 +3889,13 @@ def insertintoItemDefinition(request):
             if olddata != None:
                 raise Exception("資料庫已存在相同itemID")
             
+            query = "select * from itemDefinition2 where itemName = ?"
+            args = [itemName]
+            cursor.execute(query, args)
+            olddata = cursor.fetchone()
+            if olddata != None:
+                raise Exception("資料庫已存在相同itemName")
+            
 
             query = "insert into itemDefinition2 (itemID, rootID, itemName, engName, chtName, itemType) output inserted.chtName values(?, ?, ?, ?, ?, ?)"
             args = [itemID, rootID, itemName, engName, chtName, itemType]

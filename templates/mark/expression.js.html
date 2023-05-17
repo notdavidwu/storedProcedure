@@ -34,6 +34,11 @@
 
 <script>
 $(document).ready(function (e) {
+    setInterval(function() {
+        getitemTable();
+        console.log("已更新");
+    }, 5000);
+
 
     //初始化
     init();
@@ -592,7 +597,8 @@ $(document).ready(function (e) {
     }
 
     //根據reportID找文章
-    function getReportBylastReportID(reportID){
+    function getReportBylastReportID(reportID, type){
+        console.log("reportID in ");
         var btn = document.getElementById("collapseButton");
         var text = "查詢中";
         var count = 0;
@@ -634,6 +640,17 @@ $(document).ready(function (e) {
                 setTimeout(() => {
                     btn.innerHTML = "顯示報告";
                 }, 1000);
+
+                if (type === "1"){
+                    console.log("print");
+                    var modal = document.getElementById("modalReport");
+                    modal.style.display = "block";
+
+                    var closeButton = document.querySelector('#btnclosereport');
+                    closeButton.addEventListener('click', function() {
+                        modal.style.display = 'none';
+                    });
+                }
             },
         });
     }
@@ -881,17 +898,17 @@ $(document).ready(function (e) {
                     //     </tr>`;
                     element += `<tr reportID="${response.reportID[i]}">
                         <td><button class="btn btn-secondary" onclick="getREofRecord()">${i+1}</button></td>
-                        <td>${response.numReports[i]}</td>
-                        <td>${response.times[i]}</td>
-                        <td class="show" word="word1">${response.word1[i]}</td>
-                        <td class="show" word="word2">${response.word2[i]}</td>
-                        <td class="show" word="word3">${response.word3[i]}</td>
-                        <td class="show" word="word4">${response.word4[i]}</td>
-                        <td class="show" word="word5">${response.word5[i]}</td>
-                        <td class="show" word="word6">${response.word6[i]}</td>
-                        <td class="show">${response.targetWord1[i]}</td>
-                        <td class="show">${response.targetWord2[i]}</td>
-                        <td class="show">${response.targetWord3[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.numReports[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.times[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word1">${response.word1[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word2">${response.word2[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word3">${response.word3[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word4">${response.word4[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word5">${response.word5[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word6">${response.word6[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord1[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord2[i]}</td>
+                        <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord3[i]}</td>
                         </tr>`;
                 }
                 $('#stasticsTable tbody').append(element);
@@ -970,19 +987,19 @@ $(document).ready(function (e) {
                 //     </tr>`;
                 element += `<tr reportID="${response.reportID[i]}">
                     <td><button class="btn btn-secondary" onclick="getREofRecord2()">${i+1}</button></td>
-                    <td>${response.numReports[i]}</td>
-                    <td>${response.times[i]}</td>
-                    <td class="show" word="word1">${response.word1[i]}</td>
-                    <td class="show" word="word2">${response.word2[i]}</td>
-                    <td class="show" word="word3">${response.word3[i]}</td>
-                    <td class="show" word="word4">${response.word4[i]}</td>
-                    <td class="show" word="word5">${response.word5[i]}</td>
-                    <td class="show" word="word6">${response.word6[i]}</td>
-                    <td class="show">${response.targetWord1[i]}</td>
-                    <td class="show">${response.targetWord2[i]}</td>
-                    <td class="show">${response.targetWord3[i]}</td>
-                    <td class="show">${response.targetWord4[i]}</td>
-                    <td class="show">${response.targetWord5[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.numReports[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.times[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word1">${response.word1[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word2">${response.word2[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word3">${response.word3[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word4">${response.word4[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word5">${response.word5[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word6">${response.word6[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord1[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord2[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord3[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord4[i]}</td>
+                    <td onclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord5[i]}</td>
                     </tr>`;
             }
             $('#stasticsTable2 tbody').append(element);
@@ -1595,7 +1612,7 @@ $(document).ready(function (e) {
                 data:{
                     'tokenREID': tokenREID,
                     'serialNo': i+1,
-                    'itemName': itemName[i],               
+                    'itemName': itemName[i],
                 },
                 success:function (response){
                     printResult(response);

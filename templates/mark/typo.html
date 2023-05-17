@@ -92,7 +92,7 @@
                 <select class="form-select" id="itemDefinition_itemType" onchange="handleItemTypeChange()">
                     <option value="0" >Typo 錯別字</option>
                     <option value="1"selected >Capitalization 大小寫</option>
-                    <option value="2">Plural 單複數</option>
+                    <option value="2" >StopWord 不列入統計</option>
                 </select>
             </div>
             <div id="search" class="col-12">
@@ -106,7 +106,7 @@
             <div class="col-md-12" id='itemDefinition_frame'>
                 
                 <!-- cap -->
-                <table class='table' id="itemDefinition">
+                <!-- <table class='table' id="itemDefinition">
                     <thead style="position: sticky;top: 0" class="thead-dark">
                         <tr>
                             <th class="header" scope="col">token1 小寫</th>
@@ -115,7 +115,7 @@
                     </thead>
                     <tbody>
                     </tbody>
-                </table>
+                </table> -->
                 <!-- cap -->
 
                 <!-- typo -->
@@ -179,6 +179,16 @@
                 </div>       
                 
                 <!-- typo -->
+
+                <!-- stop -->                
+                <div class="col-md-6" id="stopWords" style="display: none;">
+                    <textarea class="form-control" placeholder="已選取的不統計字" id="stopwords" disabled></textarea>
+                </div>
+                
+                <div class="col-md-12" id="countStop" style="display: none;">
+                    <p id="countstop" >不統計單字數： 0</p>
+                </div>
+                <!-- stop -->
             </div>
             
 
@@ -188,8 +198,14 @@
                 <div class="col-md-12" >
                     <a class='btn btn-primary form-control' id="storebtn" >儲存</a>
                 </div>
+                <div class="col-md-12" id="clearbtndiv">
+                    <a class='btn btn-danger form-control' id="clearbtn" >移除所有</a>
+                </div>
+                <div class="col-md-12" id="clearonebtndiv">
+                    <a class='btn btn-danger form-control' id="clearonebtn" >移除最後一筆</a>
+                </div>
                 <div class="col-md-12" id="report">
-                    <textarea class="form-control" placeholder="選取報告" id="reportPrint" disabled></textarea>
+                    <p class="form-control" placeholder="選取報告" id="reportPrint" disabled style="display: none;"></p>
                 </div>
             </div>            
             <!-- 右下 -->

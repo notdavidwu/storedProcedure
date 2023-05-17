@@ -444,6 +444,10 @@
         resize:none;
         height:100%;
     }
+    #stopwords{
+        resize:none;
+        height:100%;
+    }
     
     #typoCorrect{
         resize:none;
@@ -459,6 +463,15 @@
     }
     #executebtn{
         color:#FFF
+    }
+    #clearbtn{
+        color:#FFF
+    }
+    #clearonebtn{
+        color:#FFF
+    }
+    #reportPrint{
+        overflow-y: auto;
     }
     #inputText{
         resize:none;
@@ -572,6 +585,12 @@
     font-size: 14pt;
   }
   #itemDefinition > thead > tr > td{
+    font-size: 14pt;
+  }  
+  #typoTable > tbody > tr > td{
+    font-size: 14pt;
+  }
+  #typoTable > thead > tr > td{
     font-size: 14pt;
   }  
   #stasticsTable2 > tbody > tr > td{

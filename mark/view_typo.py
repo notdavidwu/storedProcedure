@@ -39,17 +39,26 @@ def getCapitalToken(request):
         cursor.execute(query)
         res = cursor.fetchall()
         # print(res)
-        tokenID1 = [row.tokenID1 for row in res]
-        token1 = [row.token1 for row in res]
-        tokenID2 = [row.tokenID2 for row in res]
-        token2 = [row.token2 for row in res]
+        result['data'] = []
+        for i in res:
+            # print(i)
+            result['data'].append({
+                'tokenID1': i.tokenID1,
+                'token1': i.token1,
+                'tokenID2': i.tokenID2,
+                'token2': i.token2,
+            })
+        # tokenID1 = [row.tokenID1 for row in res]
+        # token1 = [row.token1 for row in res]
+        # tokenID2 = [row.tokenID2 for row in res]
+        # token2 = [row.token2 for row in res]
 
         result['status'] = "0"
         
-        result['tokenID1'] = tokenID1
-        result['token1'] = token1
-        result['tokenID2'] = tokenID2
-        result['token2'] = token2
+        # result['tokenID1'] = tokenID1
+        # result['token1'] = token1
+        # result['tokenID2'] = tokenID2
+        # result['token2'] = token2
         conn.commit()
     
     except Exception as e:
@@ -335,6 +344,44 @@ def insertTypo(request):
                 </tbody>
             </table>''' 
             result['MSG'] = "已完成更新<br>" + html
+        elif insertType == "stop":
+            print("stop")
+            
+            stopWord = body['stopWord']
+            print("stopWord : ", stopWord)
+            
+            
+            html = '''<table class='table'>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="header" scope="col" style = "width : 100px;">不統計字</th>
+                        </tr>
+                    </thead>
+                    <tbody>'''
+            for i in stopWord:
+                query = '''select * from Vocabulary where token = ?'''
+                args = [i]
+                cursor.execute(query, args)
+                correctTokenID = cursor.fetchone().tokenID
+                if correctTokenID == None:
+                    raise Exception(f"單字不存在 : {i}")
+                
+                query = '''update Vocabulary set prototype = ?, stopWord = ? OUTPUT inserted.* where token = ? '''
+                args = [correctWord, "1", i]
+                cursor.execute(query, args)
+                changedToken = cursor.fetchone()
+                print("changedToken : ", changedToken)
+                # html += "錯別字 : " + changedToken.token + ", 調整為 : " + changedToken.prototype + "<br>"
+                
+                html += '''<tr>'''
+                html += '''<td>'''
+                html += changedToken.token
+                html += '''</td>'''
+                html += '''</tr>'''
+            html += '''
+                </tbody>
+            </table>''' 
+            result['MSG'] = "已完成更新<br>" + html
     
         result['status'] = "0"
         conn.commit()
@@ -347,6 +394,8 @@ def insertTypo(request):
     conn.close()
     
     return JsonResponse(result)
+
+
 
 @csrf_exempt
 def selectReportByReportID(request):
@@ -373,6 +422,54 @@ def selectReportByReportID(request):
         # result['token'] = token1
         conn.commit()
     
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    # print(result)
+    
+    conn.close()
+    
+    return JsonResponse(result)
+
+@csrf_exempt
+def getStopToken(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    result = {'status': "1"}    
+    # raw = request.body.decode('utf-8')
+    
+    try:        
+        # body = json.loads(raw)
+        query = '''select TOP 1000 token, COUNT(*) AS frequency, count(distinct a.reportID) as numReports
+                FROM textToken as a
+                inner join Vocabulary as b ON a.tokenID = b.tokenID
+                where b.tokenType = 'G'
+                group by a.tokenID, b.token
+                order by frequency desc; '''
+        cursor.execute(query)
+        res = cursor.fetchall()
+        # print(res[0])
+        # tokenID1 = [row.tokenID for row in res]
+        # token1 = [row.token for row in res]
+
+        result['status'] = "0"
+        
+        # result['tokenID'] = tokenID1
+        # result['token'] = token1
+        result['data'] = []
+        for i in res:
+            # print(i)
+            result['data'].append({
+                'token': i.token,
+                'frequency': i.frequency,
+                'numReports': i.numReports,
+            })
+        conn.commit()
+        print(result['data'])
     except Exception as e:
         conn.rollback()
         result['ERRMSG'] = str(e)
