@@ -1705,7 +1705,11 @@ $(document).ready(function (e) {
                         if (resLeadingNode.status === "0"){                            
                             var leadingNodeArray = resLeadingNode.chtName;
                             for(var i=0 ; i<leadingNodeArray.length ; i++){
-                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${leadingNodeArray[i].itemName}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                                var string = leadingNodeArray[i].itemName;
+                                var replacedString = string.replace(/"/g, '&quot;');
+                                console.log("replacedString : ", replacedString);
+                                console.log(replacedString); // Sample \"string\" with double quote
+                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${replacedString}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
                             }
                         }
                         element += `</select>`
@@ -2390,7 +2394,10 @@ $(document).ready(function (e) {
                         if (resLeadingNode.status === "0"){                            
                             var leadingNodeArray = resLeadingNode.chtName;
                             for(var i=0 ; i<leadingNodeArray.length ; i++){
-                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${leadingNodeArray[i].itemName}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
+                                var string = leadingNodeArray[i].itemName;
+                                var replacedString = string.replace(/"/g, '&quot;');
+                                console.log("replacedString : ", replacedString);
+                                element += `<option value="${leadingNodeArray[i].itemID}" id="leading${leadingNodeArray[i].itemID}" itemName="${replacedString}">${leadingNodeArray[i].chtName}   ${leadingNodeArray[i].itemName}</option>`
                             }
                         }
                         element += `</select>`
@@ -3001,7 +3008,7 @@ $(document).ready(function (e) {
             var poscheck = checkPos1(startPos, endPos, extractPos, extractPos1);
             if (poscheck == "1"){
                 return;
-            } 
+            }
 
             var itemNum = 0;
             for (var i=startPos ; i<textArray.length ; i++){
