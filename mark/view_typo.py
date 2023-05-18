@@ -8,12 +8,12 @@ from django.db import connections
 import pyodbc
 import json
 import Levenshtein
-DATABASE_NAME = 'nlpVocabularyLatest' 
+DATABASE_NAME = 'buildVocabulary' 
 
 @csrf_exempt
 def getCapitalToken(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -73,7 +73,7 @@ def getCapitalToken(request):
 @csrf_exempt
 def getTypoToken(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -128,7 +128,7 @@ def order_words_by_edit_distance(word_list, search_str):
 @csrf_exempt
 def getTypoTokenDistance(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -233,7 +233,7 @@ def edit_distance(s1, s2):
 @csrf_exempt
 def insertTypo(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -400,7 +400,7 @@ def insertTypo(request):
 @csrf_exempt
 def selectReportByReportID(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -434,7 +434,7 @@ def selectReportByReportID(request):
 @csrf_exempt
 def getStopToken(request):
     server = '172.31.6.22' 
-    database = 'nlpVocabularyLatest' 
+    database = 'buildVocabulary' 
     username = 'N824'
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
