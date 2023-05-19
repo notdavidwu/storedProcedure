@@ -34,10 +34,10 @@
 
 <script>
 $(document).ready(function (e) {
-    setInterval(function() {
-        getitemTable();
-        console.log("已更新");
-    }, 5000);
+    // setInterval(function() {
+    //     getitemTable();
+    //     console.log("已更新");
+    // }, 5000);
 
 
     //初始化
@@ -179,37 +179,38 @@ $(document).ready(function (e) {
         var extractedArray = [];
         var keyArray = [];
         var valueArray = [];
-        Swal.fire({
-            title: '進入下一步確認各項參數?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
-        })
-        .then((result) => {
-            if (result.isConfirmed) {
-                try{
-                    storebtnClickCheck(extractedArray, keyArray, valueArray);
-                    showModal(keyArray, valueArray);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: error,
-                            icon: 'error',
-                            confirmButtonText: 'Ok',
-                        })
-                        return;
-                    }
-                }
-                
-            } else{
+        try{
+            storebtnClickCheck(extractedArray, keyArray, valueArray);
+            showModal(keyArray, valueArray);
+        } catch (error) {
+            if (error instanceof Error) {
                 Swal.fire({
-                    title: 'Request Canceled',
-                    icon: 'info',
+                    title: 'Error',
+                    text: error,
+                    icon: 'error',
+                    confirmButtonText: 'Ok',
                 })
+                return;
             }
-        });
+        }
+        // Swal.fire({
+        //     title: '進入下一步確認各項參數?',
+        //     icon: 'question',
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Yes',
+        //     cancelButtonText: 'No'
+        // })
+        // .then((result) => {
+        //     if (result.isConfirmed) {
+                
+                
+        //     } else{
+        //         Swal.fire({
+        //             title: 'Request Canceled',
+        //             icon: 'info',
+        //         })
+        //     }
+        // });
     }
 
     //儲存按鈕確認
@@ -256,6 +257,7 @@ $(document).ready(function (e) {
         for(var i=0 ; i<allvalueArray.length ; i++){
             ex = ex.concat((i+1).toString(), ". ", " pattern : ", extractedArray[0], ", value : ", allvalueArray[i], "\n")
             count += 1;
+            $("#storebtn").attr(`value${i+1}`, allvalueArray[i]);
         }
 
         //console.log("keyArray : ", keyArray);
@@ -898,17 +900,17 @@ $(document).ready(function (e) {
                     //     </tr>`;
                     element += `<tr reportID="${response.reportID[i]}">
                         <td><button class="btn btn-secondary" onclick="getREofRecord()">${i+1}</button></td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.numReports[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.times[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word1">${response.word1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word2">${response.word2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word3">${response.word3[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word4">${response.word4[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word5">${response.word5[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word6">${response.word6[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord3[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.numReports[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.times[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word1">${response.word1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word2">${response.word2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word3">${response.word3[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word4">${response.word4[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word5">${response.word5[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word6">${response.word6[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord3[i]}</td>
                         </tr>`;
                 }
                 $('#stasticsTable tbody').append(element);
@@ -987,19 +989,19 @@ $(document).ready(function (e) {
                 //     </tr>`;
                 element += `<tr reportID="${response.reportID[i]}">
                     <td><button class="btn btn-secondary" onclick="getREofRecord2()">${i+1}</button></td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.numReports[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')">${response.times[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word1">${response.word1[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word2">${response.word2[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word3">${response.word3[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word4">${response.word4[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word5">${response.word5[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show" word="word6">${response.word6[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord1[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord2[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord3[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord4[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i]}, '1')" class="show">${response.targetWord5[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.numReports[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.times[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word1">${response.word1[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word2">${response.word2[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word3">${response.word3[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word4">${response.word4[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word5">${response.word5[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word6">${response.word6[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord1[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord2[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord3[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord4[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord5[i]}</td>
                     </tr>`;
             }
             $('#stasticsTable2 tbody').append(element);
@@ -1159,6 +1161,7 @@ $(document).ready(function (e) {
                     for(var i=0 ; i<allvalueArray.length ; i++){
                         ex = ex.concat((i+1).toString(), ". ", " pattern : ", extractedArray[0], ", value : ", allvalueArray[i], "\n")
                         count += 1;
+                        $("#storebtn").attr(`value${i+1}`, allvalueArray[i]);
                     }
                     
                     //排完丟到畫面顯示
@@ -1253,7 +1256,7 @@ $(document).ready(function (e) {
             if (response.MSG){                
                 Swal.fire({
                     title: 'Success',
-                    text: response.MSG,
+                    html: response.MSG,
                     icon: 'success',
                 })
             }
@@ -1262,14 +1265,14 @@ $(document).ready(function (e) {
             if (response.ERRMSG){
                 Swal.fire({
                     title: 'Failed',
-                    text: response.ERRMSG,
+                    html: response.ERRMSG,
                     icon: 'error',
                 })
             }
             else{
                 Swal.fire({
                     title: 'Failed',
-                    text: "Something went wrong",
+                    html: "Something went wrong",
                     icon: 'error',
                 })
             }
@@ -1350,14 +1353,6 @@ $(document).ready(function (e) {
 
         // add a click event listener to the button
         button.addEventListener('click', function() {
-            
-            var tableWord = document.getElementById("wordsOption").value;
-            if (tableWord === "1"){
-                hideElement("stasticsTable");
-            }
-            else if (tableWord === "2"){                
-                hideElement("stasticsTable2");
-            }
 
 
             var html = "";
@@ -1387,13 +1382,18 @@ $(document).ready(function (e) {
             })
             .then((result) => {
                 if (result.isConfirmed) {
+                    
+        
+                    $('#loader').css('display','inline');
+                    $('#loader').css('z-index','10');
+                    $('#cover').css('display','inline');
                     //放在這
 
-                    Swal.fire({
-                        title: 'Data Saved',
-                        icon: 'success',
-                        confirmButtonText: 'ok',
-                    })
+                    // Swal.fire({
+                    //     title: 'Data Saved',
+                    //     icon: 'success',
+                    //     confirmButtonText: 'ok',
+                    // })
                     
                     modal.style.display = "none";
                     var itemName1 = $("#storebtn").attr("itemName");
@@ -1405,7 +1405,19 @@ $(document).ready(function (e) {
                         itemName.push(itemName1);
                     }
                     console.log("itemName : ", itemName);
-                    BtnClicked_1(itemName);
+                    // BtnClicked_1(itemName);
+                    
+                    var reportID = $("#storebtn").attr("reportID");
+                    var group1 = $("#storebtn").attr("group1");
+                    var group2 = $("#storebtn").attr("group2");
+                    console.log("reportID : ", reportID);
+                    var word = $("#wordsOption").val();
+                    
+                    var value1 = $("#storebtn").attr("value1");
+                    var value2 = $("#storebtn").attr("value2");
+                    var token = $("#regexName").val();
+                    console.log("word : ", word);
+                    reExtraction(reportID, group1, group2, word, value1, value2, token, itemName);
                 } 
                 else{
                     // Swal.fire({
@@ -1600,7 +1612,7 @@ $(document).ready(function (e) {
     }
 
     //存檔到後端資料庫
-    function BtnClicked_3(response,itemName){   
+    function BtnClicked_3(response,itemName){
         ////console.log("btnclicked3_itemName " + itemName)  
         tokenREID = response.data[0].tokenREID;        
         ////console.log("btnclicked")
@@ -1758,9 +1770,11 @@ $(document).ready(function (e) {
                                             //console.log("target : ", target);
                                             //console.log("groupNodeSelect : ", groupNodeSelect.value);
                                             var selectedGroup = groupNodeSelect.value;
+                                            $("#storebtn").attr("group1", selectedGroup);
                                             selectLeading = chtNameleading;
                                             //console.log("selectLeading : ", selectLeading);
                                             showModalStatics(target, resgroupNode, selectedGroup, selectLeading, leadingID);
+                                            $("#storebtn").attr("reportID", $(target).parents('tr').attr("reportID"));
                                         }else{
                                             Swal.fire({
                                                 title: 'Request Canceled',
@@ -2306,6 +2320,54 @@ $(document).ready(function (e) {
         });
         return res;
     }
+    
+    function reExtraction(reportID, group1, group2, word, value1, value2, token, itemName){
+        var from = document.getElementById("storebtn").getAttribute("from");
+        var to = document.getElementById("storebtn").getAttribute("to");
+        console.log("from : ", from);
+        console.log("to : ", to);
+        var nword = parseInt(to) - parseInt(from) + 1; 
+        console.log("word : ", word); 
+        regex = document.getElementById('regexText').value
+
+        console.log("reExtraction reportID : ", reportID.split(','));
+        var res;
+        $.ajax({
+            type: 'POST',
+            data:JSON.stringify({
+                'reportID[]': reportID.split(','),
+                'group1': group1,
+                'group2': group2,
+                'word': word,
+                'value1': value1,
+                'value2': value2,
+                'token': token,
+                'nWord': nword,
+                'RE': regex,
+                'RE': regex,
+                'itemName[]': itemName,
+            }),
+            url: '{% url "mark:reExtraction" %}',
+            success:function (response){
+                res = response;
+                printResult(res);
+                
+                $('#loader').css('display','none');
+                $('#cover').css('display','none');
+                
+            
+                var tableWord = document.getElementById("wordsOption").value;
+                if (tableWord === "1"){
+                    hideElement("stasticsTable");
+                }
+                else if (tableWord === "2"){                
+                    hideElement("stasticsTable2");
+                }
+                //console.log("selectRoot : ", response)
+            },
+        });
+        return res;
+    }
     function getREofRecord2(){
         ////console.log(event.target);
         //showModalReportText(event.target);
@@ -2456,6 +2518,8 @@ $(document).ready(function (e) {
                                             //console.log("groupNodeSelect : ", groupNodeSelect.value);
                                             var selectedGroup = groupNodeSelect.value;
                                             var selectedGroup1 = groupNodeSelect1.value;
+                                            $("#storebtn").attr("group1", selectedGroup);
+                                            $("#storebtn").attr("group2", selectedGroup1);
                                             if(selectedGroup === selectedGroup1){
                                                 Swal.fire({
                                                     title: '不可選擇相同item',
@@ -2466,6 +2530,8 @@ $(document).ready(function (e) {
                                             selectLeading = chtNameleading;
                                             //console.log("selectLeading : ", selectLeading);
                                             showModalStatics2(target, resgroupNode, selectedGroup, selectLeading, leadingID, selectedGroup1);
+                                            
+                                            $("#storebtn").attr("reportID", $(target).parents('tr').attr("reportID"));
                                         }else{
                                             Swal.fire({
                                                 title: 'Request Canceled',
@@ -2684,7 +2750,7 @@ $(document).ready(function (e) {
         button.textContent = '自動建立RE'; // set the text of the button
         button.id = 'generateREButton'; // set the text of the button
         button.classList.add('btn', 'btn-secondary'); // add classes to the button
-        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID"));
+        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID").split(',')[0]);
 
         
         
@@ -2696,6 +2762,7 @@ $(document).ready(function (e) {
             var ExtractValue = document.getElementById("selectItem2").value;
             var extractPos = textArray.indexOf(ExtractValue);
             var itemName = document.getElementById("SelectitemName").value;
+            // $("#storebtn").attr("group1", itemName);
             var RE = "";
 
             var startWord = document.getElementById("selectItem0").value;
@@ -2983,7 +3050,7 @@ $(document).ready(function (e) {
         button.textContent = '自動建立RE'; // set the text of the button
         button.id = 'generateREButton'; // set the text of the button
         button.classList.add('btn', 'btn-secondary'); // add classes to the button
-        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID"));
+        button.setAttribute('lastReportID', $(target).parents('tr').attr("reportID").split(',')[0]);
 
         
         

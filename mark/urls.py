@@ -116,4 +116,5 @@ urlpatterns = [
     path('getTypoTokenDistance/', getTypoTokenDistance,name="getTypoTokenDistance"),
     path('selectReportByReportID/', selectReportByReportID,name="selectReportByReportID"),
     path('getStopToken/', getStopToken,name="getStopToken"),
+    path('reExtraction/', reExtraction,name="reExtraction"),
 ]
