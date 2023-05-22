@@ -9,8 +9,9 @@ import pyodbc
 import json
 import pandas as pd 
 import pymssql
+import re
 
-DATABASE_NAME = 'buildVocabulary' 
+DATABASE_NAME = 'nlpVocabularyLatest' 
 
 
 @csrf_exempt
@@ -27,7 +28,7 @@ def getTag(request):
 @csrf_exempt
 def getItemDefinition(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -53,7 +54,7 @@ def getItemDefinition(request):
 @csrf_exempt
 def getStasticTable(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -61,9 +62,9 @@ def getStasticTable(request):
     result = {"status":"1"}
     raw = request.body.decode('utf-8')
     try:
-        print("in")
+        # print("in")
         body = json.loads(raw)
-        print("in")
+        # print("in")
         string = body['string']
 
         
@@ -76,7 +77,7 @@ def getStasticTable(request):
 
         tokenList = string.split(" ")
         IDList = []
-        print(len(tokenList))
+        # print(len(tokenList))
         if (len(tokenList) != 3):
             raise Exception("必須輸入3字")
         for i in tokenList:
@@ -86,7 +87,7 @@ def getStasticTable(request):
             VocabularyData = cursor.fetchone()
             IDList.append(VocabularyData.tokenID)
             
-        print("innnnnnnnnnnn")
+        # print("innnnnnnnnnnn")
 
 
         
@@ -228,32 +229,32 @@ def getStasticTable(request):
         # print(columns)
         # print(res)
         Array = []
-        print(len(columns), len(res[0]))
-        print("搜尋完畢")
+        # print(len(columns), len(res[0]))
+        # print("搜尋完畢")
         for i in res:
             Array.append([i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10]])
-        print(Array[0], len(Array[0]), len(Array))
+        # print(Array[0], len(Array[0]), len(Array))
         cal = pd.DataFrame(Array,columns=columns)
         # 分組
         grouped = cal.groupby(['targetWord1','targetWord2','targetWord3','word6', 'word5','word4','word3','word2','word1'])
 
         cal = grouped.agg({'exReportID': lambda x: ','.join(x.astype(str).unique()), 'numReports': lambda x: len(x.unique())}).reset_index()  
-        print("分組完畢")
+        # print("分組完畢")
         # 計算每個分組的數量  
         group_count = grouped.size().reset_index(name='count by group')  
-        print("計算每個分組的數量完畢")
+        # print("計算每個分組的數量完畢")
         
         # 合併計數每個分組的數量的 DataFrame  
         cal = pd.merge(cal, group_count, on=['targetWord1','targetWord2','targetWord3','word6', 'word5','word4','word3','word2','word1'])  
-        print("合併計數每個分組的數量的 DataFrame完畢")
+        # print("合併計數每個分組的數量的 DataFrame完畢")
         
         # 重新命名列名  
         cal = cal.rename(columns={'count by group': 'times'})  
-        print("重新命名列名完畢")
+        # print("重新命名列名完畢")
         
         # 按照 count by group 欄位進行排序  
         cal = cal.sort_values(by=['word6', 'word5', 'word4', 'word3', 'word2', 'word1'], ascending=True)
-        print("count by group完畢")
+        # print("count by group完畢")
 
         exReportID = []
         numReports = [] 
@@ -281,7 +282,7 @@ def getStasticTable(request):
             targetWord2.append(row['targetWord2'])
             targetWord3.append(row['targetWord3'])
             # ... access other columns as needed
-            print(exReportID, numReports, times, word1, word2, word3, word4, word5, word6, targetWord1, targetWord2, targetWord3)
+            # print(exReportID, numReports, times, word1, word2, word3, word4, word5, word6, targetWord1, targetWord2, targetWord3)
 
         result = {'numReports':numReports,
                          'times':times,
@@ -301,7 +302,7 @@ def getStasticTable(request):
         
         # # 顯示結果  
         # # print(cal)
-        print(result)
+        # print(result)
         
             
         conn.commit()
@@ -319,7 +320,7 @@ def getStasticTable(request):
 @csrf_exempt
 def getStasticTable2(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary' 
+    database = 'nlpVocabularyLatest' 
     username = 'N824' 
     password = 'test81218' 
     conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
@@ -327,9 +328,9 @@ def getStasticTable2(request):
     result = {"status":"1"}
     raw = request.body.decode('utf-8')
     try:
-        print("in")
+        # print("in")
         body = json.loads(raw)
-        print("in")
+        # print("in")
         string = body['string']
 
         
@@ -342,7 +343,7 @@ def getStasticTable2(request):
 
         tokenList = string.split(" ")
         IDList = []
-        print(len(tokenList))
+        # print(len(tokenList))
         if (len(tokenList) != 5):
             raise Exception("必須輸入5字")
         for i in tokenList:
@@ -352,7 +353,7 @@ def getStasticTable2(request):
             VocabularyData = cursor.fetchone()
             IDList.append(VocabularyData.tokenID)
             
-        print("in")
+        # print("in")
 
 
         
@@ -543,8 +544,8 @@ def getStasticTable2(request):
         # print(columns)
         # print(res)
         Array = []
-        print(len(columns), len(res[0]))
-        print("搜尋完畢")
+        # print(len(columns), len(res[0]))
+        # print("搜尋完畢")
         for i in res:
             Array.append([i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], i[11], i[12]])
         print(Array[0], len(Array[0]), len(Array))
@@ -553,22 +554,22 @@ def getStasticTable2(request):
         grouped = cal.groupby(['targetWord1','targetWord2','targetWord3', 'targetWord4', 'targetWord5','word6', 'word5','word4','word3','word2','word1'])
 
         cal = grouped.agg({'exReportID': lambda x: ','.join(x.astype(str).unique()), 'numReports': lambda x: len(x.unique())}).reset_index()  
-        print("分組完畢")
+        # print("分組完畢")
         # 計算每個分組的數量  
         group_count = grouped.size().reset_index(name='count by group')  
-        print("計算每個分組的數量完畢")
+        # print("計算每個分組的數量完畢")
         
         # 合併計數每個分組的數量的 DataFrame  
         cal = pd.merge(cal, group_count, on=['targetWord1','targetWord2','targetWord3', 'targetWord4', 'targetWord5','word6', 'word5','word4','word3','word2','word1'])  
-        print("合併計數每個分組的數量的 DataFrame完畢")
+        # print("合併計數每個分組的數量的 DataFrame完畢")
         
         # 重新命名列名  
         cal = cal.rename(columns={'count by group': 'times'})  
-        print("重新命名列名完畢")
+        # print("重新命名列名完畢")
         
         # 按照 count by group 欄位進行排序  
         cal = cal.sort_values(by=['word6', 'word5', 'word4', 'word3', 'word2', 'word1'], ascending=True)
-        print("count by group完畢")
+        # print("count by group完畢")
 
         exReportID = []
         numReports = [] 
@@ -600,7 +601,7 @@ def getStasticTable2(request):
             targetWord4.append(row['targetWord4'])
             targetWord5.append(row['targetWord5'])
             # ... access other columns as needed
-            print(exReportID, numReports, times, word1, word2, word3, word4, word5, word6, targetWord1, targetWord2, targetWord3)
+            # print(exReportID, numReports, times, word1, word2, word3, word4, word5, word6, targetWord1, targetWord2, targetWord3)
 
         result = {'numReports':numReports,
                          'times':times,
@@ -637,7 +638,7 @@ def getStasticTable2(request):
 @csrf_exempt
 def reExtraction(request):
     server = '172.31.6.22' 
-    database = 'buildVocabulary '
+    database = 'nlpVocabularyLatest '
     username = 'N824'
     password = 'test81218'
     
@@ -680,6 +681,7 @@ def reExtraction(request):
         REID = vocabularyRERes[0].REID
 
         itemName = body['itemName[]']
+        itemIDArray = []
         print(itemName)
         for ind,i in enumerate(itemName):
             print("itemName : ", i)
@@ -690,6 +692,8 @@ def reExtraction(request):
             itemDefinition2Res = cursor.fetchone()
             if itemDefinition2Res == None:
                 raise Exception("ItemName 不存在")
+            
+            itemIDArray.append(itemDefinition2Res.itemID)
             # print("itemID : ", itemDefinition2Res)
             #插入資料表
             query = 'INSERT into [REItem2] (REID, seqNo, itemID) OUTPUT [INSERTED].* VALUES (?, ?, ?);'
@@ -698,185 +702,184 @@ def reExtraction(request):
             cursor.execute(query, args)
             tokenREItemID = cursor.fetchone()
             # print("插入tokenREItem : ", tokenREItemID)
+
+
+        
+        endArray = body['endArray[]']
+        valueArray = body['valueArray[]']
+        reportIDArraycheck = body['reportIDArray[]']
+        groupIDArray = body['groupIDArray[]']
+        print("endArray : ", endArray)
+        print("valueArray : ", valueArray)
+        print("reportIDArraycheck : ", reportIDArraycheck)
         
         #---------------------------------------------------------------替換textToken-----------------------------------------------------------------
         word = body['word']
-        
         print("token : ", token)
+        lengthOfProcessedData = 0
         if (word == "2"):
             string = '10 1 17 1 11'
             
             reportIDArray = body['reportID[]']
-            for reportID in reportIDArray:
-                value1 = body['value1']
-                value2 = body['value2']
-                value = "(" + value1 + "/" + value2 + ")"
-                query = "select * from reExtraction(?) where reportID = ? and getData = ?"
-                args = [string, reportID, value]
+            valueArray = body['valueArray[]']
+            startArray = body['startArray[]']
+            endArray = body['endArray[]']
+            reportIDArray1 = body['reportIDArray[]']
+            groupIDArray = body['groupIDArray[]']
+            for reportID, endPos, extractValue, startPos in zip(reportIDArray1, endArray, valueArray, startArray):
+                print("reportID : ", reportID)
+                print("endPos : ", endPos)
+                print("extractValue : ", extractValue)
+                print("startPos : ", startPos)
+                print("------------------------------------選擇textToken----------------------------------------")
+                query = '''select textToken.* from textToken
+                            inner join Vocabulary on textToken.tokenID = Vocabulary.tokenID 
+                            where reportID = ? and posStart > ? and posEnd <= ?
+                            order by textToken.posStart
+                            '''
+                args = [reportID, startPos, endPos]
+                # print(args)
+                cursor.execute(query, args)
+                textTokenRes = cursor.fetchall()
+                if textTokenRes == []:
+                    raise Exception("未找到相符textToken")
+                
+
+                print(textTokenRes)
+                newPosStart = textTokenRes[0].posStart
+
+                
+                print("------------------------------------刪除textToken----------------------------------------")
+                query = '''delete textToken output deleted.* where reportID = ? and posStart > ? and posEnd <= ?
+                            '''
+                args = [reportID, startPos, endPos]
+                cursor.execute(query, args)
+                deletetextTokenRes = cursor.fetchall()
+                print(deletetextTokenRes)
+                lengthOfProcessedData += len(deletetextTokenRes)
+                
+                print("------------------------------------插入textToken----------------------------------------")
+                query = '''insert into textToken (reportID, posStart, posEnd, tokenID) output inserted.* values(?, ?, ?, ?)'''
+                args = [reportID, newPosStart, endPos, tokenID]
+                cursor.execute(query, args)
+                inserttextTokenRes = cursor.fetchone()
+                print(inserttextTokenRes)
+
+                print("------------------------------------插入extractedValueFromToken----------------------------------------")
+                print(groupIDArray)
+                query = '''insert into extractedValueFromToken (reportID, posStart, REItemID, extractedValue) output inserted.* values(?, ?, ?, ?)'''
+                args = [reportID, startPos, groupIDArray[0], extractValue[0]]
                 print(args)
                 cursor.execute(query, args)
-                getdata = cursor.fetchall()
-                if getdata == []:
-                    continue
-
-                deleteArray = []
-                
-                times = 0
-                for ind, i in enumerate(getdata):
-                    number = i.getData[1:len(i.getData)-1]
-                    print("number", number)
-                    deleteArray.append(i)
-                    # if string.split("/")[0] == num1 and string.split("/")[1] == num2:
-                    #     print(i)
-                    #     deleteArray.append(i)
-                    print(deleteArray)
-
-                    reportID = i[0]
-                    posStart = i[1]
-                    posEnd = i[2]
-                    
-                    times += i[3]
-                    num1 = number.split("/")[0]
-                    num2 = number.split("/")[1]
-
-                    print("data : ", reportID, posStart, posEnd, times, num1, num2)
-                    query = "SELECT * FROM [Vocabulary] where token = ?"
-                    args = [token]
-                    cursor.execute(query, args)
-                    VocabularyRes = cursor.fetchone()
-                    tokenID = VocabularyRes.tokenID
-                    print("tokenID : ", tokenID)
-
-                    
-                    # 只做一次
-                    if ind == 0:
-                        query = '''delete a output deleted.* from textToken as a inner join reExtraction(?) as b on a.reportID=b.reportID and a.posStart between b.posStart and b.posEnd
-                        where a.reportID = ? and b.getData = ?'''
-                        args = [string, reportID, value]
-                        cursor.execute(query, args)
-                        deletedData = cursor.fetchall()
-                        print("deletedData : ", deletedData)
-                        print("times : ", times, len(deletedData))
-                        print("deletedData[ind] : ", deletedData)
-                        print("ind : ", ind, len(getdata)-1)
-                    #最後一次迴圈看刪除總數
-                    if (int(times) != len(deletedData) and ind == len(getdata)-1):
-                        raise Exception(f'''查詢textToken數量不等於刪除textToken數量<br>查詢 : {int(times)}<br>刪除 : {len(deletedData)}''')
-                    else:
-                        print("長度相等")
-
-                    query = '''insert into textToken (reportID, posStart, posEnd, tokenID) output inserted.* values (?, ?, ?, ?)'''
-                    args = [reportID, posStart, posEnd, tokenID]
-                    cursor.execute(query, args)
-                    insertedData = cursor.fetchone()
-                    print("insertedData : ", insertedData)
-
-                    if insertedData == None:
-                        raise Exception("插入textToken錯誤")
-                    
-                    group1 = body['group1']
-                    group2 = body['group2']
-                    print(group1, group2)
-                    
-                    query = '''insert into extractedValueFromToken (reportID, posStart, REItemID, extractedValue) output inserted.* values (?, ?, ?, ?)'''
-                    args = [reportID, posStart, group1, num1]
-                    cursor.execute(query, args)
-                    insertedData = cursor.fetchone()
-                    print("insertedData : ", insertedData)
-                    insertcount += 1
-                    
-                    query = '''insert into extractedValueFromToken (reportID, posStart, REItemID, extractedValue) output inserted.* values (?, ?, ?, ?)'''
-                    args = [reportID, posStart, group2, num2]
-                    cursor.execute(query, args)
-                    insertedData = cursor.fetchone()
-                    print("insertedData : ", insertedData)
-                    insertcount += 1
+                inserttextTokenRes = cursor.fetchone()
+                print(inserttextTokenRes)
+                args = [reportID, startPos, groupIDArray[1], extractValue[1]]
+                print(args)
+                cursor.execute(query, args)
+                inserttextTokenRes = cursor.fetchone()
+                print(inserttextTokenRes)
 
 
             
         elif (word == "1"):
-            
             string = '10 1 11'
-            
             reportIDArray = body['reportID[]']
-            print("reportIDArray : ", reportIDArray)
-            for reportID in reportIDArray:
-                value1 = body['value1']
-                value = "(" + value1 + ")"
-
-                query = "select * from reExtraction(?) where reportID = ? and getData = ?"
-                args = [string, reportID, value]
+            valueArray = body['valueArray[]']
+            startArray = body['startArray[]']
+            endArray = body['endArray[]']
+            reportIDArray1 = body['reportIDArray[]']
+            groupIDArray = body['groupIDArray[]']
+            for reportID, endPos, extractValue, startPos in zip(reportIDArray1, endArray, valueArray, startArray):
+                # print("reportID : ", reportID)
+                # print("endPos : ", endPos)
+                # print("extractValue : ", extractValue)
+                # print("startPos : ", startPos)
+                print("------------------------------------選擇textToken----------------------------------------")
+                query = '''select textToken.* from textToken
+                            inner join Vocabulary on textToken.tokenID = Vocabulary.tokenID 
+                            where reportID = ? and posStart > ? and posEnd <= ?
+                            order by textToken.posStart
+                            '''
+                args = [reportID, startPos, endPos]
+                # print(args)
                 cursor.execute(query, args)
-                getdata = cursor.fetchall()
+                textTokenRes = cursor.fetchall()
+                if textTokenRes == []:
+                    raise Exception("未找到相符textToken")
+
+                print(textTokenRes)
+                newPosStart = textTokenRes[0].posStart
+
                 
-                if getdata == []:
-                    continue
+                print("------------------------------------刪除textToken----------------------------------------")
+                query = '''delete textToken output deleted.* where reportID = ? and posStart > ? and posEnd <= ?
+                            '''
+                args = [reportID, startPos, endPos]
+                cursor.execute(query, args)
+                deletetextTokenRes = cursor.fetchall()
+                print(deletetextTokenRes)
+                lengthOfProcessedData += len(deletetextTokenRes)
 
-                deleteArray = []
-                times = 0
-                for ind,i in enumerate(getdata):
-                    number = i.getData[1:len(i.getData)-1]
-                    print("number", number)
-                    deleteArray.append(i)
-                    # if string.split("/")[0] == num1 and string.split("/")[1] == num2:
-                    #     print(i)
-                    #     deleteArray.append(i)
-                    print(deleteArray)
+                
+                print("------------------------------------插入textToken----------------------------------------")
+                query = '''insert into textToken (reportID, posStart, posEnd, tokenID) output inserted.* values(?, ?, ?, ?)'''
+                args = [reportID, newPosStart, endPos, tokenID]
+                cursor.execute(query, args)
+                inserttextTokenRes = cursor.fetchone()
+                print(inserttextTokenRes)
 
-                    reportID = i[0]
-                    posStart = i[1]
-                    posEnd = i[2]
-                    
-                    times += i[3]
-                    num1 = number
-
-                    print("data : ", reportID, posStart, posEnd, times, num1)
-                    query = "SELECT * FROM [Vocabulary] where token = ?"
-                    args = [token]
-                    cursor.execute(query, args)
-                    VocabularyRes = cursor.fetchone()
-                    tokenID = VocabularyRes.tokenID
-                    print("tokenID : ", tokenID)
-
-                    # 只做一次
-                    if ind == 0:
-                        query = '''delete a output deleted.* from textToken as a inner join reExtraction(?) as b on a.reportID=b.reportID and a.posStart between b.posStart and b.posEnd
-                        where a.reportID = ? and b.getData = ?'''
-                        args = [string, reportID, value]
-                        cursor.execute(query, args)
-                        deletedData = cursor.fetchall()
-                        print("deletedData : ", deletedData)
-                        print("times : ", times, len(deletedData))
-                        print("deletedData[ind] : ", deletedData)
-                        print("ind : ", ind, len(getdata)-1)
-                    #最後一次迴圈看刪除總數
-                    if (int(times) != len(deletedData) and ind == len(getdata)-1):
-                        raise Exception(f'''查詢textToken數量不等於刪除textToken數量<br>查詢 : {int(times)}<br>刪除 : {len(deletedData)}''')
-                    else:
-                        print("長度相等")
-
-                    query = '''insert into textToken (reportID, posStart, posEnd, tokenID) output inserted.* values (?, ?, ?, ?)'''
-                    args = [reportID, posStart, posEnd, tokenID]
-                    cursor.execute(query, args)
-                    insertedData = cursor.fetchone()
-                    print("insertedData : ", insertedData)
-
-                    if insertedData == None:
-                        raise Exception("插入textToken錯誤")
-                    
-                    group1 = body['group1']
-                    print(group1)
-                    
-                    query = '''insert into extractedValueFromToken (reportID, posStart, REItemID, extractedValue) output inserted.* values (?, ?, ?, ?)'''
-                    args = [reportID, posStart, group1, num1]
-                    cursor.execute(query, args)
-                    insertedData = cursor.fetchone()
-                    print("insertedData : ", insertedData)
-                    insertcount += 1
+                print("------------------------------------插入extractedValueFromToken----------------------------------------")
+                print(groupIDArray)
+                query = '''insert into extractedValueFromToken (reportID, posStart, REItemID, extractedValue) output inserted.* values(?, ?, ?, ?)'''
+                args = [reportID, startPos, groupIDArray[0], extractValue[0]]
+                print(args)
+                cursor.execute(query, args)
+                inserttextTokenRes = cursor.fetchone()
+                print(inserttextTokenRes)
 
         result['status'] = "0"
-        result['MSG'] = f"儲存RE成功<br>並已更新{str(len(reportIDArray))}篇文章<br>{reportIDArray}<br>裡面的{insertcount}筆資料"
+        result['MSG'] = f"儲存RE成功<br>並已更新{str(len(reportIDArray))}篇文章<br>{reportIDArray}<br>裡面的共{lengthOfProcessedData}筆資料"
         conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    
+    conn.close()
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def tryToExtract(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest ' 
+    username = 'N824'
+    password = 'test81218'
+    
+    result = {'status': "1"}
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes; as_dict=True;')
+    cursor = conn.cursor()
+
+    raw = request.body.decode('utf-8')
+
+    try:        
+        # body = json.loads(raw)
+        # reportIDArray = body['reportID[]']
+        # RE = body['RE']
+
+        # print("reportIDArray : ", reportIDArray)
+        # print("RE : ", RE)
+        # for reportID in reportIDArray:
+        #     query = "select * from analyseText where reportID = ?"
+        #     args = [reportID]
+        #     cursor.execute(query, args)
+        #     reportText = cursor.fetchone().reportText
+        #     # print(reportText)
+        #     raw_string = r"{}".format(RE)
+        #     match = re.search(raw_string, reportText)
+        #     print(match)
+        result['status'] = "0"
+        # conn.commit()
     
     except Exception as e:
         conn.rollback()

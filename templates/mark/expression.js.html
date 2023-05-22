@@ -39,7 +39,6 @@ $(document).ready(function (e) {
     //     console.log("已更新");
     // }, 5000);
 
-
     //初始化
     init();
     //搜尋按鈕
@@ -103,6 +102,7 @@ $(document).ready(function (e) {
     $("#storebtn").click(function(){
         storebtnClick();
     });
+    
 })
 
 
@@ -899,18 +899,18 @@ $(document).ready(function (e) {
                     //     <td class="show">${response.targetWord3[i]}</td>
                     //     </tr>`;
                     element += `<tr reportID="${response.reportID[i]}">
-                        <td><button class="btn btn-secondary" onclick="getREofRecord()">${i+1}</button></td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.numReports[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.times[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word1">${response.word1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word2">${response.word2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word3">${response.word3[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word4">${response.word4[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word5">${response.word5[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word6">${response.word6[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord3[i]}</td>
+                        <td><button class="btn btn-secondary" onclick="getREofRecord()" id="3word${i}">${i+1}</button></td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" >${response.numReports[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" >${response.times[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word1">${response.word1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word2">${response.word2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word3">${response.word3[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word4">${response.word4[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word5">${response.word5[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word6">${response.word6[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord3[i]}</td>
                         </tr>`;
                 }
                 $('#stasticsTable tbody').append(element);
@@ -988,7 +988,7 @@ $(document).ready(function (e) {
                 //     <td class="show">${response.targetWord5[i]}</td>
                 //     </tr>`;
                 element += `<tr reportID="${response.reportID[i]}">
-                    <td><button class="btn btn-secondary" onclick="getREofRecord2()">${i+1}</button></td>
+                    <td><button class="btn btn-secondary" onclick="getREofRecord2()" id="5word${i}">${i+1}</button></td>
                     <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.numReports[i]}</td>
                     <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.times[i]}</td>
                     <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word1">${response.word1[i]}</td>
@@ -1417,7 +1417,26 @@ $(document).ready(function (e) {
                     var value2 = $("#storebtn").attr("value2");
                     var token = $("#regexName").val();
                     console.log("word : ", word);
-                    reExtraction(reportID, group1, group2, word, value1, value2, token, itemName);
+                    var getAllExtractRes = getAllExtract(reportID);
+
+                    var endArray = getAllExtractRes[0];
+                    var valueArray = getAllExtractRes[1];
+                    var reportIDArray = getAllExtractRes[2];
+                    var startArray = getAllExtractRes[3];
+                    
+                    console.log("endArray : ", endArray);
+                    console.log("reportIDArray : ", reportIDArray);
+                    console.log("valueArray : ", valueArray);
+                    
+                    var group1 = $("#storebtn").attr("group1");
+                    var group2 = $("#storebtn").attr("group2");
+                    var groupIDArray = [];
+                    groupIDArray.push(group1);
+                    if (wordNum === "2"){
+                        groupIDArray.push(group2);
+                    }
+
+                    reExtraction(reportID, group1, group2, word, value1, value2, token, itemName, endArray, reportIDArray, valueArray, startArray, groupIDArray);
                 } 
                 else{
                     // Swal.fire({
@@ -1432,6 +1451,115 @@ $(document).ready(function (e) {
 
         // append the button to the document body
         container.appendChild(button);
+    }
+    
+    function getAllExtract(reportID){
+        reportID = reportID.split(',');
+        console.log("getAllExtract reportID : ", reportID);
+        var RE = $("#regexText").val();
+        console.log("getAllExtract RE : ", RE);
+        
+        var startArray = [];
+        var endArray = [];
+        var reportIDArray = [];
+        var valueArray = [];
+        for (var i=0 ; i<reportID.length ; i++){
+            $.ajax({
+                async:false,
+                type: 'POST',
+                url: '{% url "mark:getReportByReportID" %}',
+                data:JSON.stringify({
+                    'reportID': reportID[i],
+                }),
+                success:function (response){
+                    // console.log("report : ", response.data);
+                    var extractRes = extract(response.data, RE, startArray, endArray, reportIDArray, reportID[i], valueArray);
+                    // console.log("extractRes : ", extractRes);
+                    startArray = extractRes[0];
+                    endArray = extractRes[1];
+                    reportIDArray = extractRes[2];
+                    valueArray = extractRes[3];
+                    
+                    // console.log("startArray : ", startArray);
+                    // console.log("endArray : ", endArray);
+                    // console.log("reportIDArray : ", reportIDArray);
+                    // console.log("valueArray : ", valueArray);
+                },
+            });
+        }
+        
+
+
+
+
+        // $.ajax({
+        //     type: 'POST',
+        //     url: '{% url "mark:tryToExtract" %}',
+        //     data:JSON.stringify({
+        //         'reportID[]': reportID,
+        //         'RE': RE,
+        //         'endArray[]': endArray,
+        //         'valueArray[]': valueArray,
+        //         'reportIDArray[]': reportIDArray,
+        //     }),
+        //     success:function (response){
+        //         printResult(response);
+        //         $('#loader').css('display','none');
+        //         $('#cover').css('display','none');
+        //     },
+        // });
+        // $('#loader').css('display','none');
+        // $('#cover').css('display','none');
+        return [endArray, valueArray, reportIDArray, startArray]
+    }
+
+    function extract(report, RE, startArray, endArray, reportIDArray, reportID, valueArray){
+        console.log("extract reportID : ", reportID);
+        let textToSearch = RE;               
+        textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
+        let dateFormat = new RegExp(`${textToSearch}`,"g");   
+        var result_array = [];
+        var extractedArray = [];
+        var paragraph = report;
+        var start_end_count = 0;
+        var words = document.getElementById("wordsOption").value;
+        //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
+        while(null != (g = dateFormat.exec(paragraph))) {
+            ////console.log("groups: " + g.groups);  // ouput: "a"
+            //console.log("pattern: " + g);
+            result_array.push(g.groups);
+            extractedArray.push(g);
+            
+            startArray.push(g.index);
+            endArray.push(dateFormat.lastIndex);
+            reportIDArray.push(reportID);
+            if (words === "1"){
+                valueArray.push([g[1]]);
+            }
+            else{
+                valueArray.push([g[1], g[2]]);                
+            }
+        }
+        // console.log("result_array : ", result_array);
+        // console.log("extractedArray : ", extractedArray);
+        // console.log("startArray : ", startArray);
+        // console.log("endArray : ", endArray);
+        
+        // var allkeyArray = [];
+        // var allvalueArray = [];
+        // for(var i=0 ; i<result_array.length ; i++){
+        //     var  entries = Object.entries(result_array[i]);
+        //     for (const [key, value] of entries) {
+        //         //console.log(`Key: ${key}, Value: ${value}`);
+        //         if(!keyArray.includes(key)){
+        //             keyArray.push(key);
+        //             valueArray.push(value);
+        //         }
+        //         allkeyArray.push(key);
+        //         allvalueArray.push(value);
+        //     }
+        // }
+        return [startArray, endArray, reportIDArray, valueArray];
     }
 
     function hideElement(tableid){
@@ -2265,6 +2393,7 @@ $(document).ready(function (e) {
                         
                 }
             });
+            
         });
 
         // append the button to the document body
@@ -2321,7 +2450,7 @@ $(document).ready(function (e) {
         return res;
     }
     
-    function reExtraction(reportID, group1, group2, word, value1, value2, token, itemName){
+    function reExtraction(reportID, group1, group2, word, value1, value2, token, itemName, endArray, reportIDArray, valueArray, startArray, groupIDArray){
         var from = document.getElementById("storebtn").getAttribute("from");
         var to = document.getElementById("storebtn").getAttribute("to");
         console.log("from : ", from);
@@ -2346,6 +2475,11 @@ $(document).ready(function (e) {
                 'RE': regex,
                 'RE': regex,
                 'itemName[]': itemName,
+                'startArray[]': startArray,
+                'endArray[]': endArray,
+                'valueArray[]': valueArray,
+                'reportIDArray[]': reportIDArray,
+                'groupIDArray[]': groupIDArray,
             }),
             url: '{% url "mark:reExtraction" %}',
             success:function (response){
@@ -2354,14 +2488,15 @@ $(document).ready(function (e) {
                 
                 $('#loader').css('display','none');
                 $('#cover').css('display','none');
-                
-            
-                var tableWord = document.getElementById("wordsOption").value;
-                if (tableWord === "1"){
-                    hideElement("stasticsTable");
-                }
-                else if (tableWord === "2"){                
-                    hideElement("stasticsTable2");
+                if (response.status === "0"){
+                    document.getElementById("searchbtn").click();
+                    var tableWord = document.getElementById("wordsOption").value;
+                    if (tableWord === "1"){
+                        $("#stasticsTable tbody tr td button").prop("disabled", true);
+                    }
+                    else if (tableWord === "2"){                
+                        $("#stasticsTable2 tbody tr td button").prop("disabled", true);
+                    }
                 }
                 //console.log("selectRoot : ", response)
             },
@@ -3336,7 +3471,6 @@ $(document).ready(function (e) {
         return poscheck;
 
     }
-
 
 
 </script>
