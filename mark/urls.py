@@ -118,4 +118,8 @@ urlpatterns = [
     path('getStopToken/', getStopToken,name="getStopToken"),
     path('reExtraction/', reExtraction,name="reExtraction"),
     path('tryToExtract/', tryToExtract,name="tryToExtract"),
+    path('wordTable/', wordTable,name="wordTable"),
+    path('typo1/', typo1,name="typo1"),
+    path('getTokenAll/', getTokenAll,name="getTokenAll"),
+    path('getReportByToken/', getReportByToken,name="getReportByToken"),
 ]

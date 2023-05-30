@@ -242,7 +242,7 @@
     }
     
     #loader{
-        background-color:#000
+        background-color:#000;
         z-index:2;
         position:absolute;
         top:50%;

@@ -8,6 +8,7 @@ from django.db import connections
 import pyodbc
 import json
 import Levenshtein
+import re
 DATABASE_NAME = 'nlpVocabularyLatest' 
 
 @csrf_exempt
@@ -254,8 +255,8 @@ def insertTypo(request):
             html = '''<table class='table'>
                     <thead class="thead-dark">
                         <tr>
-                            <th class="header" scope="col" style = "width : 100px;">大小不同字</th>
-                            <th class="header" scope="col" style = "width : 100px;">調整為正確字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">大小不同字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">調整為正確字</th>
                         </tr>
                     </thead>
                     <tbody>'''
@@ -282,10 +283,10 @@ def insertTypo(request):
                 changedToken = cursor.fetchone()
                 print("changedToken : ", changedToken)
                 html += '''<tr>'''
-                html += '''<td>'''
+                html += '''<td style="text-align: center;">'''
                 html += changedToken.token
                 html += '''</td>'''
-                html += '''<td>'''
+                html += '''<td style="text-align: center;">'''
                 html += changedToken.prototype
                 html += '''</td>'''
                 html += '''</tr>'''
@@ -294,6 +295,10 @@ def insertTypo(request):
             </table>''' 
                 # html += "[" + changedToken.token + ", " + changedToken.prototype + "]<br>"
             result['MSG'] = "已完成更新<br>" + html
+            
+            if correctWord == []:
+                result['MSG'] = ""
+
         elif insertType == "typo":
             print("typo")
             
@@ -312,8 +317,8 @@ def insertTypo(request):
             html = '''<table class='table'>
                     <thead class="thead-dark">
                         <tr>
-                            <th class="header" scope="col" style = "width : 100px;">錯別字</th>
-                            <th class="header" scope="col" style = "width : 100px;">調整為正確字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">錯別字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">調整為正確字</th>
                         </tr>
                     </thead>
                     <tbody>'''
@@ -333,10 +338,10 @@ def insertTypo(request):
                 # html += "錯別字 : " + changedToken.token + ", 調整為 : " + changedToken.prototype + "<br>"
                 
                 html += '''<tr>'''
-                html += '''<td>'''
+                html += '''<td style="text-align: center;">'''
                 html += changedToken.token
                 html += '''</td>'''
-                html += '''<td>'''
+                html += '''<td style="text-align: center;">'''
                 html += changedToken.prototype
                 html += '''</td>'''
                 html += '''</tr>'''
@@ -344,6 +349,99 @@ def insertTypo(request):
                 </tbody>
             </table>''' 
             result['MSG'] = "已完成更新<br>" + html
+            if wrongWord == []:
+                result['MSG'] = ""
+
+        elif insertType == "plural":
+            correctWord = body['correctWord']
+            wrongWord = body['wrongWord']
+            print("correctWord : ", correctWord)
+            print("wrongWord : ", wrongWord)
+
+            query = '''select * from Vocabulary where token = ?'''
+            args = [correctWord]
+            cursor.execute(query, args)
+            correctTokenID = cursor.fetchone().tokenID
+            if correctTokenID == None:
+                raise Exception("正確字不存在")
+            # html = ""
+            html = '''<table class='table'>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">複數字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">調整為正確字</th>
+                        </tr>
+                    </thead>
+                    <tbody>'''
+            for i in wrongWord:
+                query = '''select * from Vocabulary where token = ?'''
+                args = [i]
+                cursor.execute(query, args)
+                wrongTokenID = cursor.fetchone().tokenID
+                if wrongTokenID == None:
+                    raise Exception("錯誤字不存在")
+                
+                query = '''update Vocabulary set prototype = ?, plural = ? OUTPUT inserted.* where token = ? '''
+                args = [correctWord, "1", i]
+                cursor.execute(query, args)
+                changedToken = cursor.fetchone()
+                print("changedToken : ", changedToken)
+                # html += "錯別字 : " + changedToken.token + ", 調整為 : " + changedToken.prototype + "<br>"
+                
+                html += '''<tr>'''
+                html += '''<td style="text-align: center;">'''
+                html += changedToken.token
+                html += '''</td>'''
+                html += '''<td style="text-align: center;">'''
+                html += changedToken.prototype
+                html += '''</td>'''
+                html += '''</tr>'''
+            html += '''
+                </tbody>
+            </table>''' 
+            result['MSG'] = "已完成更新<br>" + html
+            if wrongWord == []:
+                result['MSG'] = "未選擇複數字"
+        elif insertType == "reverse":
+            correctWord = body['correctWord']
+            wrongWord = body['wrongWord']
+            print("correctWord : ", correctWord)
+            print("wrongWord : ", wrongWord)
+
+            # html = ""
+            html = '''<table class='table'>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">反向索引字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">調整為正確字</th>
+                        </tr>
+                    </thead>
+                    <tbody>'''
+            
+            
+            query = '''update Vocabulary set prototype = ? OUTPUT inserted.* where token = ? '''
+            args = [correctWord, wrongWord]
+            cursor.execute(query, args)
+            changedToken = cursor.fetchone()
+            print("changedToken : ", changedToken)
+            # html += "錯別字 : " + changedToken.token + ", 調整為 : " + changedToken.prototype + "<br>"
+            
+            html += '''<tr>'''
+            html += '''<td style="text-align: center;">'''
+            html += changedToken.token
+            html += '''</td>'''
+            html += '''<td style="text-align: center;">'''
+            html += changedToken.prototype
+            html += '''</td>'''
+            html += '''</tr>'''
+
+            html += '''
+                </tbody>
+            </table>''' 
+            result['MSG'] = "已完成更新<br>" + html
+            if wrongWord == []:
+                result['MSG'] = "未輸入反向索引字"
+
         elif insertType == "stop":
             print("stop")
             
@@ -354,7 +452,7 @@ def insertTypo(request):
             html = '''<table class='table'>
                     <thead class="thead-dark">
                         <tr>
-                            <th class="header" scope="col" style = "width : 100px;">不統計字</th>
+                            <th class="header" scope="col" style = "width : 100px; text-align: center;">不統計字</th>
                         </tr>
                     </thead>
                     <tbody>'''
@@ -374,7 +472,7 @@ def insertTypo(request):
                 # html += "錯別字 : " + changedToken.token + ", 調整為 : " + changedToken.prototype + "<br>"
                 
                 html += '''<tr>'''
-                html += '''<td>'''
+                html += '''<td style="text-align: center;">'''
                 html += changedToken.token
                 html += '''</td>'''
                 html += '''</tr>'''
@@ -384,7 +482,7 @@ def insertTypo(request):
             result['MSG'] = "已完成更新<br>" + html
     
         result['status'] = "0"
-        conn.commit()
+        # conn.commit()
     
     except Exception as e:
         conn.rollback()
@@ -478,3 +576,228 @@ def getStopToken(request):
     conn.close()
     
     return JsonResponse(result)
+
+
+@csrf_exempt
+def wordTable(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    result = {'status': "1"}    
+    raw = request.body.decode('utf-8')
+    
+    try:        
+        body = json.loads(raw)        
+        times = body['times']
+
+        numReports = []
+        Times = []
+        numReportsArray = []
+        timesArray = []
+        stdTokenArray = []
+        oriTokenArray = []
+        oriTokenIDArray = []
+        newTokenIDArray = []
+
+        query = '''exec wordTable'''
+        cursor.execute(query)
+        res = cursor.fetchall()
+        for row in res:
+            if row.times >= int(times):
+
+                query = '''select * from Vocabulary where token = ?'''
+                args = [row.stdToken]
+                print(args)
+                cursor.execute(query, args)
+                std = cursor.fetchone()
+
+                
+                query = '''select * from Vocabulary where token = ?'''
+                args = [row.oriToken]
+                print(args)
+                cursor.execute(query, args)
+                ori = cursor.fetchone()
+
+                if (std != None and ori != None):
+                    numReports.append(row.numReports)
+                    Times.append(row.times)
+                    numReportsArray.append("{:.2f}".format(int(row.numReports2)/int(row.numReports)*100))
+                    timesArray.append("{:.2f}".format(int(row.times2)/int(row.times)*100))
+                    stdTokenArray.append(row.stdToken)
+                    oriTokenArray.append(row.oriToken)
+                    oriTokenIDArray.append(std.tokenID)
+                    newTokenIDArray.append(ori.tokenID)
+
+        result['status'] = "0"
+        result['data'] = [numReports, Times,  stdTokenArray, oriTokenArray, numReportsArray, timesArray, oriTokenIDArray, newTokenIDArray]
+        
+        # result['token'] = token1
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    # print(result)
+    
+    conn.close()
+    
+    return JsonResponse(result)
+
+@csrf_exempt
+def getTokenAll(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    result = {'status': "1"}
+    
+    try:           
+        
+        query = '''select * from Vocabulary'''
+        cursor.execute(query)
+        res = cursor.fetchall()
+        tokenArray = []
+        for i in res:
+            tokenArray.append(i.token)
+
+        result['status'] = "0"
+        result['data'] = tokenArray
+        
+        # result['token'] = token1
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+    # print(result)
+    
+    conn.close()
+    
+    return JsonResponse(result)
+
+
+@csrf_exempt
+def getReportByToken(request):
+    server = '172.31.6.22' 
+    database = 'nlpVocabularyLatest' 
+    username = 'N824'
+    password = 'test81218' 
+    conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server}; SERVER='+server+'; DATABASE='+database+'; ENCRYPT=yes; UID='+username+'; PWD='+ password +'; TrustServerCertificate=yes;')
+    cursor = conn.cursor()
+    result = {'status': "1"}    
+    raw = request.body.decode('utf-8')
+    
+    try:        
+        body = json.loads(raw)        
+        token = body['token']
+        query = '''select * from Vocabulary where token = ?'''
+        args = [token]
+        cursor.execute(query, args)
+        Vocabularyres = cursor.fetchone()
+        tokenID = Vocabularyres.tokenID
+
+        
+        query = '''select top(1) reportID, count(*) as times from textToken where tokenID = ?
+                    group by reportID
+                    order by times desc'''
+        args = [tokenID]
+        cursor.execute(query, args)
+        textTokenres = cursor.fetchone()
+        print("textTokenres : ", textTokenres)
+        reportID = textTokenres.reportID
+
+        query = '''select * from textToken where tokenID = ? and reportID = ?'''
+        args = [tokenID, reportID]
+        cursor.execute(query, args)
+        textTokenres1 = cursor.fetchall()
+        print("textTokenres1 : ", textTokenres1)
+        startEndArray = []
+        startArray = []
+        endArray = []
+        for i in textTokenres1:
+            startEndArray.append([i.posStart, i.posEnd])
+            startArray.append(i.posStart)
+            endArray.append(i.posEnd)
+        
+        startEndArray = reverse_2d_list(startEndArray)
+        print("startEndArray : ", startEndArray)
+        result['startEndArray'] = startEndArray
+        print("over")
+        query = '''select top(1) * from analyseText where reportID = ?'''
+        args = [reportID]
+        cursor.execute(query, args)
+        analyseTextres = cursor.fetchone()
+        # print("analyseTextres : ", analyseTextres.reportText)
+        
+        startArray = startArray.reverse()
+        marked_text = analyseTextres.reportText
+        offset = 0
+        for i in startEndArray:
+            start = i[0]
+            end = i[1]
+            # start += offset
+            start -= len(token)
+            # end += offset
+            end += len(token)-1
+            print(marked_text[:start])
+            print("----------------------------")
+            print(marked_text[start:end])
+            print("----------------------------")
+            print(marked_text[end:])
+            print("----------------------------")
+            marked_text = marked_text[:start] + '<mark class="highlight">' + marked_text[start:end] + '</mark>' + marked_text[end:]
+            # print(start, end)
+            # print("offset : ", offset)
+            # print(start + offset, end + offset)
+            # print(marked_text[start:end])
+            # marked_text = marked_text[:start + offset] + '<mark class="highlight">' + marked_text[start + offset + len('<mark class="highlight">'):]
+            # offset += len('<mark class="highlight">')
+            
+            # print("offset : ", offset)
+            # print(start + offset, end + offset)
+            # marked_text = marked_text[:end + offset] + '</mark>' + marked_text[end + offset + len('</mark>'):]
+            # offset += len('</mark>')
+            
+            # print("offset : ", offset)
+            # print(start + offset, end + offset)
+            
+            # print("-----------------------------------------------")
+            
+        # print(marked_text)
+        result['data'] = marked_text
+        # print("startEndArray : ", startEndArray)
+        # for i in startEndArray:
+        #     print(i[0], i[1])
+        #     print(analyseTextres.reportText[i[0]-10:i[1]+10])
+
+        result['status'] = "0"
+        
+        # result['token'] = token1
+        conn.commit()
+    
+    except Exception as e:
+        conn.rollback()
+        result['ERRMSG'] = str(e)
+        print(str(e))
+    # print(result)
+    
+    conn.close()
+    
+    return JsonResponse(result)
+
+def replace_string_index_slicing(original_string, index, new_character):
+    if index < 0 or index >= len(original_string):
+        return original_string  # Index out of range, return the original string
+    else:
+        return original_string[:index] + new_character + original_string[index + len(new_character):]
+    
+def reverse_2d_list(original_list):
+    reversed_list = original_list[::-1]
+    for sublist in reversed_list:
+        sublist.reverse()
+    return reversed_list

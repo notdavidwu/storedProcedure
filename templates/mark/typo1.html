@@ -70,8 +70,8 @@
 
         <title>CSMU AIC</title>
     </head>
-{% include 'mark/typo.js.html' %}
-{% include 'mark/typo.css' %}
+{% include 'mark/typo1.js.html' %}
+{% include 'mark/typo1.css' %}
 
 
 <body >
@@ -84,134 +84,8 @@
     {{ user.username|json_script:"user_username" }}
     {{ user.last_name|json_script:"hospital" }}
     <div id='loader' class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    <div id="frame" >
-        <div id="wordPannel" class="col-6">
-            <div class="row g-3">
-                <div class="col-4">
-                    <div class="box">
-                        <label>搜尋</label>
-                        <input class="form-control"  placeholder="輸入查詢文字" id='searchInputBox'>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="box">
-                        <label>次數篩選</label>
-                        <input class="form-control" id="times" placeholder="出現次數>=">
-                    </div>
-                </div>
-                <div class="col-4">
-                    <button id="search" class="btn btn-primary form-control" type="submit">搜尋</button>
-                </div>
-                <div class="col-12" id="wordTable">
-                    <table class="table table-striped" id="wordtable">
-                        <thead>
-                            <tr>
-                                <th scope="col">報告數量</th>
-                                <th scope="col">出現次數</th>
-                                <th scope="col">標準文字</th>
-                                <th scope="col">原始文字</th>
-                                <th scope="col">佔報告數量比例</th>
-                                <th scope="col">佔出現次數比例</th>
-                                <th scope="col">選取</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-        </div>
-        <div id="settingPannel" class="container col-6">
-                <div id="selectedWord" class="row g-3">  
-                    <div  class="col-md-12 box">
-                        <label id="label">選取的標準文字:</label>
-                    </div>
-                </div>
-                <div id="cardArea" class="row g-3">  
-                    <div  class="col-md-12">  
-                        <div class="card">  
-                        <div class="card-header">  
-                            <ul class="nav nav-tabs card-header-tabs">  
-                            <li class="nav-item custom-nav-item">  
-                                <a class="nav-link active" data-toggle="tab" href="#word-form" id="typocap">
-                                    <div class="row g-3 customCardHeaderCol">
-                                        <div class="col-md-6">錯別、同義、大小寫</div>
-                                        <div class="col-md-6" style="margin: 0;">
-                                            <div class="row g-3 customCardHeaderCol">
-                                                <div class="col-md-8">
-                                                    <span>容忍度:</span>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input type="text" class="form-control customCardHeaderDistanceFilter" placeholder="容忍度" id="distance" value=2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>  
-                            </li>  
-                            <li class="nav-item custom-nav-item">  
-                                <a class="nav-link" data-toggle="tab" href="#reverseindex-form"  id="reverse">反向索引</a>  
-                            </li>  
-                            </ul>  
-                        </div>  
-                        <div class="card-body">  
-                            <div class="tab-content">  
-                            <div class="tab-pane fade show active" id="word-form">  
-                                <form>
-                                    <table class="table table-striped"  id="analyseTable">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">錯別字<input type="text" class="form-control" placeholder="搜尋框"></th>
-                                                <th scope="col">大小寫<input type="text" class="form-control" placeholder="搜尋框"></th>
-                                                <th scope="col">單複數<input type="text" class="form-control" placeholder="搜尋框"></th>
-                                                <th scope="col">同義字<input type="text" class="form-control" placeholder="搜尋框"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </form>  
-                            </div>  
-                            <div class="tab-pane fade" id="reverseindex-form">
-                                <form>  
-                                    <table class="table table-striped" id="reversedIndexTable">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">縮寫</th>
-                                                <th scope="col">原始文字</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </form>  
-                            </div>  
-                            </div>  
-                        </div>  
-                        </div>  
-                    </div>  
-                    </div>  
-                    <div>
-                        <button id="store" class="btn btn-primary form-control" type="submit">儲存</button>
-                    </div>
-                </div>
-        </div>
-    </div>
-
-        
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                
-                
-                <div>
-                    <span class="btn-close" style="user-select: none;" id="closeModal">&times;</span>
-                    <div id="result_data"></div>
-                    </div>
-                </div>
-        </div>
-
-        {% comment %} <div id=pool class="row g-3">
+    <div id="frame">
+        <div id=pool class="row g-3">
             
             <div class="col-md-12">
                 <label for="itemDefinition_itemType" class="form-label">表格種類</label>
@@ -339,7 +213,12 @@
 
         </div>
         <div id="view">
-        </div> {% endcomment %}
+        </div>
+    </div>
+    <div id="cover">
+    <div>
+
+
 </body >
 </html>
 {% endblock %}

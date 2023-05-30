@@ -599,7 +599,7 @@ $(document).ready(function (e) {
     }
 
     //根據reportID找文章
-    function getReportBylastReportID(reportID, type){
+    function getReportBylastReportID(reportID, type, event){
         console.log("reportID in ");
         var btn = document.getElementById("collapseButton");
         var text = "查詢中";
@@ -633,7 +633,7 @@ $(document).ready(function (e) {
                 'reportID': reportID,
             }),
             success:function (response){
-                // printResult(response);
+            // printResult(response);
                 document.getElementById("reportText").innerHTML = response.data;
                 document.getElementById("reportText").setAttribute("originalReport", response.data);
                 clearInterval(intervalId);
@@ -645,11 +645,60 @@ $(document).ready(function (e) {
 
                 if (type === "1"){
                     console.log("print");
+                    console.log("event.target : ", event.target);
+                    var target = event.target;
+                    var textArray = [];
+                    for (var i=3 ; i<12 ; i++){
+                        textArray.push($(target).parents('tr').children('td').eq(i).html());
+                    }
+                    console.log("textArray : ", textArray);
+
+                    var ExtractValue = "[Number]";
+                    var itemName = "test";
+                    var RE = "";
+
+                    for (var i=0 ; i<textArray.length ; i++){
+                        if ( textArray[i] == "\\."){
+                            textArray[i] = "."
+                        }
+                        if (ExtractValue == textArray[i]){
+                            RE += "(";
+                            RE += `?<${itemName}>`;
+                        }
+
+                        var pattern = /[\\^$.|?*+(){[}\]\"]/g;
+                        var matches = textArray[i].match(pattern);
+                        //console.log("matches : ", matches);
+                        if (textArray[i] == "[SPACE]" ){    
+                            RE += " ";
+                        }
+                        else if (textArray[i] == "[Number]"){        
+                            RE += "\\d+" ;
+                        }
+                        else if (matches && textArray[i] != "[Number]"){        
+                            RE += "\\" + textArray[i];    
+                        }
+                        else {
+                            RE += textArray[i];
+                        }
+                        
+                        if (ExtractValue == textArray[i]){
+                            RE += ")";
+                        }
+                    }
+                    console.log("RE : ", RE);
+                    
+                    let dateFormat = new RegExp(`${RE}`,"g");
+
+                    var element = document.getElementById("reportText")
+                    var original = element.innerHTML;
+                    element.innerHTML = element.innerHTML.replace(dateFormat, match => `<mark class="highlight">${match}</mark>`);
                     var modal = document.getElementById("modalReport");
                     modal.style.display = "block";
 
                     var closeButton = document.querySelector('#btnclosereport');
                     closeButton.addEventListener('click', function() {
+                        element.innerHTML = original;
                         modal.style.display = 'none';
                     });
                 }
@@ -900,17 +949,17 @@ $(document).ready(function (e) {
                     //     </tr>`;
                     element += `<tr reportID="${response.reportID[i]}">
                         <td><button class="btn btn-secondary" onclick="getREofRecord()" id="3word${i}">${i+1}</button></td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" >${response.numReports[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" >${response.times[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word1">${response.word1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word2">${response.word2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word3">${response.word3[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word4">${response.word4[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word5">${response.word5[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show" word="word6">${response.word6[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord1[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord2[i]}</td>
-                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')"  class="show">${response.targetWord3[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" >${response.numReports[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" >${response.times[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word1">${response.word1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word2">${response.word2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word3">${response.word3[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word4">${response.word4[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word5">${response.word5[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show" word="word6">${response.word6[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show">${response.targetWord1[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show">${response.targetWord2[i]}</td>
+                        <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)"  class="show">${response.targetWord3[i]}</td>
                         </tr>`;
                 }
                 $('#stasticsTable tbody').append(element);
@@ -989,19 +1038,19 @@ $(document).ready(function (e) {
                 //     </tr>`;
                 element += `<tr reportID="${response.reportID[i]}">
                     <td><button class="btn btn-secondary" onclick="getREofRecord2()" id="5word${i}">${i+1}</button></td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.numReports[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')">${response.times[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word1">${response.word1[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word2">${response.word2[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word3">${response.word3[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word4">${response.word4[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word5">${response.word5[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show" word="word6">${response.word6[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord1[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord2[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord3[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord4[i]}</td>
-                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1')" class="show">${response.targetWord5[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)">${response.numReports[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)">${response.times[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word1">${response.word1[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word2">${response.word2[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word3">${response.word3[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word4">${response.word4[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word5">${response.word5[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show" word="word6">${response.word6[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show">${response.targetWord1[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show">${response.targetWord2[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show">${response.targetWord3[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show">${response.targetWord4[i]}</td>
+                    <td ondblclick="getReportBylastReportID(${response.reportID[i].split(',')[0]}, '1', event)" class="show">${response.targetWord5[i]}</td>
                     </tr>`;
             }
             $('#stasticsTable2 tbody').append(element);

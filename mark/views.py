@@ -4633,6 +4633,10 @@ def expression(request):
 
 def typo(request):
     return render(request, 'mark/typo.html')
+
+
+def typo1(request):
+    return render(request, 'mark/typo1.html')
 class selectVocabulary(ListView):
     model = Text
     template_name = 'selectVocabulary.js'

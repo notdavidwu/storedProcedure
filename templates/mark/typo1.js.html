@@ -43,7 +43,7 @@ $(document).ready(function (e) {
     //查詢按鈕
     $("#searchButton").click(function(){
         var type = $("#itemDefinition_itemType").val();
-        //////console.log("type : ", type);
+        ////console.log("type : ", type);
         if (type === "1"){
             getitemTable();
         }
@@ -70,55 +70,6 @@ $(document).ready(function (e) {
     $("#clearonebtn").click(function(){
         clearonebtnClick();
     });
-
-    //搜尋按鈕
-    $("#search").click(function(){
-        var times =document.getElementById("times").value;
-        //console.log("times : ", times);
-        if (times === ""){
-            Swal.fire({
-                title: '請輸入次數',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-            })
-        }
-        else{
-            wordTable(times);
-        }
-    });
-
-    //清除單筆按鈕
-    $("#store").click(function(){
-        storeClick();
-    });
-
-    $('#searchInputBox').on('keyup', function() {  
-        var value = $(this).val().toLowerCase();  
-        var pattern = new RegExp(value, 'i');  
-        $('#wordTable table tbody tr').each(function() {  
-          var $tr = $(this);  
-          var $tds = $tr.find('td');  
-          var match = false;  
-          $tds.each(function() {  
-            var text = $(this).html().toLowerCase();
-            var result = pattern.exec(text);
-            if (result && result.index == 0) {
-                // console.log("result : ", result);
-                // console.log("result.index : ", result.index);
-                match = true;
-                return false; // 跳出 $tds.each() 循環  
-            }  
-          });  
-          if (match) {  
-            $tr.show();  
-          } else {  
-            $tr.hide();  
-          }  
-        });  
-      });  
-        $("#distance").on("change", function() {
-            getAllWordsOnchange();
-        });
 })
 
     function clearbtnClick(){
@@ -143,8 +94,8 @@ $(document).ready(function (e) {
                 newCorrect += correctWords[i];
             }
         }
-        // ////console.log("text : ", text);
-        // ////console.log("newCorrect : ", newCorrect);
+        // //console.log("text : ", text);
+        // //console.log("newCorrect : ", newCorrect);
         document.getElementById("correct").innerHTML = newCorrect;
         document.getElementById("correct").value = newCorrect;
         document.getElementById("countCorrect").innerHTML = `大小寫正確單字數：${correctNumber-1}`;
@@ -163,8 +114,8 @@ $(document).ready(function (e) {
                 newWrong += wrongWords[i];
             }
         }
-        // ////console.log("text : ", text);
-        // ////console.log("newWrong : ", newWrong);
+        // //console.log("text : ", text);
+        // //console.log("newWrong : ", newWrong);
         document.getElementById("wrong").innerHTML = newWrong;
         document.getElementById("wrong").value = newWrong;
         document.getElementById("countWrong").innerHTML = `大小寫錯誤單字數：${wrongNumber-1}`;
@@ -173,7 +124,7 @@ $(document).ready(function (e) {
 
     function handleItemTypeChange() {
         var selectedItemType = document.getElementById("itemDefinition_itemType").value;
-        ////console.log("Selected item type: " + selectedItemType);
+        //console.log("Selected item type: " + selectedItemType);
         
         $('#itemDefinition_frame').empty();
         if (selectedItemType === "1"){
@@ -269,8 +220,7 @@ $(document).ready(function (e) {
         $('#loader').css('display','none');
         $('#frame').css('visibility','visible');
 
-
-        // ////////console.log("responseItem : ", responseItem);
+        // //////console.log("responseItem : ", responseItem);
         
         // // getitemTable();
         // // $('#itemDefinition tbody').empty()
@@ -289,582 +239,7 @@ $(document).ready(function (e) {
         // getEToken();
     }
 
-    //取得所有wordTable
-    function wordTable(times){
-        var btn = document.getElementById("search");
-        var text = "查詢中";
-        var count = 0;
-        btn.disabled = true; // Disable the button during the search
-        var intervalId = setInterval(function() {
-            count++;
-            if (count > 3) {
-            count = 0;
-            }
-            switch (count) {
-            case 0:
-                btn.innerHTML = text;
-                break;
-            case 1:
-                btn.innerHTML = text + ".";
-                break;
-            case 2:
-                btn.innerHTML = text + "..";
-                break;
-            case 3:
-                btn.innerHTML = text + "...";
-                break;
-            }
-        }, 500); // Update the text every 500 milliseconds
-        //////console.log("getitemTable in ");
-        var res;
-        $.ajax({
-            async:true,
-            type: 'POST',
-            url: '{% url "mark:wordTable" %}',
-            data:JSON.stringify({
-                'times': times,
-            }),
-            success:function (response){
-                res = response;
-                //console.log("response : ", response);
-                $('#wordtable tbody').empty()
-                let element = '';
-                for(let i=0;i<response.data[0].length;i++){
-                    element += `<tr>
-                        <td style="width : 12%">${response.data[0][i]}</td>
-                        <td style="width : 12%">${response.data[1][i]}</td>
-                        <td style="width : 13%" oriTokenID="${response.data[6][i]}">${response.data[2][i]}</td>
-                        <td style="width : 13%" newTokenID="${response.data[7][i]}">${response.data[3][i]}</td>
-                        <td style="width : 20%">${response.data[4][i]}%</td>
-                        <td style="width : 20%">${response.data[5][i]}%</td>
-                        <td style="width : 10%;"><button class="btn btn-primary form-control" onclick="getAllWords(event)" id="select${i}">選取</button></td>
-                        </tr>`;
-                }
-                $('#wordtable tbody').append(element);
-                clearInterval(intervalId);
-                btn.disabled = false;
-                btn.innerHTML = "成功!";
-                setTimeout(() => {
-                    btn.innerHTML = "搜尋";
-                }, 1000);
-            },
-        });
-        return res;
-    }
     
-    function getAllWords(event){
-        console.log("button id : ", $(event.target).attr("id"));
-        $("#store").attr("lastButton", $(event.target).attr("id"));
-        
-        $('#loader').css('display','inline');
-        $('#loader').css('z-index','10');
-        $('#cover').css('display','inline');
-
-        //console.log("target : ", $(event.target));
-        //console.log("word : ", $(event.target).parents("tr").children("td").eq(2).html());
-        var labelWord = $(event.target).parents("tr").children("td").eq(2).html();
-        $("#label").html("選取的標準文字: " + labelWord);
-        $("#label").attr("token", labelWord);
-
-        var thisWordArray = [];
-        var thisTokenIDArray = [];
-        var oriWordArray = [];
-        var oriTokenIDArray = [];
-
-        $("tr").each(function() {
-            var labelWordnew = $(this).children("td").eq(2).html();
-            var oriTokenID = $(this).children("td").eq(2).attr("oriTokenID");
-            
-            if (labelWordnew === labelWord) {
-
-                var thisWord = $(this).children("td").eq(3).html();
-                var thisTokenID = $(this).children("td").eq(3).attr("newTokenID");
-                if (thisWord != labelWord){
-                    thisWordArray.push(thisWord);
-                    thisTokenIDArray.push(thisTokenID);
-                    oriWordArray.push(labelWordnew);
-                    oriTokenIDArray.push(oriTokenID);
-                }
-            }
-        });
-
-        // //console.log(thisWordArray);
-        checkType(thisWordArray, thisTokenIDArray, oriWordArray, oriTokenIDArray);
-    }
-
-    function getAllWordsOnchange(){
-        var buttonID = $("#store").attr("lastButton");
-        // $("#store").attr("lastButton", $(event.target).attr("id"));
-        
-        $('#loader').css('display','inline');
-        $('#loader').css('z-index','10');
-        $('#cover').css('display','inline');
-
-        //console.log("target : ", $(event.target));
-        //console.log("word : ", $(event.target).parents("tr").children("td").eq(2).html());
-        var labelWord = $(`#${buttonID}`).parents("tr").children("td").eq(2).html();
-        $("#label").html("選取的標準文字: " + labelWord);
-        $("#label").attr("token", labelWord);
-
-        var thisWordArray = [];
-        var thisTokenIDArray = [];
-        var oriWordArray = [];
-        var oriTokenIDArray = [];
-
-        $("tr").each(function() {
-            var labelWordnew = $(this).children("td").eq(2).html();
-            var oriTokenID = $(this).children("td").eq(2).attr("oriTokenID");
-            
-            if (labelWordnew === labelWord) {
-
-                var thisWord = $(this).children("td").eq(3).html();
-                var thisTokenID = $(this).children("td").eq(3).attr("newTokenID");
-                if (thisWord != labelWord){
-                    thisWordArray.push(thisWord);
-                    thisTokenIDArray.push(thisTokenID);
-                    oriWordArray.push(labelWordnew);
-                    oriTokenIDArray.push(oriTokenID);
-                }
-            }
-        });
-
-        // //console.log(thisWordArray);
-        checkType(thisWordArray, thisTokenIDArray, oriWordArray, oriTokenIDArray);
-    }
-
-    function checkType(thisWordArray, thisTokenIDArray, oriWordArray, oriTokenIDArray){
-        //console.log("thisWordArray : ", thisWordArray);
-        //console.log("thisTokenIDArray : ", thisTokenIDArray);
-        //console.log("oriWordArray : ", oriWordArray);
-        //console.log("oriTokenIDArray : ", oriTokenIDArray);
-
-        var capArray = [];
-        var capIDArray = [];
-        for (var i=0 ; i<thisWordArray.length ; i++){
-            
-            // //console.log("thisWordArray[i] : ", thisWordArray[i]);
-            // //console.log("oriWordArray[i] : ", oriWordArray[i]);
-
-            if(thisWordArray[i].toLowerCase() === oriWordArray[i]){
-                // //console.log("大小寫不同字 : ", thisWordArray[i], oriWordArray[i]);
-                capArray.push([oriWordArray[i], thisWordArray[i]]);
-                capIDArray.push([oriTokenIDArray[i], thisTokenIDArray[i]]);
-            }
-        }
-
-        createOption(capArray, capIDArray);
-    }
-
-    function createOption(capArray, capIDArray){
-        //console.log("capArray : ", capArray);
-        //console.log("capIDArray : ", capIDArray);
-
-
-        var tokenArray = getToken(capArray, capIDArray);
-        
-    }
-
-    //根據reportID找文章
-    function getReport(event){
-        event.preventDefault();
-        //console.log(event.target);
-        var token = event.target.getAttribute("token");
-        
-        var clickedElement = event.target;
-        var tdElement = clickedElement.closest('td');
-        var labelElement = tdElement.querySelector('label');
-        var labelHtml = labelElement.innerHTML;
-        //console.log("Label HTML:", labelHtml);   
-        $.ajax({
-            type: 'POST',
-            url: '{% url 'mark:getReportByToken' %}',
-            data:JSON.stringify({
-                'token': token,
-            }),
-            success:function (response){
-                
-                var modal = document.getElementById("modal");
-                modal.style.display = "block";
-
-                var closeButton = document.querySelector('#closeModal');
-
-                closeButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                var text = document.getElementById("result_data");
-                // var textToSearch = token;
-                // textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
-                // var pattern = new RegExp(`${textToSearch}`,"g");
-
-                // text.innerHTML = response.data.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
-                text.innerHTML = response.data;
-            },
-        });
-    }
-
-
-    //取得所有token
-    function getToken(capArray, capIDArray){
-        var res;
-        $.ajax({
-            type: 'POST',
-            url: '{% url "mark:getTokenAll" %}',
-            success:function (response){
-                res = response;
-                tokenArray = response.data;
-                //console.log("tokenArray : ", tokenArray);
-                var distance = $("#distance").val();
-                var token = $("#label").attr("token");
-                var orderArray = orderWordsByEditDistance(tokenArray, token, distance);
-
-                //console.log("orderArray : ", orderArray);
-
-                $('#analyseTable tbody').empty();
-                let element = '';
-                for(let i=0 ; i<orderArray.length ; i++){
-                    element += `<tr>
-                                    <td class="typo">
-                                        <button class="btn btn-secondary form-control"  token="${orderArray[i]}" onclick="getReport(event)" style="width:80px;">報告</button>
-                                        <input type="checkbox" id="typo${i}" token="${orderArray[i]}">
-                                        <label for="typo${i}">${orderArray[i]}</label>
-                                    </td>
-                                    <td class="cap">
-                                    </td>
-                                    <td class="plural">
-
-                                    </td>
-                                    <td class="syn">
-
-                                    </td>
-                                </tr>`;
-                }
-                $('#analyseTable tbody').append(element);
-                // console.log("test", $('#analyseTable tbody tr .cap').eq(0));
-                for (var i=0 ; i<capIDArray.length ; i++){
-                    $('#analyseTable tbody tr .cap').eq(i).html(
-                        `
-                        <input type="checkbox" id="cap${i}" tokenID="${capIDArray[i][1]}" token="${capArray[i][1]}">
-                        <label for="cap${i}">${capArray[i][1]}</label>
-                        `
-                    );
-                }
-                
-                var pluralArray = [];
-                for (var i=0 ; i<tokenArray.length ; i++){
-                    var selectedText = token.substring(0, token.length - 1);
-                    // console.log("selectedText : ", selectedText);
-                    if (tokenArray[i] === (token + "s") || tokenArray[i] === (token + "es") || tokenArray[i] === (selectedText + "ies")){
-                        // console.log("複數 : ", tokenArray[i]);
-                        pluralArray.push(tokenArray[i]);
-                    }
-                }
-                
-                for (var i=0 ; i<pluralArray.length ; i++){
-                    $('#analyseTable tbody tr .plural').eq(i).html(
-                        `
-                        <input type="checkbox" id="plural${i}"  token="${pluralArray[i]}">
-                        <label for="plural${i}">${pluralArray[i]}</label>
-                        `
-                    );
-                }
-
-                
-                $('#reversedIndexTable tbody').empty();
-                element = "";
-                for (var i=0 ; i<token.length ; i++){
-                    var tokenSub = token.substring(i, i+1);
-                    // console.log("token.substring : ", tokenSub);
-                    // reversedIndexTable
-                    element += `<tr>
-                                    <td>
-                                        <span>${tokenSub}</span>
-                                    </td>
-                                    <td>
-                                        <input id="reverse${i}" class="form-control combine" placeHolder="請輸入 ${tokenSub} 所代表的字" onchange="convertToLowercase(event)">
-                                    </td>
-                                </tr>`;
-                }
-                $('#reversedIndexTable tbody').append(element);
-
-                $('#loader').css('display','none');
-                $('#cover').css('display','none');
-            },
-        });
-        return res;
-    }
-
-    function convertToLowercase(event) {
-        var curWord = $(event.target).val();
-        var lowercaseValue = curWord.toLowerCase();
-        $(event.target).val(lowercaseValue);
-        $(event.target).html(lowercaseValue);
-    }
-
-    function storeClick(){
-        Swal.fire({
-            title: '確認儲存?',
-            icon: 'question',
-            showCancelButton: true,
-            cancelButtonText:'cancel',
-            confirmButtonText: 'Ok',
-        })
-        .then((result) => {
-            if (result.isConfirmed) {
-                if ($("#typocap").hasClass("active")){
-                    
-                    var capRes = cap();
-                    var typoRes = typo();
-                    var pluralRes = plural();
-                    var newhtml = "";
-
-                    var check = 0;
-                    if (capRes.status === "0"){
-                        newhtml += capRes.MSG;
-                        $("#analyseTable tbody td.cap").empty();
-                    }
-                    else{
-                        newhtml += capRes.ERRMSG;
-                        check = 1;
-                    }
-
-                    if (typoRes.status === "0"){
-                        newhtml += typoRes.MSG;
-                        $("#analyseTable tbody td.typo").empty();
-                    }
-                    else{
-                        newhtml += typoRes.ERRMSG;
-                        check = 1;
-                    }
-
-                    if (pluralRes.status === "0"){
-                        newhtml += pluralRes.MSG;
-                        $("#analyseTable tbody td.plural").empty();
-                    }
-                    else{
-                        newhtml += pluralRes.ERRMSG;
-                        check = 1;
-                    }
-                    // $("#analyseTable tbody td.syn").empty();
-                    capRes.MSG = newhtml;
-
-                    var RES = {"status":check.toString(), "MSG":newhtml};
-                    console.log("RES : ", RES);
-                    printResult(RES);
-                    
-                    if(check === 0){
-                        clearSameRow();
-                    }
-                }                
-                else if ($("#reverse").hasClass("active")){
-                    var reverseRes = reverse();
-                    printResult(reverseRes);
-                }
-
-
-
-            }
-        });
-    }
-
-    function cap(){
-        var table = document.getElementById("analyseTable");
-        //console.log("table : ", table);
-        var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        //console.log("rows : ", rows);
-        var correctWord = [];
-        var wrongWord = [];
-        for (var i=0 ; i<rows.length ; i++) {
-            var row = rows[i];
-            var capCell = row.getElementsByClassName("cap")[0];
-            var checkbox = capCell.getElementsByTagName("input")[0];
-            if (checkbox){
-                if (checkbox.checked) {
-                    //console.log("row : ", row);
-                    //console.log("Checked option: ",  checkbox.getAttribute("tokenID"), checkbox.getAttribute("token"));
-                    correctWord.push(checkbox.getAttribute("token").toLowerCase());
-                    wrongWord.push(checkbox.getAttribute("token"));
-                }
-            }
-            else{
-                break;
-            }
-        }
-        //console.log(correctWord, wrongWord);
-        var resinsertTypo = insertTypo(correctWord, wrongWord);
-        return resinsertTypo;
-    }
-
-    function typo(){
-        var table = document.getElementById("analyseTable");
-        //console.log("table : ", table);
-        var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        //console.log("rows : ", rows);
-        var correctWord = [];
-        var wrongWord = [];
-        for (var i=0 ; i<rows.length ; i++) {
-            var row = rows[i];
-            var capCell = row.getElementsByClassName("typo")[0];
-            var checkbox = capCell.getElementsByTagName("input")[0];
-            if (checkbox && checkbox.checked) {
-                //console.log("row : ", row);
-                //console.log("Checked option: ",  checkbox.getAttribute("tokenID"), checkbox.getAttribute("token"));
-                correctWord.push($("#label").attr("token").toLowerCase());
-                wrongWord.push(checkbox.getAttribute("token"));
-            }
-        }
-        //console.log(correctWord, wrongWord);
-        console.log("correctWord : ", correctWord);
-        var resinsertTypotypo =  insertTypotypo(correctWord, wrongWord);
-
-
-        
-        return resinsertTypotypo;
-    }
-
-    function plural(){
-        var table = document.getElementById("analyseTable");
-        //console.log("table : ", table);
-        var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        //console.log("rows : ", rows);
-        var correctWord = [];
-        var wrongWord = [];
-        
-        for (var i=0 ; i<rows.length ; i++) {
-            var row = rows[i];
-            var pluralCell = row.getElementsByClassName("plural")[0];
-            var checkbox = pluralCell.getElementsByTagName("input")[0];
-            // console.log("pluralCell : ", pluralCell);
-            // console.log("checkbox : ", checkbox);
-            if (checkbox && checkbox.checked){
-                // console.log("checkbox : ", checkbox);
-                // console.log("Checked option: ",  checkbox.getAttribute("tokenID"), checkbox.getAttribute("token"));
-                correctWord.push($("#label").attr("token").toLowerCase());
-                wrongWord.push(checkbox.getAttribute("token"));
-            }
-        }
-
-        // console.log("correctWord : ", correctWord);
-        // console.log("wrongWord : ", wrongWord);
-        if (correctWord.length != 0 && wrongWord.length != 0){
-            var resinsertplural = insertplural(correctWord, wrongWord);
-        }
-        else {
-            var resinsertplural = {"status":"0", "MSG":"",};
-        }
-        // console.log("resinsertplural", resinsertplural);
-        return resinsertplural;
-    }
-
-    
-    function reverse(){
-        var table = document.getElementById("reversedIndexTable");
-        //console.log("table : ", table);
-        var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        //console.log("rows : ", rows);
-        var correctWord = "";
-        var wrongWord = "";
-        
-        for (var i=0 ; i<rows.length ; i++) {
-            var row = rows[i];
-            var pluralCell = row.getElementsByClassName("form-control combine")[0];
-            // console.log("pluralCell : ", pluralCell);
-            var text = pluralCell.value;
-            // console.log("text : ", text);
-            // console.log("checkbox : ", checkbox);
-            // console.log("Checked option: ",  checkbox.getAttribute("tokenID"), checkbox.getAttribute("token"));
-            if (text === ""){
-                Swal.fire({
-                    title: '請輸入原始文字',
-                    icon: 'error',
-                    confirmButtonText: 'Ok',
-                })
-            }
-            correctWord += text + " ";
-
-        }
-        correctWord = correctWord.substring(0, correctWord.length - 1);
-        wrongWord = $("#label").attr("token");
-
-        console.log("correctWord : ", correctWord);
-        console.log("wrongWord : ", wrongWord);
-
-        if (correctWord != "" && wrongWord != ""){
-            var resinsertplural = insertreverse(correctWord, wrongWord);
-        }
-        else {
-            var resinsertplural = {"status":"2"};
-        }
-
-        // console.log("resinsertplural", resinsertplural);
-        return resinsertplural;
-    }
-
-    function clearSameRow(){
-        var token = document.getElementById("label").getAttribute("token");
-        $("#wordTable tr").each(function() {
-            var labelWordnew = $(this).children("td").eq(2).html();
-            if (labelWordnew === token) {
-                $(this).css('display', 'none');
-            }
-        });
-    }
-
-    function orderWordsByEditDistance(wordList, searchStr, distance) {
-        // Calculate edit distance between search string and each word in the list
-        var distances = wordList.map(function(word) {
-            return levenshteinDistance(searchStr, word);
-        });
-
-        // Sort the list of words by their edit distance from the search string
-        var sortedWords = wordList.slice().sort(function(a, b) {
-            var indexA = wordList.indexOf(a);
-            var indexB = wordList.indexOf(b);
-            return distances[indexA] - distances[indexB];
-        });
-
-        var selectedWords = sortedWords.filter(function(word) {
-            var index = wordList.indexOf(word);
-            return distances[index] <= parseInt(distance) && distances[index] != 0;
-        });
-
-        // Return the selected words
-        return selectedWords;
-    }
-
-    // Function to calculate the Levenshtein distance between two strings
-    function levenshteinDistance(a, b) {
-        if (a.length === 0) return b.length;
-        if (b.length === 0) return a.length;
-
-        var matrix = [];
-
-        // Initialize matrix
-        for (var i = 0; i <= b.length; i++) {
-            matrix[i] = [i];
-        }
-
-        for (var j = 0; j <= a.length; j++) {
-            matrix[0][j] = j;
-        }
-
-        // Calculate matrix
-        for (var i = 1; i <= b.length; i++) {
-            for (var j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                matrix[i - 1][j - 1] + 1,
-                matrix[i][j - 1] + 1,
-                matrix[i - 1][j] + 1
-                );
-            }
-            }
-        }
-
-        return matrix[b.length][a.length];
-    }
-
     function getEToken(){
         $.ajax({
             type: 'POST',
@@ -912,7 +287,7 @@ $(document).ready(function (e) {
         // var checkedOptions = getCheckedOptions();
         var text = document.getElementById("stopwords").value;
         var checkedOptions = text.split('\n');
-        ////console.log("checkedOptions : ", checkedOptions);
+        //console.log("checkedOptions : ", checkedOptions);
         if (checkedOptions.length === 0){
             Swal.fire({
                 title: '請選擇至少一個字',
@@ -944,7 +319,7 @@ $(document).ready(function (e) {
             </tbody>
         </table>` ;
     
-        ////console.log("html : ", html);
+        //console.log("html : ", html);
         Swal.fire({
             title: '繼續儲存?',
             html: html,
@@ -955,20 +330,20 @@ $(document).ready(function (e) {
         })
         .then((result) => {
             if (result.isConfirmed) {
-                ////console.log("isConfirmed");
+                //console.log("isConfirmed");
                 //insertTypotypo(correctWord, checkedOptions);
                 // insertTypo(correctWords, wrongWords);                
                 // CapClear();
             } 
             else{
-                //////console.log("canceled");
+                ////console.log("canceled");
             }
         });
     }
     
     function TypoStore(){
         var checkedOptions = getCheckedOptions();
-        ////console.log("checkedOptions : ", checkedOptions);
+        //console.log("checkedOptions : ", checkedOptions);
         if (checkedOptions.length === 0){
             Swal.fire({
                 title: '請選擇至少一個錯別字',
@@ -1006,7 +381,7 @@ $(document).ready(function (e) {
             </tbody>
         </table>` ;
     
-        ////console.log("html : ", html);
+        //console.log("html : ", html);
         Swal.fire({
             title: '繼續儲存?',
             html: html,
@@ -1017,13 +392,13 @@ $(document).ready(function (e) {
         })
         .then((result) => {
             if (result.isConfirmed) {
-                ////console.log("isConfirmed");
+                //console.log("isConfirmed");
                 insertTypotypo(correctWord, checkedOptions);
                 // insertTypo(correctWords, wrongWords);                
                 // CapClear();
             } 
             else{
-                //////console.log("canceled");
+                ////console.log("canceled");
             }
         });
     }
@@ -1032,18 +407,18 @@ $(document).ready(function (e) {
         //確認長度相等
         var autoSelect = document.getElementById("storebtn").autoSelect;
         var text = document.getElementById("correct").value;
-        // //////console.log("text : ", text);
+        // ////console.log("text : ", text);
         var correctWords = text.split('\n');
         var correctNumber = correctWords.length;
-        //////console.log("correctWords : ", correctWords);
-        //////console.log("correctNumber : ", correctNumber);
+        ////console.log("correctWords : ", correctWords);
+        ////console.log("correctNumber : ", correctNumber);
         
         text = document.getElementById("wrong").value;
-        // //////console.log("text : ", text);
+        // ////console.log("text : ", text);
         var wrongWords = text.split('\n');
         var wrongNumber = wrongWords.length;
-        //////console.log("wrongWords : ", wrongWords);
-        //////console.log("wrongNumber : ", wrongNumber);
+        ////console.log("wrongWords : ", wrongWords);
+        ////console.log("wrongNumber : ", wrongNumber);
 
         if (wrongNumber != correctNumber){
             throw new Error("兩側數目必須相等");
@@ -1054,7 +429,7 @@ $(document).ready(function (e) {
         //確認是大小寫相等字
         for(var i=0 ; i<correctWords.length ; i++){
             if (correctWords[i] != wrongWords[i].toLowerCase()){
-                //////console.log("different : ", correctWords[i], ", ", wrongWords[i]);
+                ////console.log("different : ", correctWords[i], ", ", wrongWords[i]);
                 diffCorrect.push(correctWords[i]);
                 diffWrong.push(wrongWords[i]);
             }
@@ -1071,7 +446,7 @@ $(document).ready(function (e) {
                     </thead>
                     <tbody>`
             for (var i=0 ; i<diffCorrect.length ; i++){
-                //////console.log("in");
+                ////console.log("in");
                 // html += `${i+1}. [${diffCorrect[i]} , ${diffWrong[i]}]<br>`;
                 
                 html += `<tr>`;
@@ -1101,7 +476,7 @@ $(document).ready(function (e) {
                     nodifferent(correctWords, wrongWords);
                 } 
                 else{
-                    //////console.log("canceled");
+                    ////console.log("canceled");
                 }
             });
         }
@@ -1112,10 +487,10 @@ $(document).ready(function (e) {
 
     
     function different(diffCorrect, diffWrong, correctWords, wrongWords){
-        //////console.log("diffCorrect : ", diffCorrect);
-        //////console.log("diffWrong : ", diffWrong);
-        // ////console.log("correctWords : ", correctWords);
-        // ////console.log("wrongWords : ", wrongWords);
+        ////console.log("diffCorrect : ", diffCorrect);
+        ////console.log("diffWrong : ", diffWrong);
+        // //console.log("correctWords : ", correctWords);
+        // //console.log("wrongWords : ", wrongWords);
         // var html = `以下轉換大小寫後不同的字 : <br>`;
 
         var html = `<table class='table'>
@@ -1127,7 +502,7 @@ $(document).ready(function (e) {
                     </thead>
                     <tbody>`
         for (var i=0 ; i<diffCorrect.length ; i++){
-            //////console.log("in");
+            ////console.log("in");
             // html += `${i+1}. [${diffCorrect[i]} , ${diffWrong[i]}]<br>`;
             
             html += `<tr>`;
@@ -1145,9 +520,9 @@ $(document).ready(function (e) {
             </tbody>
         </table>` ;
     
-        // ////console.log("html : ", html);
+        // //console.log("html : ", html);
         html = "以下為轉換大小寫後不正確的字<br>" + html;
-        //////console.log(html);
+        ////console.log(html);
         Swal.fire({
             title: '繼續儲存?',
             html: html,
@@ -1158,21 +533,21 @@ $(document).ready(function (e) {
         })
         .then((result) => {
             if (result.isConfirmed) {
-                //////console.log("isConfirmed");
+                ////console.log("isConfirmed");
                 
                 insertTypo(correctWords, wrongWords);                
                 CapClear();
             } 
             else{
-                //////console.log("canceled");
+                ////console.log("canceled");
             }
         });
     }
 
     function nodifferent(correctWords, wrongWords){
-        ////console.log("in");
-        ////console.log("correctWords : ", correctWords);
-        ////console.log("wrongWords : ", wrongWords);
+        //console.log("in");
+        //console.log("correctWords : ", correctWords);
+        //console.log("wrongWords : ", wrongWords);
         // var html = `請再次確認 : <br>`;
         
         var html = `<table class='table'>
@@ -1184,7 +559,7 @@ $(document).ready(function (e) {
                     </thead>
                     <tbody>`
         for (var i=0 ; i<correctWords.length ; i++){
-            //////console.log("in");
+            ////console.log("in");
             // html += `${i+1}. [${correctWords[i]} , ${wrongWords[i]}]<br>`;
             html += `<tr>`;
                 html += `<td>`;
@@ -1196,13 +571,13 @@ $(document).ready(function (e) {
                 html += `</td>`;
             html += `</tr>`;
         }
-        //////console.log(html);
+        ////console.log(html);
 
         html += `
             </tbody>
         </table>` ;
     
-        ////console.log("html : ", html);
+        //console.log("html : ", html);
 
         Swal.fire({
             title: '繼續儲存?',
@@ -1214,12 +589,12 @@ $(document).ready(function (e) {
         })
         .then((result) => {
             if (result.isConfirmed) {
-                //////console.log("isConfirmed");
+                ////console.log("isConfirmed");
                 insertTypo(correctWords, wrongWords);
                 CapClear();
             } 
             else{
-                //////console.log("canceled");
+                ////console.log("canceled");
             }
         });
     }
@@ -1227,9 +602,7 @@ $(document).ready(function (e) {
 
     function insertTypo(correctWords, wrongWords){
         //console.log("insertTypo");
-        var res;
         $.ajax({
-            async:false,
             type: 'POST',
             url: "{% url 'mark:insertTypo' %}",
             data:JSON.stringify({
@@ -1238,76 +611,27 @@ $(document).ready(function (e) {
                 'wrongWord': wrongWords,
             }),
             success:function (response){
-                res = response;
-                // printResult(response);
+                printResult(response);
             },
         });
-        return res;
     }
 
     function insertTypotypo(correctWords, wrongWords){
-        ////console.log("insertTypo");
-        var res;
+        //console.log("insertTypo");
         $.ajax({
-            async:false,
             type: 'POST',
             url: "{% url 'mark:insertTypo' %}",
             data:JSON.stringify({
                 'insertType': "typo",
-                'correctWord': correctWords[0],
+                'correctWord': correctWords,
                 'wrongWord': wrongWords,
             }),
             success:function (response){
-                res = response;
-                // printResult(response);
+                printResult(response);
             },
         });
-        return res;
     }
 
-    function insertplural(correctWords, wrongWords){
-        ////console.log("insertTypo");
-        console.log("correctWords : ", correctWords);
-        console.log("wrongWords : ", wrongWords);
-        var res;
-        $.ajax({
-            async:false,
-            type: 'POST',
-            url: "{% url 'mark:insertTypo' %}",
-            data:JSON.stringify({
-                'insertType': "plural",
-                'correctWord': correctWords[0],
-                'wrongWord': wrongWords,
-            }),
-            success:function (response){
-                res = response;
-                console.log("insertplural", response);
-                // printResult(response);
-            },
-        });
-        return res;
-    }
-
-    function insertreverse(correctWord, wrongWord){
-        ////console.log("insertTypo");
-        var res;
-        $.ajax({
-            async:false,
-            type: 'POST',
-            url: "{% url 'mark:insertTypo' %}",
-            data:JSON.stringify({
-                'insertType': "reverse",
-                'correctWord': correctWord,
-                'wrongWord': wrongWord,
-            }),
-            success:function (response){
-                res = response;
-                console.log("insertreverse", response);
-                // printResult(response);
-            },
-        });
-        return res;
-    }
     function CapClear(){
         document.getElementById("correct").value = "";
         document.getElementById("correct").innerHTML = "";
@@ -1323,7 +647,7 @@ $(document).ready(function (e) {
         let textToSearch = document.getElementById("correct").value;                
         textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
         let dateFormat = new RegExp(`${textToSearch}`,"g");
-        ////////////console.log("dateFormat: "+ dateFormat);          
+        //////////console.log("dateFormat: "+ dateFormat);          
         result_array = []
         var paragraph = document.getElementById("reportText").innerHTML;
         
@@ -1333,19 +657,19 @@ $(document).ready(function (e) {
 
         //迴圈執行exec()取得回傳的groups 原本exec只會找一筆所以要回圈 match回傳值沒有groups所以不能用
         while(null != (g = dateFormat.exec(paragraph))) {
-            //////////console.log("groups: " + g.groups);  // ouput: "a"
-            ////////console.log("pattern: " + g);
+            ////////console.log("groups: " + g.groups);  // ouput: "a"
+            //////console.log("pattern: " + g);
             result_array.push(g.groups);
             extractedArray.push(g[0]);
         }
-        ////////console.log("result_array : ", result_array);
+        //////console.log("result_array : ", result_array);
         
         var allkeyArray = [];
         var allvalueArray = [];
         for(var i=0 ; i<result_array.length ; i++){
             var  entries = Object.entries(result_array[i]);
             for (const [key, value] of entries) {
-                ////////console.log(`Key: ${key}, Value: ${value}`);
+                //////console.log(`Key: ${key}, Value: ${value}`);
                 if(!keyArray.includes(key)){
                     keyArray.push(key);
                     valueArray.push(value);
@@ -1355,8 +679,8 @@ $(document).ready(function (e) {
             }
         }
 
-        ////////console.log("extractedArray : ", extractedArray);
-        ////////console.log("allvalueArray : ", allvalueArray);
+        //////console.log("extractedArray : ", extractedArray);
+        //////console.log("allvalueArray : ", allvalueArray);
         var ex = "";
         var count = 0;
         for(var i=0 ; i<allvalueArray.length ; i++){
@@ -1364,8 +688,8 @@ $(document).ready(function (e) {
             count += 1;
         }
 
-        ////////console.log("keyArray : ", keyArray);
-        ////////console.log("valueArray : ", valueArray);
+        //////console.log("keyArray : ", keyArray);
+        //////console.log("valueArray : ", valueArray);
         var string = "";
         for(var i=0 ; i<keyArray.length ; i++){
             string += (keyArray[i]).toString() + ". " + valueArray[i].toString() + "<br>"
@@ -1373,12 +697,12 @@ $(document).ready(function (e) {
     }
 
     function getitemTable(){
-        //////console.log("getitemTable in ");
+        ////console.log("getitemTable in ");
         
         var responseItem = getCapitalToken();
         // responseformodal = responseItem;
         // response = responseItem;
-        // ////////console.log("response : ", response);
+        // //////console.log("response : ", response);
         
         // $('#itemDefinition tbody').empty();
         // let element = '';
@@ -1403,7 +727,7 @@ $(document).ready(function (e) {
         
         
         var response = getTypoToken();
-        ////////console.log("response : ", response);
+        //////console.log("response : ", response);
         
         // $('#typoTable tbody').empty();
         // let element = '';
@@ -1414,7 +738,7 @@ $(document).ready(function (e) {
         // }
         
         // $('#typoTable tbody').append(element);
-        //////console.log("response : ", response.data);
+        ////console.log("response : ", response.data);
 
 
         // $('#typoTable').bootstrapTable();
@@ -1422,18 +746,18 @@ $(document).ready(function (e) {
     }
     //取得雙擊元素correct
     function getTypo(){
-        //////console.log("target : ", event.target);
+        ////console.log("target : ", event.target);
         var element = document.getElementById("typoCorrect");
         element.value = event.target.innerHTML;
         element.innerHTML = event.target.innerHTML;
         emphasizeInput(element);
         var token = event.target.innerHTML;
-        ////console.log("token : ", token);
+        //console.log("token : ", token);
         getTypoTokenDistance(token);
     }
 
     function getTypoTokenDistance(token){
-        ////console.log("insertTypo");
+        //console.log("insertTypo");
         $.ajax({
             type: 'POST',
             url: "{% url 'mark:getTypoTokenDistance' %}",
@@ -1451,64 +775,62 @@ $(document).ready(function (e) {
         });
     }
 
-    // function createOption(tokenArray, reportIDArray){
-    //     var targetDiv = document.getElementById("checkboxDivinside");
-    //     targetDiv.innerHTML = "";
-    //     targetDiv.value = "";
-    //     if (tokenArray.length > 0){
-    //         for (var i=0 ; i<tokenArray.length ; i++){
-    //             var checkbox = document.createElement("input");
-    //             checkbox.type = "checkbox";
-    //             checkbox.id = `myCheckbox${i}`;
-    //             checkbox.name = `myCheckbox${i}`;
-    //             checkbox.className = 'class="form-check-input"';
-    //             checkbox.setAttribute("reportID", reportIDArray[i]);
+    function createOption(tokenArray, reportIDArray){
+        var targetDiv = document.getElementById("checkboxDivinside");
+        targetDiv.innerHTML = "";
+        targetDiv.value = "";
+        if (tokenArray.length > 0){
+            for (var i=0 ; i<tokenArray.length ; i++){
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = `myCheckbox${i}`;
+                checkbox.name = `myCheckbox${i}`;
+                checkbox.className = 'class="form-check-input"';
+                checkbox.setAttribute("reportID", reportIDArray[i]);
 
-    //             var label = document.createElement("label");
-    //             label.innerHTML = tokenArray[i];
-    //             label.setAttribute("for", `myCheckbox${i}`);
-    //             label.className = 'class="form-check-label"';
-    //             label.style = "user-select : none";
-    //             // Append the checkbox element to the target div
-    //             targetDiv.appendChild(checkbox);
-    //             targetDiv.appendChild(label);
+                var label = document.createElement("label");
+                label.innerHTML = tokenArray[i];
+                label.setAttribute("for", `myCheckbox${i}`);
+                label.className = 'class="form-check-label"';
+                label.style = "user-select : none";
+                // Append the checkbox element to the target div
+                targetDiv.appendChild(checkbox);
+                targetDiv.appendChild(label);
                 
-    //             targetDiv.appendChild(document.createElement("br"));
-    //         }
-    //         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    //         var labels = document.querySelectorAll('label');
+                targetDiv.appendChild(document.createElement("br"));
+            }
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var labels = document.querySelectorAll('label');
 
-    //         // ////console.log(labels);
+            // //console.log(labels);
 
-    //         // Loop through the checkboxes and add an event listener to each one
-    //         for (var i = 0; i < checkboxes.length; i++) {
-    //             checkboxes[i].addEventListener('click', function() {
-    //                 var reportID = this.getAttribute("reportID");
-    //                 ////console.log("reportID : ", reportID);
-    //                 this.classList.toggle('checked');
+            // Loop through the checkboxes and add an event listener to each one
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].addEventListener('click', function() {
+                    var reportID = this.getAttribute("reportID");
+                    this.classList.toggle('checked');
                     
-    //                 var checkedOptions = getCheckedOptions();
-    //                 // ////console.log("checkedOptions : ", checkedOptions);
-    //                 document.getElementById("typoResult").innerHTML = `已選擇錯別字數： ${checkedOptions.length}`;
+                    var checkedOptions = getCheckedOptions();
+                    // //console.log("checkedOptions : ", checkedOptions);
+                    document.getElementById("typoResult").innerHTML = `已選擇錯別字數： ${checkedOptions.length}`;
 
-    //                 var label = this.nextElementSibling; // get the label element after the checkbox
-    //                 var labelText = label.textContent; // get the text content of the label
-    //                 ////console.log("labelText : ", labelText);
-    //                 //如果狀態變為選取
-    //                 if (this.classList.contains('checked')){
-    //                     ////console.log("checked");
-    //                     getReportBylastReportID(reportID, labelText);
-    //                 }
-                    
-    //             });
-    //         }
-    //     }
-    //     else{
-    //         targetDiv.innerHTML = "";
-    //         targetDiv.value = "";
-    //         targetDiv.innerHTML = "無資料";
-    //     }
-    // }
+                    var label = this.nextElementSibling; // get the label element after the checkbox
+                    var labelText = label.textContent; // get the text content of the label
+                    //console.log("labelText : ", labelText);
+                    //如果狀態變為選取
+                    if (this.classList.contains('checked')){
+                        //console.log("checked");
+                        getReportBylastReportID(reportID, labelText);
+                    }
+                });
+            }
+        }
+        else{
+            targetDiv.innerHTML = "";
+            targetDiv.value = "";
+            targetDiv.innerHTML = "無資料";
+        }
+    }
     
 
     //根據reportID找文章
@@ -1536,7 +858,7 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        ////////console.log("reportID" + reportID);     
+        //////console.log("reportID" + reportID);     
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:getReportByReportID' %}',
@@ -1545,16 +867,16 @@ $(document).ready(function (e) {
             }),
             success:function (response){
                 // printResult(response);
-                ////console.log("report res : ", response);
+                //console.log("report res : ", response);
                 // btn.innerHTML = response.data;
                 // btn.value = response.data;
                 clearInterval(intervalId);
                 var paragraph = response.data[0];
-                ////console.log("paragraph : ", paragraph);
+                //console.log("paragraph : ", paragraph);
                 textToSearch = textToSearch.replace(/[ .*+?^${}()| [\ ]\\ ]/g,"\\$&");
                 var pattern = new RegExp(`${textToSearch}`,"g");
                 
-                ////console.log("pattern : ", pattern);
+                //console.log("pattern : ", pattern);
 
                 document.getElementById("reportPrint").innerHTML = paragraph.replace(pattern, match => `<mark class="highlight">${match}</mark>`);
                 // btn.innerHTML = "已找到報告!";
@@ -1581,7 +903,7 @@ $(document).ready(function (e) {
 
     //取得雙擊元素correct
     function getCorrect(){
-        //////console.log("target : ", event.target);
+        ////console.log("target : ", event.target);
         var element = document.getElementById("correct");
         if(element.value != ""){
             element.value += "\n" + event.target.innerHTML;
@@ -1593,18 +915,18 @@ $(document).ready(function (e) {
         }
         var autoSelect = document.getElementById("storebtn").autoSelect;
         var text = document.getElementById("correct").value;
-        // //////console.log("text : ", text);
+        // ////console.log("text : ", text);
         var correctWords = text.split('\n');
         var correctNumber = correctWords.length;
-        //////console.log("correctWords : ", correctWords);
-        //////console.log("correctNumber : ", correctNumber);
+        ////console.log("correctWords : ", correctWords);
+        ////console.log("correctNumber : ", correctNumber);
         document.getElementById("countCorrect").innerHTML = `大小寫正確單字數：${correctNumber}`;
         emphasizeInput(element);
     }
 
     //取得雙擊元素wrong
     function getWrong(){
-        //////console.log("target : ", event.target);
+        ////console.log("target : ", event.target);
         var element = document.getElementById("wrong");
         if(element.value != ""){
             element.value += "\n" + event.target.innerHTML;
@@ -1615,11 +937,11 @@ $(document).ready(function (e) {
             element.innerHTML += event.target.innerHTML;
         }
         var text = document.getElementById("wrong").value;
-        // //////console.log("text : ", text);
+        // ////console.log("text : ", text);
         var wrongWords = text.split('\n');
         var wrongNumber = wrongWords.length;
-        //////console.log("wrongWords : ", wrongWords);
-        //////console.log("wrongNumber : ", wrongNumber);
+        ////console.log("wrongWords : ", wrongWords);
+        ////console.log("wrongNumber : ", wrongNumber);
         document.getElementById("countWrong").innerHTML = `大小寫錯誤單字數：${wrongNumber}`;
         emphasizeInput(element);
     }
@@ -1628,12 +950,12 @@ $(document).ready(function (e) {
 
     //取得雙擊元素Stop
     function getStop(){
-        //////console.log("target : ", event.target);
+        ////console.log("target : ", event.target);
         
         var text = document.getElementById("stopwords").value;
         var stoptWords = text.split('\n');
         var element = document.getElementById("stopwords");
-        //console.log("target : ", $(event.target).parent('tr').children()[0].innerHTML);
+        console.log("target : ", $(event.target).parent('tr').children()[0].innerHTML);
         var string = $(event.target).parent('tr').children()[0].innerHTML;
         if (stoptWords.indexOf(string) === -1){
             
@@ -1648,8 +970,8 @@ $(document).ready(function (e) {
             text = document.getElementById("stopwords").value;
             stoptWords = text.split('\n');
             var stopNumber = stoptWords.length;
-            // //console.log("stoptWords : ", stoptWords);
-            // //console.log("stopNumber : ", stopNumber);
+            // console.log("stoptWords : ", stoptWords);
+            // console.log("stopNumber : ", stopNumber);
             document.getElementById("countstop").innerHTML = `不統計單字數：${stopNumber}`;
             emphasizeInput(element);
         }
@@ -1716,7 +1038,7 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        //////console.log("getitemTable in ");
+        ////console.log("getitemTable in ");
         var res;
         $.ajax({
             async:false,
@@ -1724,7 +1046,7 @@ $(document).ready(function (e) {
             url: '{% url "mark:getCapitalToken" %}',
             success:function (response){
                 res = response;
-                ////console.log("response Capital : ", response);
+                //console.log("response Capital : ", response);
                 $('#itemDefinition_frame').empty();
                 $('#itemDefinition_frame').append(`<table id='itemDefinition' class="table table-striped" data-toggle="table"  data-search="true"
                 data-pagination="true"
@@ -1769,7 +1091,7 @@ $(document).ready(function (e) {
                 setTimeout(() => {
                     btn.innerHTML = "查詢";
                 }, 1000);
-                ////////console.log(response, res);
+                //////console.log(response, res);
             },
         });
         return res;
@@ -1801,14 +1123,14 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        //////console.log("getitemTable in ");
+        ////console.log("getitemTable in ");
         var res;
         $.ajax({
             type: 'POST',
             url: '{% url "mark:getStopToken" %}',
             success:function (response){
                 res = response;
-                ////console.log("response Capital : ", response);
+                //console.log("response Capital : ", response);
                 $('#itemDefinition_frame').empty();
                 $('#itemDefinition_frame').append(`<table id='StopTable' class="table table-striped" data-toggle="table"  data-search="true"
                 data-pagination="true"
@@ -1862,7 +1184,7 @@ $(document).ready(function (e) {
                 setTimeout(() => {
                     btn.innerHTML = "查詢";
                 }, 1000);
-                ////////console.log(response, res);
+                //////console.log(response, res);
             },
         });
         return res;
@@ -1894,7 +1216,7 @@ $(document).ready(function (e) {
                 break;
             }
         }, 500); // Update the text every 500 milliseconds
-        //////console.log("getitemTable in ");
+        ////console.log("getitemTable in ");
         var res;
         $.ajax({
             type: 'POST',
@@ -1955,7 +1277,7 @@ $(document).ready(function (e) {
                 setTimeout(() => {
                     btn.innerHTML = "查詢";
                 }, 1000);
-                ////////console.log(response, res);
+                //////console.log(response, res);
             },
         });
         return res;
@@ -2008,16 +1330,16 @@ $(document).ready(function (e) {
 
     //存檔到後端資料庫
     function BtnClicked_1(itemName){
-        ////////////console.log("execute in")
-        //////console.log("itemName : ", itemName);
+        //////////console.log("execute in")
+        ////console.log("itemName : ", itemName);
 
 
         token = document.getElementById('regexName').value;
-        ////////console.log("token : ", token);
+        //////console.log("token : ", token);
         tokenType = "E";
-        //////////console.log("tokenType : " + tokenType)
+        ////////console.log("tokenType : " + tokenType)
         //count = getLength(token);
-        ////////////console.log(input,regex)
+        //////////console.log(input,regex)
         $.ajax({
             type: 'POST',
             url: '{% url 'mark:insertVocabulary' %}',
@@ -2027,7 +1349,7 @@ $(document).ready(function (e) {
                 'tokenType': tokenType,                
             },
             success:function (response){
-                //////////console.log("result : " + response.status)
+                ////////console.log("result : " + response.status)
                 if (tokenType == 'E'){
                     BtnClicked_2(response,itemName);
                 }

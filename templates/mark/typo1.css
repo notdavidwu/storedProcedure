@@ -240,8 +240,8 @@
         color: #8cbed6;
     }
     
-    
     #loader{
+        background-color:#000
         z-index:2;
         position:absolute;
         top:50%;
@@ -602,124 +602,6 @@
   #pool > .col-md-12 > label{
     font-size: 14pt;
   }
-
-
-    #wordPannel{
-        background:url("{% static 'image/texture.png' %}");
-        background-color:#FFF;
-        margin-top:0px;
-        height:100%;
-        
-    }
-    #wordPannel > div{
-        height:100%;
-    }
-    #wordTable{
-        height:calc(100% - 150px);
-        overflow-y: auto;
-    }
-    #word-form{
-        height:600px;
-        overflow-y: auto;
-    }
-    #reverseindex-form{
-        height:600px;
-        overflow-y: auto;
-    }
-    .custom-nav-item{
-        width:50%
-    }
-    #settingPannel{
-        padding-left:0px;
-        padding-right:0px;
-    }
-    #settingPannel > #cardArea {
-        padding-left:0px;
-        padding-right:0px;
-        height:calc(100% - 100px);
-    }
-    #settingPannel > #cardArea > div{
-        padding-left:0px;
-        padding-right:0px;
-    }
-    .card-header{padding-left:0px;
-        padding-right:0px
-        }
-    .card-header-tabs{
-        padding-left:0px;
-        padding-right:0px;
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-    .card{
-        height:100%
-    }
-    #search{
-        height:100%;
-    }
-    .box{
-        background:url("{% static 'image/texture.png' %}");
-        background-color:#0F2540;
-        padding:10px;
-        border:1px solid #000;
-        border-radius:5px;
-        justify-content: center;
-        height:100%;
-    }
-    .box > label{
-        justify-content: center;
-        color:#FFF;
-        
-    }
-    #frame div{
-        font-size:14pt;
-    }
-    #selectedWord{
-        height:50px
-    }
-    table {  
-        width: 100%;  
-        border-collapse: collapse;  
-      }  
-        
-    thead {  
-        position: sticky;  
-        top: 0;  
-        z-index: 1;  
-        background-color: #fff;  
-    }  
-        
-    th {  
-        padding: 10px;  
-        text-align: left;  
-        border-bottom: 1px solid #ddd;  
-    }
-    #wordTable > table > tbody > tr > td{
-        font-size:14pt;
-    }    
-    #analyseTable > tbody > tr > td{
-        font-size:14pt;
-    }
-    #reversedIndexTable > tbody > tr > td{
-        font-size:14pt;
-    }
-
-
-    
-    #wordtable tbody > tr > td:nth-child(1),
-    #wordtable tbody > tr > td:nth-child(2),
-    #wordtable tbody > tr > td:nth-child(5),
-    #wordtable tbody > tr > td:nth-child(6) {
-        text-align: right;
-    }
-
-
-    #wordtable thead > tr > th:nth-child(1),
-    #wordtable thead > tr > th:nth-child(2),
-    #wordtable thead > tr > th:nth-child(5),
-    #wordtable thead > tr > th:nth-child(6) {
-        text-align: right;
-    }
 </style>
 {% endblock %}
 
